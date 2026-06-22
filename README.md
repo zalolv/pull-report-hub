@@ -4,23 +4,26 @@ Static HTML report hosting for Pull&Bear ecommerce reports through GitHub Pages.
 
 ## Purpose
 
-This repository stores report HTML files that are published through GitHub Pages. There is no dashboard, import form, backend API, database, or access control in this iteration.
+This repository stores report HTML files that are published through GitHub Pages. The root `index.html` is a manually maintained dashboard that links to the available reports. There is no import form, backend API, database, or access control in this iteration.
 
 ## Structure
 
 - `reports/`: committed HTML report files served directly by GitHub Pages.
+- `index.html`: manually maintained dashboard with one card per available report.
 
 ## Add A Report
 
 1. Copy the report HTML into `reports/`.
 2. Use a stable, URL-safe filename, for example `reports/weekly-sales-2026-06-22.html`.
-3. Commit and push the change.
-4. Share the deployed URL: `https://zalolv.github.io/pull-report-hub/reports/<filename>.html`.
+3. Add a matching card to `index.html` with the report title, summary, tags, and link.
+4. Commit and push the change.
+5. Share either the dashboard URL `https://zalolv.github.io/pull-report-hub/` or the direct report URL `https://zalolv.github.io/pull-report-hub/reports/<filename>.html`.
 
 ## Delete A Report
 
 1. Remove the HTML file from `reports/`.
-2. Commit and push the change.
+2. Remove its card from `index.html`.
+3. Commit and push the change.
 
 ## Access
 
