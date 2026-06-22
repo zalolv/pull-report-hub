@@ -1,19 +1,28 @@
 # Pull Report Hub
 
-Base project for iterating on Pull&Bear reporting workflows with OpenCode.
+Static HTML report hosting for Pull&Bear ecommerce reports.
 
 ## Purpose
 
-This repository is intentionally minimal. It starts with only the files needed to provide project context and let future iterations add structure when there is a concrete need.
+This repository stores report HTML files that are published through Azure Static Web Apps and protected by corporate SSO. There is no dashboard, import form, backend API, or database in this iteration.
 
-## Initial Scope
+## Structure
 
-- Keep the project independent from other local workspaces.
-- Use this folder as the only working root for changes related to Pull Report Hub.
-- Add tooling, dependencies, or runtime structure only when a specific task requires them.
+- `reports/`: committed HTML report files.
+- `staticwebapp.config.json`: Azure Static Web Apps auth routing. Every route requires an authenticated user.
 
-## Suggested Next Steps
+## Add A Report
 
-1. Define the first reporting use case.
-2. Decide whether the output should be HTML, Markdown, CSV, dashboard data, or another format.
-3. Add only the folders and tooling required by that first use case.
+1. Copy the report HTML into `reports/`.
+2. Use a stable, URL-safe filename, for example `reports/weekly-sales-2026-06-22.html`.
+3. Commit and push the change.
+4. Share the deployed URL: `https://<azure-static-web-app-host>/reports/<filename>.html`.
+
+## Delete A Report
+
+1. Remove the HTML file from `reports/`.
+2. Commit and push the change.
+
+## Access
+
+Azure Static Web Apps redirects unauthenticated users to the configured corporate SSO login flow. After login, users can open direct report URLs.
