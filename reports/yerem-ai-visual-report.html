@@ -1,0 +1,573 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>yerem-ai | Informe visual</title>
+  <style>
+    :root {
+      --bg: #ffffff;
+      --ink: #000000;
+      --muted: #666666;
+      --soft: #f7f7f7;
+      --line: #e3e3e3;
+      --inverse: #000000;
+      --inverse-ink: #ffffff;
+      --success: #34c759;
+      --info: #007aff;
+      --warn: #ff9500;
+      --radius-card: 16px;
+      --radius-panel: 12px;
+      --space: clamp(20px, 3vw, 44px);
+      --max: 1180px;
+    }
+
+    * { box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: "Neue Haas", "Helvetica Now Text", Helvetica, Arial, sans-serif;
+      font-size: 16px;
+      line-height: 1.45;
+      letter-spacing: .3px;
+    }
+
+    .page {
+      width: min(100%, var(--max));
+      margin: 0 auto;
+      padding: 28px clamp(18px, 4vw, 56px) 64px;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      padding: 14px 0 32px;
+      border-bottom: 1px solid var(--line);
+      font-size: 12px;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .brand {
+      color: var(--ink);
+      font-weight: 500;
+      letter-spacing: .7px;
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1.25fr) minmax(280px, .75fr);
+      gap: var(--space);
+      align-items: stretch;
+      padding: clamp(42px, 7vw, 96px) 0 48px;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      width: fit-content;
+      padding: 8px 10px;
+      border: 1px solid var(--ink);
+      font-size: 11px;
+      line-height: 1;
+      text-transform: uppercase;
+      letter-spacing: .7px;
+    }
+
+    h1, h2, h3, p { margin: 0; }
+
+    h1 {
+      max-width: 880px;
+      margin-top: 24px;
+      font-size: clamp(44px, 7vw, 92px);
+      font-weight: 350;
+      line-height: .95;
+      letter-spacing: -2px;
+    }
+
+    .lead {
+      max-width: 780px;
+      margin-top: 28px;
+      color: #2f2f2f;
+      font-size: clamp(18px, 2vw, 24px);
+      line-height: 1.35;
+    }
+
+    .hero-card {
+      min-height: 100%;
+      padding: 28px;
+      border-radius: var(--radius-card);
+      background: var(--inverse);
+      color: var(--inverse-ink);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 34px;
+    }
+
+    .hero-card .label {
+      color: #c4c4c4;
+      font-size: 11px;
+      text-transform: uppercase;
+    }
+
+    .hero-card strong {
+      display: block;
+      margin-top: 10px;
+      font-size: clamp(26px, 4vw, 44px);
+      font-weight: 350;
+      line-height: 1;
+      letter-spacing: -1px;
+    }
+
+    .hero-card p { color: #d8d8d8; }
+
+    .section {
+      padding: 52px 0;
+      border-top: 1px solid var(--line);
+    }
+
+    .section-head {
+      display: grid;
+      grid-template-columns: 220px 1fr;
+      gap: 28px;
+      margin-bottom: 28px;
+    }
+
+    .section-kicker {
+      color: var(--muted);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: .8px;
+    }
+
+    h2 {
+      font-size: clamp(28px, 4vw, 52px);
+      font-weight: 350;
+      line-height: 1.02;
+      letter-spacing: -1.4px;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+    }
+
+    .card {
+      padding: 24px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-card);
+      background: var(--soft);
+    }
+
+    .card.white { background: #fff; }
+
+    .card.dark {
+      background: var(--ink);
+      color: var(--inverse-ink);
+      border-color: var(--ink);
+    }
+
+    .card h3 {
+      margin-bottom: 12px;
+      font-size: 18px;
+      font-weight: 500;
+      letter-spacing: .1px;
+    }
+
+    .card p, .card li {
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .card.dark p, .card.dark li { color: #d4d4d4; }
+
+    .metric {
+      display: block;
+      margin-bottom: 14px;
+      font-size: clamp(34px, 5vw, 64px);
+      font-weight: 350;
+      line-height: .9;
+      letter-spacing: -1.5px;
+    }
+
+    .pill-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 18px;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      min-height: 32px;
+      padding: 7px 10px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: #fff;
+      color: #222;
+      font-size: 12px;
+      white-space: nowrap;
+    }
+
+    .pill.inverse {
+      border-color: #434343;
+      background: #111;
+      color: #fff;
+    }
+
+    .matrix {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+    }
+
+    .mcp {
+      min-height: 136px;
+      padding: 18px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-panel);
+      background: #fff;
+    }
+
+    .mcp span {
+      display: inline-block;
+      margin-bottom: 18px;
+      padding: 5px 7px;
+      background: var(--soft);
+      color: var(--muted);
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: .7px;
+    }
+
+    .mcp h3 {
+      margin-bottom: 8px;
+      font-size: 16px;
+      font-weight: 500;
+    }
+
+    .mcp p {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.35;
+    }
+
+    .workflow {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 10px;
+      counter-reset: flow;
+    }
+
+    .step {
+      position: relative;
+      min-height: 170px;
+      padding: 20px;
+      border: 1px solid var(--line);
+      background: #fff;
+      border-radius: var(--radius-panel);
+    }
+
+    .step::before {
+      counter-increment: flow;
+      content: "0" counter(flow);
+      display: inline-block;
+      margin-bottom: 28px;
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .step h3 {
+      margin-bottom: 10px;
+      font-size: 15px;
+      font-weight: 500;
+    }
+
+    .step p {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    ul {
+      margin: 12px 0 0;
+      padding-left: 18px;
+    }
+
+    li + li { margin-top: 8px; }
+
+    .highlight {
+      padding: clamp(28px, 4vw, 46px);
+      border-radius: var(--radius-card);
+      background: var(--inverse);
+      color: var(--inverse-ink);
+    }
+
+    .highlight h2 { max-width: 900px; }
+
+    .highlight .lead { color: #d4d4d4; }
+
+    .footer {
+      padding: 34px 0 0;
+      border-top: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 12px;
+      display: flex;
+      justify-content: space-between;
+      gap: 20px;
+    }
+
+    .accent-success { color: var(--success); }
+    .accent-info { color: var(--info); }
+    .accent-warn { color: var(--warn); }
+
+    @media (max-width: 980px) {
+      .hero,
+      .section-head,
+      .grid-3,
+      .grid-2,
+      .workflow { grid-template-columns: 1fr; }
+
+      .matrix { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    @media (max-width: 620px) {
+      .page { padding-inline: 16px; }
+      .topbar, .footer { flex-direction: column; align-items: flex-start; }
+      .matrix { grid-template-columns: 1fr; }
+      .hero-card, .card, .highlight { border-radius: 12px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <header class="topbar">
+      <div class="brand">Pull&amp;Bear Agent Sandbox</div>
+      <div>Informe visual · MCPs · Skills · Utilidades</div>
+    </header>
+
+    <section class="hero">
+      <div>
+        <span class="eyebrow">yerem-ai</span>
+        <h1>Una capa operativa local para trabajar con agentes IA en Pull&amp;Bear.</h1>
+        <p class="lead">El proyecto centraliza contexto, MCPs, skills y utilidades para convertir preguntas técnicas o funcionales en análisis accionables, tickets bien formados, diagnósticos y soporte operativo.</p>
+      </div>
+      <aside class="hero-card">
+        <div>
+          <div class="label">Propósito principal</div>
+          <strong>Menos fricción. Más contexto. Mejor salida funcional.</strong>
+        </div>
+        <p>No es una aplicación de producto final: es un sandbox de trabajo para agentes, análisis Pull&amp;Bear, pruebas de herramientas, consultas Snowflake y soporte ecommerce.</p>
+      </aside>
+    </section>
+
+    <section class="section">
+      <div class="section-head">
+        <div class="section-kicker">Resumen ejecutivo</div>
+        <h2>yerem-ai conecta herramientas corporativas y conocimiento local para acelerar trabajo de producto, desarrollo y operación.</h2>
+      </div>
+      <div class="grid-3">
+        <article class="card dark">
+          <span class="metric">17</span>
+          <h3>MCPs configurados</h3>
+          <p>Acceso a Jira, GitHub, Figma, SRE, Snowflake, Zenit, Miro, documentación, navegador y otros sistemas desde una misma sesión de agente.</p>
+        </article>
+        <article class="card">
+          <span class="metric">30+</span>
+          <h3>Skills y workflows</h3>
+          <p>Guías especializadas para Jira, análisis técnico, Sonar, SDUI, APIs, observabilidad, Teams, Outlook, presentaciones, Colabora y más.</p>
+        </article>
+        <article class="card">
+          <span class="metric">1</span>
+          <h3>Rol funcional claro</h3>
+          <p>Las reglas de AGENTS.md orientan el output a valor Pull&amp;Bear: impacto funcional, negocio, estabilidad, eficiencia y creación estructurada de tickets.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-head">
+        <div class="section-kicker">Mapa de valor</div>
+        <h2>Cuatro capas que convierten contexto disperso en decisiones accionables.</h2>
+      </div>
+      <div class="grid-2">
+        <article class="card white">
+          <h3>1. MCPs</h3>
+          <p>Puentes hacia sistemas reales: Jira, GitHub, Snowflake, Zenit, SRE, Figma, Miro, documentación, GrowthBook, navegador y auditorías web.</p>
+        </article>
+        <article class="card white">
+          <h3>2. Skills</h3>
+          <p>Procedimientos reutilizables que reducen improvisación: análisis, creación Jira, diseño API, SDUI, observabilidad, CI/CD, Sonar, comunicación y reporting.</p>
+        </article>
+        <article class="card white">
+          <h3>3. Utilidades locales</h3>
+          <p>Scripts, prompts, templates, servidor Snowflake MCP y extensión CTR Review para resolver casos Pull&amp;Bear con menos pasos manuales.</p>
+        </article>
+        <article class="card white">
+          <h3>4. Reglas de rol</h3>
+          <p>El agente trabaja como analista funcional senior: no inventa, traduce lo técnico a valor, y no crea Jira sin confirmación explícita.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-head">
+        <div class="section-kicker">MCPs configurados</div>
+        <h2>Un panel de conexiones para investigar, diagnosticar, documentar y actuar.</h2>
+      </div>
+      <div class="matrix">
+        <article class="mcp"><span>Producto</span><h3>Jira</h3><p>Lectura, análisis y creación controlada de issues Inditex.</p></article>
+        <article class="mcp"><span>Código</span><h3>GitHub</h3><p>Repositorios, PRs, commits, reviews, issues y contexto técnico.</p></article>
+        <article class="mcp"><span>Diseño</span><h3>Figma</h3><p>Consulta de diseños, nodos, imágenes y metadatos funcionales.</p></article>
+        <article class="mcp"><span>Operación</span><h3>SRE</h3><p>Grafana, Prometheus, Loki, Tempo y análisis de producción.</p></article>
+        <article class="mcp"><span>Web</span><h3>Playwright</h3><p>Navegación, snapshots, automatización y validación browser.</p></article>
+        <article class="mcp"><span>Calidad web</span><h3>Lighthouse</h3><p>Performance, SEO, accesibilidad, PWA y oportunidades de mejora.</p></article>
+        <article class="mcp"><span>Docs</span><h3>Geppetto</h3><p>Documentación técnica Inditex y guías de frameworks AMIGA.</p></article>
+        <article class="mcp"><span>Experimentación</span><h3>GrowthBook</h3><p>Feature flags, experimentos, métricas y conexiones SDK.</p></article>
+        <article class="mcp"><span>Datos</span><h3>Snowflake</h3><p>Consultas analíticas con SSO externalbrowser y servidor local.</p></article>
+        <article class="mcp"><span>Analítica</span><h3>Zenit</h3><p>Eventos, parámetros, páginas, KPIs, datasets y reportes Zenit.</p></article>
+        <article class="mcp"><span>Colaboración</span><h3>Miro</h3><p>Lectura y creación de contexto visual mediante OAuth.</p></article>
+        <article class="mcp"><span>Referencia</span><h3>Context7</h3><p>Documentación actualizada de librerías y frameworks.</p></article>
+        <article class="mcp"><span>Búsqueda</span><h3>Exa Code</h3><p>Búsqueda semántica externa para documentación y código.</p></article>
+        <article class="mcp"><span>Conocimiento</span><h3>Confluence</h3><p>Consulta de documentación corporativa cuando hay token disponible.</p></article>
+        <article class="mcp"><span>Configuración</span><h3>ConfigNow</h3><p>Análisis de configuración, flags y valores por entorno.</p></article>
+        <article class="mcp"><span>Debug</span><h3>Chrome DevTools</h3><p>Inspección de páginas mediante Chrome DevTools Protocol.</p></article>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-head">
+        <div class="section-kicker">Skills</div>
+        <h2>Procedimientos especializados para no empezar de cero en cada petición.</h2>
+      </div>
+      <div class="grid-3">
+        <article class="card">
+          <h3>Producto y Jira</h3>
+          <p>Creación de tickets con plantillas Pull&amp;Bear, análisis de iniciativas, comunidad, Colabora y productos PREINT.</p>
+          <div class="pill-row"><span class="pill">jira</span><span class="pill">tech-analysis</span><span class="pill">community-helper</span><span class="pill">colabora</span><span class="pill">preint-products</span></div>
+        </article>
+        <article class="card">
+          <h3>Desarrollo y calidad</h3>
+          <p>Ejecución guiada, actualización de frameworks, análisis Sonar, CI/CD, Janus y documentación de properties.</p>
+          <div class="pill-row"><span class="pill">coding</span><span class="pill">sonarcloud</span><span class="pill">inditex-cicd</span><span class="pill">janus-publication</span><span class="pill">update-fwk-version</span></div>
+        </article>
+        <article class="card">
+          <h3>APIs, SDUI y UI</h3>
+          <p>Diseño API Storefront, creación y migración SDUI, y aplicación de guías visuales de marca.</p>
+          <div class="pill-row"><span class="pill">storefrontAPIDesign</span><span class="pill">sdui-builder</span><span class="pill">sdui-migrator-*</span><span class="pill">ui-designer</span></div>
+        </article>
+        <article class="card">
+          <h3>Analítica y observabilidad</h3>
+          <p>Eventos Zenit, producción, Kafka/PIPE, ConfigNow, métricas y diagnóstico de incidencias.</p>
+          <div class="pill-row"><span class="pill">zenit-analytics-testing</span><span class="pill">observability-analysis</span><span class="pill">pipe-messages</span><span class="pill">config-now-expert</span></div>
+        </article>
+        <article class="card">
+          <h3>Comunicación y reporting</h3>
+          <p>Teams, Outlook, presentaciones, imágenes, vídeo y generación de informes visuales.</p>
+          <div class="pill-row"><span class="pill">ms-teams</span><span class="pill">ms-outlook</span><span class="pill">presentation</span><span class="pill">pixia</span></div>
+        </article>
+        <article class="card dark">
+          <h3>Valor práctico</h3>
+          <p>Las skills convierten conocimiento tácito en procesos repetibles: menos variabilidad, menos olvidos, más consistencia en entregables.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-head">
+        <div class="section-kicker">Utilidades locales</div>
+        <h2>Además de conectar herramientas, el sandbox incluye piezas locales para resolver casos concretos.</h2>
+      </div>
+      <div class="grid-3">
+        <article class="card white">
+          <h3>CTR Review</h3>
+          <p>Extensión Chrome y backend local para mostrar CTR de productos sobre parrillas Pull&amp;Bear Web usando vistas Zenit en Snowflake.</p>
+          <ul><li>Detecta productos visibles.</li><li>Consulta impresiones y clicks.</li><li>Pinta overlays de CTR en la parrilla.</li></ul>
+        </article>
+        <article class="card white">
+          <h3>Snowflake MCP</h3>
+          <p>Servidor local Python para consultas Snowflake con autenticación SSO externalbrowser y configuración Pull&amp;Bear.</p>
+          <ul><li>Consultas de datos.</li><li>Muestras de tablas.</li><li>Análisis de estructura y clustering.</li></ul>
+        </article>
+        <article class="card white">
+          <h3>AI Context</h3>
+          <p>Prompts, scripts y templates importados desde el ecosistema ecommerce para acelerar tareas recurrentes.</p>
+          <ul><li>Refresco de token ITX.</li><li>Monitor de major incidents.</li><li>Templates de testing Zenit.</li></ul>
+        </article>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-head">
+        <div class="section-kicker">Flujo de trabajo</div>
+        <h2>Del input del usuario a una salida útil, trazable y orientada a valor.</h2>
+      </div>
+      <div class="workflow">
+        <article class="step"><h3>Pregunta o necesidad</h3><p>El usuario pide analizar, crear, diagnosticar, consultar o preparar un entregable.</p></article>
+        <article class="step"><h3>Contexto</h3><p>El agente consulta README, AGENTS, repos, Jira, docs o datos según el caso.</p></article>
+        <article class="step"><h3>Skill adecuada</h3><p>Se activa el procedimiento específico para evitar respuestas improvisadas.</p></article>
+        <article class="step"><h3>MCP o utilidad</h3><p>La acción se apoya en sistemas reales: Jira, GitHub, Zenit, SRE, browser o Snowflake.</p></article>
+        <article class="step"><h3>Salida funcional</h3><p>El resultado se expresa como valor, riesgo, impacto, ticket, informe o diagnóstico.</p></article>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="highlight">
+        <div class="section-kicker">Valor para Pull&amp;Bear</div>
+        <h2>yerem-ai reduce el coste de pasar de información dispersa a decisiones claras.</h2>
+        <p class="lead">Su utilidad no está en una única herramienta, sino en la combinación: contexto local, acceso a sistemas, procesos guiados y una forma de redactar orientada a impacto funcional y de negocio.</p>
+        <div class="pill-row">
+          <span class="pill inverse">Mayor autonomía operativa</span>
+          <span class="pill inverse">Tickets más consistentes</span>
+          <span class="pill inverse">Diagnóstico más rápido</span>
+          <span class="pill inverse">Menor pérdida de contexto</span>
+          <span class="pill inverse">Mejor traducción técnica-funcional</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-head">
+        <div class="section-kicker">Casos de uso</div>
+        <h2>Dónde aporta más valor.</h2>
+      </div>
+      <div class="grid-2">
+        <article class="card white"><h3>Análisis funcional de entregas</h3><p>Transformar tickets, épicas o versiones en bloques de valor comprensibles para negocio y producto.</p></article>
+        <article class="card white"><h3>Creación de Jira Pull&amp;Bear</h3><p>Preparar bugs, stories, initiatives o strategic themes con campos obligatorios, plantillas y confirmación previa.</p></article>
+        <article class="card white"><h3>Diagnóstico técnico-operativo</h3><p>Combinar SRE, Sonar, CI/CD, ConfigNow, GitHub y docs para investigar incidencias o riesgos.</p></article>
+        <article class="card white"><h3>Soporte ecommerce y analítica</h3><p>Consultar Zenit, Snowflake, eventos, CTR, productos PREINT, rebajas y datos de operación Pull&amp;Bear.</p></article>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-head">
+        <div class="section-kicker">Guardrails</div>
+        <h2>El proyecto también define límites para proteger calidad y confianza.</h2>
+      </div>
+      <div class="grid-3">
+        <article class="card"><h3>No inventar</h3><p>Si falta información obligatoria, se pregunta antes de actuar. Si no hay evidencia, se explicita la limitación.</p></article>
+        <article class="card"><h3>No crear Jira sin permiso</h3><p>La creación de issues exige resumen previo y confirmación explícita del usuario.</p></article>
+        <article class="card"><h3>No tratar el sandbox como producto real</h3><p>El workspace local es un entorno de análisis y pruebas salvo indicación expresa.</p></article>
+      </div>
+    </section>
+
+    <footer class="footer">
+      <div>Generado desde contexto local de yerem-ai: README.md, opencode.json y AGENTS.md.</div>
+      <div>HTML autocontenido · listo para abrir, compartir o copiar.</div>
+    </footer>
+  </main>
+</body>
+</html>
