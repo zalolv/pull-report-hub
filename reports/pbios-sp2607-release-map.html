@@ -1,0 +1,557 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>PBIOS-SP2607 | Mapa de release iOS</title>
+  <style>
+    :root {
+      --color-content-default: #000000;
+      --color-content-low: #757575;
+      --color-content-inverse: #ffffff;
+      --color-bg-default: #ffffff;
+      --color-bg-low: #f7f7f7;
+      --color-bg-inverse: #000000;
+      --color-border-default: #000000;
+      --color-border-low: #e3e3e3;
+      --color-alt-red-high: #c93b3a;
+      --color-alt-red-low: #fff0f0;
+      --color-alt-orange-high: #b65321;
+      --color-alt-orange-low: #fff4e5;
+      --color-alt-green-high: #178329;
+      --color-alt-green-low: #f1fdf1;
+      --color-alt-blue-high: #1b5ea7;
+      --color-alt-blue-low: #ebf5ff;
+      --color-alt-purple-high: #6b3daf;
+      --color-alt-purple-low: #f6f0ff;
+      --font-primary: "Neue Haas", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background: var(--color-bg-default);
+      color: var(--color-content-default);
+      font-family: var(--font-primary);
+      font-size: 14px;
+      line-height: 1.35;
+      letter-spacing: 0.7px;
+    }
+
+    .page {
+      width: min(1440px, 100%);
+      margin: 0 auto;
+      padding: 32px 56px 56px;
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1.5fr) minmax(320px, 0.8fr);
+      gap: 24px;
+      align-items: stretch;
+      border-bottom: 1px solid var(--color-border-default);
+      padding-bottom: 24px;
+    }
+
+    .eyebrow,
+    .section-label,
+    .tag,
+    .status,
+    .metric-label {
+      text-transform: uppercase;
+      font-size: 11px;
+      line-height: 16px;
+      letter-spacing: 0.8px;
+    }
+
+    h1 {
+      margin: 8px 0 12px;
+      font-size: clamp(36px, 5vw, 72px);
+      line-height: 0.95;
+      font-weight: 400;
+      letter-spacing: -2px;
+    }
+
+    h2 {
+      margin: 0 0 16px;
+      font-size: 24px;
+      line-height: 1.1;
+      font-weight: 400;
+      letter-spacing: -0.5px;
+    }
+
+    h3 {
+      margin: 0 0 8px;
+      font-size: 16px;
+      font-weight: 400;
+    }
+
+    p { margin: 0; }
+
+    .hero-summary {
+      max-width: 850px;
+      font-size: 18px;
+      color: var(--color-content-low);
+    }
+
+    .release-box {
+      border: 1px solid var(--color-border-default);
+      padding: 20px;
+      display: grid;
+      gap: 16px;
+    }
+
+    .release-dates {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .date-card,
+    .metric,
+    .note,
+    .person-card,
+    .work-card,
+    .swap-card {
+      border: 1px solid var(--color-border-low);
+      background: var(--color-bg-default);
+      padding: 16px;
+    }
+
+    .date-value {
+      display: block;
+      margin-top: 4px;
+      font-size: 22px;
+      letter-spacing: -0.4px;
+    }
+
+    .metrics {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 12px;
+      margin: 24px 0;
+    }
+
+    .metric-value {
+      display: block;
+      margin-top: 8px;
+      font-size: 34px;
+      line-height: 1;
+      letter-spacing: -1px;
+    }
+
+    .metric-risk { border-color: var(--color-alt-red-high); background: var(--color-alt-red-low); }
+    .metric-open { border-color: var(--color-alt-orange-high); background: var(--color-alt-orange-low); }
+    .metric-flow { border-color: var(--color-alt-blue-high); background: var(--color-alt-blue-low); }
+    .metric-review { border-color: var(--color-alt-green-high); background: var(--color-alt-green-low); }
+
+    .board {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(260px, 1fr));
+      gap: 16px;
+      margin-top: 16px;
+    }
+
+    .lane {
+      border: 1px solid var(--color-border-default);
+      min-height: 280px;
+      background: var(--color-bg-low);
+    }
+
+    .lane-header {
+      min-height: 82px;
+      padding: 16px;
+      border-bottom: 1px solid var(--color-border-default);
+      background: var(--color-bg-default);
+    }
+
+    .lane-header p {
+      margin-top: 6px;
+      color: var(--color-content-low);
+      font-size: 12px;
+    }
+
+    .lane-items {
+      display: grid;
+      gap: 10px;
+      padding: 12px;
+    }
+
+    .work-card {
+      display: grid;
+      gap: 10px;
+    }
+
+    .work-card.critical { border-left: 4px solid var(--color-alt-red-high); }
+    .work-card.high { border-left: 4px solid var(--color-alt-orange-high); }
+    .work-card.medium { border-left: 4px solid var(--color-alt-blue-high); }
+    .work-card.low { border-left: 4px solid var(--color-content-low); }
+
+    .card-top {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: flex-start;
+    }
+
+    .key {
+      font-size: 12px;
+      text-decoration: underline;
+      text-underline-offset: 3px;
+      white-space: nowrap;
+    }
+
+    .status {
+      display: inline-flex;
+      align-items: center;
+      width: fit-content;
+      padding: 3px 8px;
+      border: 1px solid var(--color-border-low);
+      background: var(--color-bg-low);
+      white-space: nowrap;
+    }
+
+    .status.flow { background: var(--color-alt-blue-low); border-color: var(--color-alt-blue-high); color: var(--color-alt-blue-high); }
+    .status.review { background: var(--color-alt-green-low); border-color: var(--color-alt-green-high); color: var(--color-alt-green-high); }
+    .status.rework { background: var(--color-alt-red-low); border-color: var(--color-alt-red-high); color: var(--color-alt-red-high); }
+    .status.backlog { background: var(--color-alt-orange-low); border-color: var(--color-alt-orange-high); color: var(--color-alt-orange-high); }
+
+    .title {
+      font-size: 13px;
+      line-height: 1.35;
+    }
+
+    .owner {
+      color: var(--color-content-low);
+      font-size: 12px;
+    }
+
+    .tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .tag {
+      padding: 3px 8px;
+      border: 1px solid var(--color-border-low);
+      background: var(--color-bg-default);
+    }
+
+    .tag.keep { border-color: var(--color-alt-red-high); color: var(--color-alt-red-high); }
+    .tag.swap { border-color: var(--color-alt-orange-high); color: var(--color-alt-orange-high); }
+    .tag.watch { border-color: var(--color-alt-purple-high); color: var(--color-alt-purple-high); background: var(--color-alt-purple-low); }
+
+    .section {
+      margin-top: 40px;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    .people-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .person-card {
+      display: grid;
+      gap: 12px;
+    }
+
+    .person-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .mini-list {
+      display: grid;
+      gap: 8px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .mini-list li {
+      display: grid;
+      gap: 2px;
+      padding-top: 8px;
+      border-top: 1px solid var(--color-border-low);
+      font-size: 12px;
+    }
+
+    .swap-zone {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    .swap-card {
+      display: grid;
+      gap: 12px;
+    }
+
+    .swap-card strong {
+      font-weight: 400;
+      font-size: 18px;
+    }
+
+    .decision-rule {
+      border: 1px solid var(--color-border-default);
+      padding: 20px;
+      background: var(--color-bg-inverse);
+      color: var(--color-content-inverse);
+    }
+
+    .decision-rule .tag {
+      background: transparent;
+      border-color: var(--color-content-inverse);
+      color: var(--color-content-inverse);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: var(--color-bg-default);
+      border: 1px solid var(--color-border-default);
+    }
+
+    th,
+    td {
+      text-align: left;
+      vertical-align: top;
+      padding: 12px;
+      border-bottom: 1px solid var(--color-border-low);
+      font-size: 12px;
+    }
+
+    th {
+      text-transform: uppercase;
+      font-size: 11px;
+      letter-spacing: 0.8px;
+      font-weight: 400;
+      background: var(--color-bg-low);
+    }
+
+    .print-note {
+      margin-top: 32px;
+      color: var(--color-content-low);
+      font-size: 12px;
+    }
+
+    @media (max-width: 1100px) {
+      .page { padding: 24px 32px 40px; }
+      .hero,
+      .grid-2,
+      .swap-zone { grid-template-columns: 1fr; }
+      .metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .board { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .people-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+
+    @media (max-width: 680px) {
+      .page { padding: 20px 16px 32px; }
+      .metrics,
+      .board,
+      .people-grid,
+      .release-dates { grid-template-columns: 1fr; }
+      h1 { font-size: 42px; }
+    }
+
+    @media print {
+      body { background: #ffffff; }
+      .page { width: 100%; padding: 18px; }
+      .board { grid-template-columns: repeat(2, 1fr); }
+      .people-grid { grid-template-columns: repeat(2, 1fr); }
+      .work-card,
+      .person-card,
+      .swap-card,
+      .lane { break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <section class="hero">
+      <div>
+        <div class="eyebrow">Pull&amp;Bear · iOS release control</div>
+        <h1>PBIOS-SP2607</h1>
+        <p class="hero-summary">Mapa visual de la release para controlar el alcance, detectar trabajo en riesgo y decidir que se puede sacar si entra algo nuevo. Base construida con el listado compartido por el equipo, sin consulta activa a Jira.</p>
+      </div>
+      <aside class="release-box">
+        <div class="section-label">Ventana de release</div>
+        <div class="release-dates">
+          <div class="date-card"><span class="metric-label">Inicio</span><span class="date-value">10/jun/26</span></div>
+          <div class="date-card"><span class="metric-label">Fin</span><span class="date-value">08/jul/26</span></div>
+        </div>
+        <p class="owner">Objetivo: mantener una foto estable del alcance y negociar entradas nuevas con intercambio explicito.</p>
+      </aside>
+    </section>
+
+    <section class="metrics" aria-label="Resumen de release">
+      <div class="metric"><span class="metric-label">Total tareas</span><span class="metric-value">26</span></div>
+      <div class="metric metric-flow"><span class="metric-label">En curso</span><span class="metric-value">12</span></div>
+      <div class="metric metric-review"><span class="metric-label">In review</span><span class="metric-value">4</span></div>
+      <div class="metric metric-risk"><span class="metric-label">To rework</span><span class="metric-value">3</span></div>
+      <div class="metric metric-open"><span class="metric-label">No iniciadas</span><span class="metric-value">6</span></div>
+    </section>
+
+    <section class="section">
+      <h2>Mapa por estado</h2>
+      <div class="board">
+        <article class="lane">
+          <div class="lane-header">
+            <div class="section-label">En curso · mantener foco</div>
+            <p>Trabajo ya arrancado. Sacarlo suele tener coste si hay avance real.</p>
+          </div>
+          <div class="lane-items">
+            <div class="work-card critical"><div class="card-top"><span class="key">PBIOS-413</span><span class="status flow">En Curso</span></div><p class="title">[Fase V] UX pantalla de selección de tipo de envío</p><p class="owner">Hugo Morales Martinez</p><div class="tags"><span class="tag keep">A++</span><span class="tag">Checkout</span></div></div>
+            <div class="work-card high"><div class="card-top"><span class="key">PBIOS-412</span><span class="status flow">En Curso</span></div><p class="title">[Fase V] UX Pantalla de resumen de compra</p><p class="owner">Hugo Morales Martinez</p><div class="tags"><span class="tag keep">A+</span><span class="tag">Checkout</span></div></div>
+            <div class="work-card high"><div class="card-top"><span class="key">PBIOS-1300</span><span class="status flow">En Cartera</span></div><p class="title">[Detalle pedido][Fast Sint] Pedidos partidos con fast sint</p><p class="owner">Hugo Morales Martinez</p><div class="tags"><span class="tag swap">Candidato si no arranca</span></div></div>
+            <div class="work-card high"><div class="card-top"><span class="key">PBIOS-1149</span><span class="status flow">En Curso</span></div><p class="title">[Checkout] Resumen de Pedido - Mejoras de UX en las promociones</p><p class="owner">Nicolas Carrascal Mesa</p><div class="tags"><span class="tag keep">A+</span><span class="tag">Checkout</span></div></div>
+            <div class="work-card critical"><div class="card-top"><span class="key">PBIOS-409</span><span class="status flow">En Curso</span></div><p class="title">[FaseV] Integración HPP</p><p class="owner">Nicolas Carrascal Mesa</p><div class="tags"><span class="tag keep">A++</span><span class="tag">Pago</span></div></div>
+            <div class="work-card low"><div class="card-top"><span class="key">PBIOS-895</span><span class="status flow">En Curso</span></div><p class="title">[Analitica][GA4] Plazos de entrega - iOS</p><p class="owner">Nicolas Carrascal Mesa</p><div class="tags"><span class="tag swap">D</span><span class="tag">Analitica</span></div></div>
+            <div class="work-card high"><div class="card-top"><span class="key">PBIOS-296</span><span class="status flow">En Curso</span></div><p class="title">[Analitica] Analitica Checkout Fase V GA4 - iOS</p><p class="owner">Nicolas Carrascal Mesa</p><div class="tags"><span class="tag keep">A+</span><span class="tag">Analitica</span></div></div>
+            <div class="work-card high"><div class="card-top"><span class="key">PBIOS-371</span><span class="status flow">En Curso</span></div><p class="title">[Analitica] Funcionalidad Geolocalizacion Google Formularios - iOS</p><p class="owner">Jun Qiu</p><div class="tags"><span class="tag">Analitica</span></div></div>
+            <div class="work-card high"><div class="card-top"><span class="key">PBIOS-307</span><span class="status flow">En Curso</span></div><p class="title">[Formularios Formidables] Formularios de dirección - Geolocalización</p><p class="owner">Jun Qiu</p><div class="tags"><span class="tag keep">A+</span><span class="tag">Formularios</span></div></div>
+            <div class="work-card critical"><div class="card-top"><span class="key">PBIOS-832</span><span class="status flow">En Curso</span></div><p class="title">Migración formulario Bank Transfer a Formidables</p><p class="owner">Martin Calvete Iglesias</p><div class="tags"><span class="tag keep">A++</span></div></div>
+            <div class="work-card high"><div class="card-top"><span class="key">PBIOS-397</span><span class="status flow">En Curso</span></div><p class="title">[WISHLIST] Añadir items a lista Coming soon</p><p class="owner">Miguel Vicente Arara Lujan</p><div class="tags"><span class="tag keep">A+</span><span class="tag">Wishlist</span></div></div>
+            <div class="work-card high"><div class="card-top"><span class="key">PBIOS-1194</span><span class="status flow">En Curso</span></div><p class="title">[QA][Checkout] Fallo con usuario nuevo al introducir direccion y volver</p><p class="owner">Javier Mazorra Rodriguez</p><div class="tags"><span class="tag keep">A</span><span class="tag">QA</span></div></div>
+            <div class="work-card high"><div class="card-top"><span class="key">PBIOS-401</span><span class="status flow">En Curso</span></div><p class="title">OpenRoaming: funcionalidad OpenRoaming WiFi para tiendas físicas</p><p class="owner">Jose Bechiarelli Mateo</p><div class="tags"><span class="tag">Store</span></div></div>
+          </div>
+        </article>
+
+        <article class="lane">
+          <div class="lane-header">
+            <div class="section-label">Revisión · cerca de cerrar</div>
+            <p>Trabajo candidato a proteger: ya pasó desarrollo y está cerca de salida.</p>
+          </div>
+          <div class="lane-items">
+            <div class="work-card critical"><div class="card-top"><span class="key">PBIOS-1145</span><span class="status review">In Review</span></div><p class="title">[Wishlist] peticiones en arranque con 403 y en bucle</p><p class="owner">Miguel Vicente Arara Lujan</p><div class="tags"><span class="tag keep">A++</span><span class="tag">Wishlist</span></div></div>
+            <div class="work-card high"><div class="card-top"><span class="key">PBIOS-1151</span><span class="status review">In Review</span></div><p class="title">[Analitica] Zenit - Incidencias Wishlist 2.0 - iOS</p><p class="owner">Miguel Vicente Arara Lujan</p><div class="tags"><span class="tag keep">A+</span><span class="tag">Zenit</span></div></div>
+            <div class="work-card high"><div class="card-top"><span class="key">PBIOS-1137</span><span class="status review">In Review</span></div><p class="title">[Wishlist] Modificaciones sobre el MVP - EDICIÓN</p><p class="owner">Miguel Vicente Arara Lujan</p><div class="tags"><span class="tag keep">A+</span><span class="tag">Wishlist</span></div></div>
+            <div class="work-card high"><div class="card-top"><span class="key">PBIOS-1126</span><span class="status review">In Review</span></div><p class="title">[Wishlist] Modificaciones sobre el MVP - ACCESO</p><p class="owner">Miguel Vicente Arara Lujan</p><div class="tags"><span class="tag keep">A+</span><span class="tag">Wishlist</span></div></div>
+          </div>
+        </article>
+
+        <article class="lane">
+          <div class="lane-header">
+            <div class="section-label">To rework · riesgo</div>
+            <p>Trabajo con retrabajo. Debe tener decisión diaria: resolver, sacar o bloquear entrada nueva.</p>
+          </div>
+          <div class="lane-items">
+            <div class="work-card high"><div class="card-top"><span class="key">PBIOS-1139</span><span class="status rework">To Rework</span></div><p class="title">[QA][CESTA] No se pueden editar tallas en productos con Low_stock</p><p class="owner">Jun Qiu</p><div class="tags"><span class="tag watch">Riesgo QA</span><span class="tag keep">A+</span></div></div>
+            <div class="work-card high"><div class="card-top"><span class="key">PBIOS-935</span><span class="status rework">To Rework</span></div><p class="title">[Analitica] Zenit - Incidencias PRODUCT_BUNDLE_DETAILS</p><p class="owner">Jun Qiu</p><div class="tags"><span class="tag watch">Riesgo retrabajo</span><span class="tag">Zenit</span></div></div>
+            <div class="work-card high"><div class="card-top"><span class="key">PBIOS-368</span><span class="status rework">To Rework</span></div><p class="title">[P_ANIM_UX] Despliegue de menú</p><p class="owner">Imanol Cobian Martinez</p><div class="tags"><span class="tag watch">Riesgo UX</span></div></div>
+          </div>
+        </article>
+
+        <article class="lane">
+          <div class="lane-header">
+            <div class="section-label">No iniciado · bolsa de intercambio</div>
+            <p>Primer lugar donde buscar capacidad si entra algo nuevo.</p>
+          </div>
+          <div class="lane-items">
+            <div class="work-card high"><div class="card-top"><span class="key">PBIOS-1246</span><span class="status backlog">En Cartera</span></div><p class="title">[PUSH][INAPP] No se muestra banner en home de la push 10% welcome app</p><p class="owner">Víctor Llinares Muñoz</p><div class="tags"><span class="tag swap">Candidato swap</span><span class="tag keep">A+</span></div></div>
+            <div class="work-card high"><div class="card-top"><span class="key">PBIOS-1034</span><span class="status backlog">En Cartera</span></div><p class="title">PBPASS RELAUNCH</p><p class="owner">Imanol Cobian Martinez</p><div class="tags"><span class="tag swap">Candidato si no es compromiso</span></div></div>
+            <div class="work-card high"><div class="card-top"><span class="key">PBIOS-1147</span><span class="status backlog">En Cartera</span></div><p class="title">[Wishlist] Modificación sobre el MVP - módulo de recomendados</p><p class="owner">Miguel Vicente Arara Lujan</p><div class="tags"><span class="tag swap">Candidato swap</span><span class="tag keep">A+</span></div></div>
+            <div class="work-card low"><div class="card-top"><span class="key">PBIOS-681</span><span class="status backlog">En Cartera</span></div><p class="title">[Firebase][ERROR] ProductGridDataSource.reconfigureItems</p><p class="owner">Miguel Vicente Arara Lujan</p><div class="tags"><span class="tag swap">Mejor candidato</span><span class="tag">C</span></div></div>
+            <div class="work-card high"><div class="card-top"><span class="key">PBIOS-819</span><span class="status backlog">En Cartera</span></div><p class="title">[Plan de animaciones] Interacciones Hápticas</p><p class="owner">Jose Bechiarelli Mateo</p><div class="tags"><span class="tag swap">Candidato si no arranca</span></div></div>
+            <div class="work-card high"><div class="card-top"><span class="key">PBIOS-797</span><span class="status backlog">Ready to Start</span></div><p class="title">[Wallet][Store] Activación de QR tienda desde wallet iPhone por geolocalización</p><p class="owner">Jose Bechiarelli Mateo</p><div class="tags"><span class="tag swap">Candidato swap</span></div></div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="section grid-2">
+      <article class="decision-rule">
+        <div class="section-label">Regla para entradas nuevas</div>
+        <h2>Si entra algo, algo sale</h2>
+        <p>Todo Jira nuevo que quiera entrar en PBIOS-SP2607 debe indicar prioridad, impacto funcional y a que tarea sustituye. Sin intercambio explicito, queda fuera de release.</p>
+        <div class="tags" style="margin-top:16px"><span class="tag">1 entrada</span><span class="tag">1 salida</span><span class="tag">decision diaria</span></div>
+      </article>
+      <article class="note">
+        <div class="section-label">Criterio de salida sugerido</div>
+        <h2>Orden para buscar hueco</h2>
+        <table>
+          <thead><tr><th>Orden</th><th>Tipo de tarea</th><th>Motivo</th></tr></thead>
+          <tbody>
+            <tr><td>1</td><td>No iniciada y baja prioridad</td><td>Menor coste de salida.</td></tr>
+            <tr><td>2</td><td>No iniciada aunque importante</td><td>Replanificable si no bloquea negocio.</td></tr>
+            <tr><td>3</td><td>To Rework sin fecha clara</td><td>Puede absorber capacidad sin cerrar valor.</td></tr>
+            <tr><td>4</td><td>En curso</td><td>Solo si el nuevo Jira es mas critico.</td></tr>
+            <tr><td>5</td><td>In Review</td><td>Evitar sacarlas: están cerca de cerrar.</td></tr>
+          </tbody>
+        </table>
+      </article>
+    </section>
+
+    <section class="section">
+      <h2>Candidatos para liberar capacidad</h2>
+      <div class="swap-zone">
+        <article class="swap-card">
+          <span class="section-label">Salida preferente</span>
+          <strong>PBIOS-681 · Firebase error ProductGridDataSource</strong>
+          <p class="owner">Miguel Vicente Arara Lujan · En Cartera · prioridad C</p>
+          <p>Mejor candidato si hace falta meter trabajo nuevo porque no está iniciado y tiene menor prioridad relativa.</p>
+        </article>
+        <article class="swap-card">
+          <span class="section-label">Salida negociable</span>
+          <strong>PBIOS-819 · Interacciones Hápticas</strong>
+          <p class="owner">Jose Bechiarelli Mateo · En Cartera</p>
+          <p>Puede diferirse si no forma parte de un compromiso funcional cerrado para la release.</p>
+        </article>
+        <article class="swap-card">
+          <span class="section-label">Salida negociable</span>
+          <strong>PBIOS-797 · QR tienda desde wallet por geolocalización</strong>
+          <p class="owner">Jose Bechiarelli Mateo · Ready to Start</p>
+          <p>Aún no aparece en curso. Revisar si tiene dependencia externa o compromiso con tiendas antes de sacarlo.</p>
+        </article>
+        <article class="swap-card">
+          <span class="section-label">Salida con cuidado</span>
+          <strong>PBIOS-1147 · Wishlist recomendados</strong>
+          <p class="owner">Miguel Vicente Arara Lujan · En Cartera · prioridad A+</p>
+          <p>No está iniciado, pero parece vinculado al paquete Wishlist. Sacarlo puede afectar coherencia del MVP.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Carga por persona</h2>
+      <div class="people-grid">
+        <article class="person-card"><h3>Hugo Morales Martinez</h3><div class="person-meta"><span class="tag">3 tareas</span><span class="tag keep">2 criticas</span></div><ul class="mini-list"><li><span>PBIOS-1300 · En Cartera</span><span class="owner">Detalle pedido / Fast Sint</span></li><li><span>PBIOS-413 · En Curso</span><span class="owner">UX selección envío</span></li><li><span>PBIOS-412 · En Curso</span><span class="owner">UX resumen compra</span></li></ul></article>
+        <article class="person-card"><h3>Nicolas Carrascal Mesa</h3><div class="person-meta"><span class="tag">4 tareas</span><span class="tag keep">Checkout</span></div><ul class="mini-list"><li><span>PBIOS-1149 · En Curso</span><span class="owner">Promociones resumen pedido</span></li><li><span>PBIOS-409 · En Curso</span><span class="owner">Integración HPP</span></li><li><span>PBIOS-895 · En Curso</span><span class="owner">GA4 plazos entrega</span></li><li><span>PBIOS-296 · En Curso</span><span class="owner">GA4 Checkout Fase V</span></li></ul></article>
+        <article class="person-card"><h3>Jun Qiu</h3><div class="person-meta"><span class="tag">4 tareas</span><span class="tag watch">2 rework</span></div><ul class="mini-list"><li><span>PBIOS-1139 · To Rework</span><span class="owner">Cesta low stock</span></li><li><span>PBIOS-935 · To Rework</span><span class="owner">Zenit Product Bundle</span></li><li><span>PBIOS-371 · En Curso</span><span class="owner">Analítica geolocalización</span></li><li><span>PBIOS-307 · En Curso</span><span class="owner">Formularios geolocalización</span></li></ul></article>
+        <article class="person-card"><h3>Víctor Llinares Muñoz</h3><div class="person-meta"><span class="tag">1 tarea</span><span class="tag swap">En cartera</span></div><ul class="mini-list"><li><span>PBIOS-1246 · En Cartera</span><span class="owner">Push / InApp welcome app</span></li></ul></article>
+        <article class="person-card"><h3>Imanol Cobian Martinez</h3><div class="person-meta"><span class="tag">2 tareas</span><span class="tag watch">1 rework</span></div><ul class="mini-list"><li><span>PBIOS-368 · To Rework</span><span class="owner">Animación menú</span></li><li><span>PBIOS-1034 · En Cartera</span><span class="owner">PBPASS relaunch</span></li></ul></article>
+        <article class="person-card"><h3>Martin Calvete Iglesias</h3><div class="person-meta"><span class="tag">1 tarea</span><span class="tag keep">A++</span></div><ul class="mini-list"><li><span>PBIOS-832 · En Curso</span><span class="owner">Bank Transfer a Formidables</span></li></ul></article>
+        <article class="person-card"><h3>Miguel Vicente Arara Lujan</h3><div class="person-meta"><span class="tag">7 tareas</span><span class="tag keep">Wishlist</span></div><ul class="mini-list"><li><span>PBIOS-1151 · In Review</span><span class="owner">Zenit Wishlist 2.0</span></li><li><span>PBIOS-1147 · En Cartera</span><span class="owner">Wishlist recomendados</span></li><li><span>PBIOS-1145 · In Review</span><span class="owner">Wishlist 403 en bucle</span></li><li><span>PBIOS-1137 · In Review</span><span class="owner">Wishlist edición</span></li><li><span>PBIOS-1126 · In Review</span><span class="owner">Wishlist acceso</span></li><li><span>PBIOS-681 · En Cartera</span><span class="owner">Firebase ProductGridDataSource</span></li><li><span>PBIOS-397 · En Curso</span><span class="owner">Coming soon</span></li></ul></article>
+        <article class="person-card"><h3>Javier Mazorra Rodriguez</h3><div class="person-meta"><span class="tag">1 tarea</span><span class="tag">QA Checkout</span></div><ul class="mini-list"><li><span>PBIOS-1194 · En Curso</span><span class="owner">Checkout usuario nuevo</span></li></ul></article>
+        <article class="person-card"><h3>Jose Bechiarelli Mateo</h3><div class="person-meta"><span class="tag">3 tareas</span><span class="tag swap">2 no iniciadas</span></div><ul class="mini-list"><li><span>PBIOS-819 · En Cartera</span><span class="owner">Interacciones hápticas</span></li><li><span>PBIOS-797 · Ready to Start</span><span class="owner">Wallet QR tienda</span></li><li><span>PBIOS-401 · En Curso</span><span class="owner">OpenRoaming WiFi tiendas</span></li></ul></article>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Lectura para el equipo</h2>
+      <table>
+        <thead><tr><th>Bloque</th><th>Situación</th><th>Decisión sugerida</th></tr></thead>
+        <tbody>
+          <tr><td>Checkout / Fase V</td><td>Concentra varias tareas críticas ya en curso.</td><td>Proteger salvo bloqueo mayor.</td></tr>
+          <tr><td>Wishlist</td><td>Muchas piezas están en review, pero queda trabajo no iniciado.</td><td>Proteger review; negociar PBIOS-1147 si entra algo urgente.</td></tr>
+          <tr><td>Analítica</td><td>Varias tareas en curso y una en rework.</td><td>Separar lo imprescindible para trazabilidad de lo diferible.</td></tr>
+          <tr><td>Animaciones / experiencia</td><td>Hay tareas en cartera o rework.</td><td>Buena zona para revisar si el alcance está cerrado.</td></tr>
+          <tr><td>Store / Wallet / OpenRoaming</td><td>Una tarea en curso y dos no iniciadas.</td><td>Confirmar compromiso externo antes de intercambiar.</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <p class="print-note">Documento preparado para copiar, pegar o compartir en navegador. Si se añade un Jira nuevo, incluirlo primero en la zona de entrada y decidir contra que candidato de salida se intercambia.</p>
+  </main>
+</body>
+</html>
