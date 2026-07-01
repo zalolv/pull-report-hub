@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pull&amp;Bear Android — App Version Traffic Evolution</title>
+<script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;background:#fff;color:#111;font-size:14px;line-height:1.5}
+
+/* HERO */
+.hero{background:#000;color:#fff;padding:48px 48px 40px;border-bottom:3px solid #000}
+.hero-eyebrow{font-size:11px;letter-spacing:.2em;text-transform:uppercase;opacity:.5;margin-bottom:20px}
+.hero-title{font-size:56px;font-weight:800;line-height:1;letter-spacing:-.03em;margin-bottom:20px}
+.hero-meta{font-size:13px;opacity:.55;letter-spacing:.02em}
+
+/* KPI ROW */
+.kpi-row{display:grid;grid-template-columns:repeat(4,1fr);border-bottom:3px solid #000}
+.kpi{padding:28px 28px 24px;border-right:2px solid #000}
+.kpi:last-child{border-right:none}
+.kpi-label{font-size:10px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:#888;margin-bottom:10px}
+.kpi-value{font-size:40px;font-weight:800;letter-spacing:-.03em;line-height:1}
+.kpi-note{font-size:11px;color:#999;margin-top:6px}
+
+/* SECTIONS */
+.section{padding:40px 40px 36px;border-bottom:2px solid #000}
+.section-title{font-size:11px;font-weight:700;letter-spacing:.2em;text-transform:uppercase}
+.section-desc{font-size:11px;color:#888;margin-top:3px;margin-bottom:24px}
+.chart-wrap{width:100%;height:340px}
+
+/* NOTE BADGE */
+.badge{display:inline-block;background:#111;color:#fff;font-size:10px;letter-spacing:.12em;text-transform:uppercase;padding:4px 10px;margin-bottom:20px}
+
+/* VERSION TABLE */
+.ver-table{width:100%;border-collapse:collapse;font-size:12px}
+.ver-table th{text-align:left;padding:8px 10px;border-bottom:2px solid #000;font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;white-space:nowrap}
+.ver-table td{padding:8px 10px;border-bottom:1px solid #eee;vertical-align:middle}
+.ver-table tr:last-child td{border-bottom:none}
+.dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:7px;vertical-align:middle}
+.num{font-variant-numeric:tabular-nums;text-align:right}
+.bar-bg{background:#f0f0f0;height:6px;border-radius:3px;overflow:hidden;min-width:120px}
+.bar-fill{height:6px;border-radius:3px}
+
+/* FOOTER */
+.footer{padding:20px 40px;display:flex;justify-content:space-between;align-items:center}
+.footer-brand{font-size:12px;font-weight:800;letter-spacing:.2em;text-transform:uppercase}
+.footer-meta{font-size:11px;color:#999}
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="hero-eyebrow">Pull&amp;Bear &middot; Android &middot; App Analytics</div>
+  <div class="hero-title">Version Traffic<br>Evolution</div>
+  <div class="hero-meta">13 weeks &nbsp;&middot;&nbsp; Apr 6 &rarr; Jun 29, 2026 &nbsp;&middot;&nbsp; Source: Snowflake V_FACT_SESSION_DATE_PB</div>
+</div>
+
+<div class="kpi-row">
+  <div class="kpi">
+    <div class="kpi-label">Total sessions (13W)</div>
+    <div class="kpi-value">22.5M</div>
+    <div class="kpi-note">Apr 6 &ndash; Jun 29, 2026</div>
+  </div>
+  <div class="kpi">
+    <div class="kpi-label">W22 sessions (peak)</div>
+    <div class="kpi-value">3.15M</div>
+    <div class="kpi-note">&asymp; 1.8&times; normal weekly run rate</div>
+  </div>
+  <div class="kpi">
+    <div class="kpi-label">2605.2.2 adoption (W22)</div>
+    <div class="kpi-value">52.4%</div>
+    <div class="kpi-note">1.65M sessions</div>
+  </div>
+  <div class="kpi">
+    <div class="kpi-label">26.2.0 adoption (W22)</div>
+    <div class="kpi-value">42.8%</div>
+    <div class="kpi-note">1.35M sessions</div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-title">Absolute Session Volume by Version</div>
+  <div class="section-desc">ThemeRiver &mdash; weekly sessions per app version, stacked by volume</div>
+  <div class="badge">W22 spike: mass Play Store update push for 2605.2.2</div>
+  <div id="chart-river" class="chart-wrap"></div>
+</div>
+
+<div class="section">
+  <div class="section-title">Version Share &mdash; % Adoption Over Time</div>
+  <div class="section-desc">100% stacked area &mdash; proportion of weekly sessions per version</div>
+  <div id="chart-pct" class="chart-wrap"></div>
+</div>
+
+<div class="section">
+  <div class="section-title">Version Breakdown &mdash; Week 22 (Jun 16&ndash;22, 2026)</div>
+  <div class="section-desc">Sessions and share during peak adoption week &middot; W23 is partial (Mon&ndash;Tue only)</div>
+  <table class="ver-table">
+    <thead>
+      <tr>
+        <th>Version</th>
+        <th class="num">Sessions W22</th>
+        <th class="num">Share W22</th>
+        <th style="min-width:140px">Distribution</th>
+        <th>First seen</th>
+      </tr>
+    </thead>
+    <tbody id="ver-table-body"></tbody>
+  </table>
+</div>
+
+<div class="footer">
+  <div class="footer-brand">Pull&amp;Bear</div>
+  <div class="footer-meta">Generated 2026-07-01 &middot; Android App Version Analytics &middot; Snowflake: V_FACT_SESSION_DATE_PB</div>
+</div>
+
+<script>
+const WEEKS = [
+  '2026-04-06','2026-04-13','2026-04-20','2026-04-27',
+  '2026-05-04','2026-05-11','2026-05-18','2026-05-25',
+  '2026-06-01','2026-06-08','2026-06-15','2026-06-22','2026-06-29'
+];
+const VERSIONS = ['2605.2.2','26.2.0','26.1.0','26.0.0','2605.0.0','25.0.0','24.2.0','2603.0.5','Other'];
+const COLORS   = ['#FBBF24','#EF4444','#F59E0B','#3B82F6','#10B981','#818CF8','#EC4899','#94A3B8','#374151'];
+
+const RAW = {
+  '2605.2.2': [0,0,0,0,0,0,0,0,0,0,327807,1653605,210123],
+  '26.2.0':   [0,0,0,0,0,0,0,0,0,0,516766,1350587,162919],
+  '26.1.0':   [0,0,0,0,0,0,0,0,592927,963634,467659,4029,288],
+  '26.0.0':   [0,0,0,0,0,662070,961276,1055741,509620,4799,1686,992,98],
+  '2605.0.0': [0,0,0,0,0,14,25183,557448,696070,150097,24282,24921,2025],
+  '25.0.0':   [0,639702,993613,1003892,360645,4133,1614,505,197,149,67,63,8],
+  '24.2.0':   [1041980,323215,3352,1479,685,376,264,90,52,58,41,24,5],
+  '2603.0.5': [0,356116,545522,232895,41085,20911,14675,12338,9560,7042,5925,10370,988],
+  'Other':    [731176,332127,72975,278679,1287919,992606,702648,276547,137233,611839,444824,109970,8317]
+};
+const TOTALS = [1773156,1651160,1615462,1516945,1690334,1680110,1705660,1902669,1945659,1737618,1789057,3154561,384771];
+const W22 = 11;
+
+function fmt(n) {
+  if (n >= 1e6) return (n/1e6).toFixed(2)+'M';
+  if (n >= 1e3) return (n/1e3).toFixed(1)+'K';
+  return String(n);
+}
+function fmtDate(s) {
+  const d = new Date(s + 'T00:00:00Z');
+  return (d.getUTCMonth()+1)+'/'+(String(d.getUTCDate()).padStart(2,'0'));
+}
+
+// ── THEMERIVER ────────────────────────────────────────────────────────────────
+const riverData = [];
+VERSIONS.forEach(v => {
+  WEEKS.forEach((w,i) => { riverData.push([w, RAW[v][i], v]); });
+});
+
+const chartRiver = echarts.init(document.getElementById('chart-river'));
+chartRiver.setOption({
+  color: COLORS,
+  tooltip: {
+    trigger: 'axis',
+    axisPointer: { type: 'line' },
+    formatter: params => {
+      if (!params || !params.length) return '';
+      const week = params[0].data[0];
+      let html = '<b>' + week + '</b><br>';
+      params.forEach(p => {
+        const v = p.data[2];
+        const val = p.data[1];
+        if (val === 0) return;
+        html += '<span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:'
+          + p.color + ';margin-right:5px;vertical-align:middle"></span>'
+          + v + ': ' + fmt(val) + '<br>';
+      });
+      return html;
+    }
+  },
+  singleAxis: {
+    type: 'time',
+    axisLabel: {
+      formatter: v => fmtDate(new Date(v).toISOString().slice(0,10)),
+      fontSize: 10,
+      color: '#555'
+    },
+    axisLine: { lineStyle: { color: '#ccc' } },
+    splitLine: { show: false },
+    axisTick: { show: false },
+    bottom: 36,
+    height: '72%'
+  },
+  series: [{
+    type: 'themeRiver',
+    boundaryGap: ['8%','8%'],
+    label: { show: false },
+    emphasis: { focus: 'self' },
+    data: riverData
+  }]
+});
+
+// ── 100% STACKED AREA ─────────────────────────────────────────────────────────
+const pctSeries = VERSIONS.map((v,vi) => ({
+  name: v,
+  type: 'line',
+  stack: 'pct',
+  areaStyle: {},
+  symbol: 'none',
+  smooth: false,
+  lineStyle: { width: 0 },
+  itemStyle: { color: COLORS[vi] },
+  emphasis: { focus: 'series' },
+  data: WEEKS.map((w,i) => [w, TOTALS[i] ? +(RAW[v][i]/TOTALS[i]*100).toFixed(2) : 0])
+}));
+
+const chartPct = echarts.init(document.getElementById('chart-pct'));
+chartPct.setOption({
+  color: COLORS,
+  tooltip: {
+    trigger: 'axis',
+    formatter: params => {
+      if (!params || !params.length) return '';
+      const week = params[0].data[0];
+      let html = '<b>' + week + '</b><br>';
+      [...params].reverse().forEach(p => {
+        if (p.data[1] < 0.1) return;
+        html += '<span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:'
+          + p.color + ';margin-right:5px;vertical-align:middle"></span>'
+          + p.seriesName + ': ' + p.data[1] + '%<br>';
+      });
+      return html;
+    }
+  },
+  legend: {
+    bottom: 0,
+    textStyle: { fontSize: 10, color: '#555' },
+    itemWidth: 12,
+    itemHeight: 8,
+    data: [...VERSIONS].reverse()
+  },
+  grid: { top: 10, bottom: 80, left: 52, right: 20 },
+  xAxis: {
+    type: 'time',
+    axisLabel: {
+      formatter: v => fmtDate(new Date(v).toISOString().slice(0,10)),
+      fontSize: 10,
+      color: '#555'
+    },
+    splitLine: { show: false },
+    axisTick: { show: false },
+    axisLine: { lineStyle: { color: '#ccc' } }
+  },
+  yAxis: {
+    type: 'value',
+    min: 0, max: 100,
+    axisLabel: { formatter: '{value}%', fontSize: 10, color: '#555' },
+    splitLine: { lineStyle: { color: '#f0f0f0' } }
+  },
+  series: pctSeries
+});
+
+// ── VERSION TABLE ─────────────────────────────────────────────────────────────
+const tbody = document.getElementById('ver-table-body');
+const total22 = TOTALS[W22];
+
+const rows = VERSIONS.map((v,vi) => ({
+  v, vi,
+  sessions: RAW[v][W22],
+  share: RAW[v][W22] / total22 * 100,
+  firstSeen: (() => {
+    for (let i = 0; i < WEEKS.length; i++) {
+      if (RAW[v][i] > 0) return WEEKS[i];
+    }
+    return '—';
+  })()
+})).sort((a,b) => b.sessions - a.sessions);
+
+rows.forEach(r => {
+  const tr = document.createElement('tr');
+  tr.innerHTML =
+    '<td><span class="dot" style="background:' + COLORS[r.vi] + '"></span>' + r.v + '</td>'
+    + '<td class="num">' + fmt(r.sessions) + '</td>'
+    + '<td class="num">' + r.share.toFixed(1) + '%</td>'
+    + '<td><div class="bar-bg"><div class="bar-fill" style="width:' + Math.min(r.share,100).toFixed(1) + '%;background:' + COLORS[r.vi] + '"></div></div></td>'
+    + '<td style="color:#888;font-size:11px">' + r.firstSeen + '</td>';
+  tbody.appendChild(tr);
+});
+
+window.addEventListener('resize', () => {
+  chartRiver.resize();
+  chartPct.resize();
+});
+</script>
+</body>
+</html>
