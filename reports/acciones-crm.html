@@ -1,0 +1,1054 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CRM Quest - Pull&Bear eCommerce</title>
+
+  <style>
+    :root {
+      --bg: #0b1f33;
+      --sea: #123d5a;
+      --sand: #f6c66b;
+      --gold: #ffd166;
+      --orange: #f77f00;
+      --red: #d62828;
+      --green: #06d6a0;
+      --blue: #118ab2;
+      --purple: #6d4c9f;
+      --ink: #1b1b1b;
+      --paper: #fff4c2;
+      --paper-dark: #e7b85c;
+      --white: #fff8e7;
+      --shadow: #000000;
+      --pixel: 4px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      color: var(--white);
+      background:
+        radial-gradient(circle at 20% 10%, rgba(255, 209, 102, 0.18), transparent 18%),
+        linear-gradient(180deg, #071525 0%, #0b1f33 38%, #123d5a 70%, #071525 100%);
+      font-family: "Courier New", Courier, monospace;
+      image-rendering: pixelated;
+      line-height: 1.55;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background: repeating-linear-gradient(
+        to bottom,
+        rgba(255,255,255,0.035),
+        rgba(255,255,255,0.035) 1px,
+        transparent 1px,
+        transparent 4px
+      );
+      mix-blend-mode: screen;
+      z-index: 999;
+    }
+
+    .page {
+      max-width: 1220px;
+      margin: 0 auto;
+      padding: 28px 18px 80px;
+    }
+
+    .hero {
+      border: var(--pixel) solid var(--shadow);
+      background:
+        linear-gradient(180deg, #ffcf6d 0%, #f77f00 42%, #713b1d 100%);
+      color: #160a00;
+      box-shadow: 8px 8px 0 var(--shadow);
+      padding: 28px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::after {
+      content: "CRM QUEST";
+      position: absolute;
+      right: 18px;
+      bottom: -10px;
+      font-size: 72px;
+      font-weight: 900;
+      color: rgba(0,0,0,0.13);
+      letter-spacing: -4px;
+      pointer-events: none;
+    }
+
+    .eyebrow {
+      display: inline-block;
+      background: var(--ink);
+      color: var(--gold);
+      padding: 6px 10px;
+      border: 3px solid var(--gold);
+      text-transform: uppercase;
+      font-weight: bold;
+      margin-bottom: 16px;
+      box-shadow: 4px 4px 0 #000;
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      font-size: clamp(32px, 6vw, 62px);
+      line-height: 0.95;
+      text-transform: uppercase;
+      text-shadow: 3px 3px 0 var(--gold);
+      letter-spacing: -2px;
+    }
+
+    .subtitle {
+      max-width: 780px;
+      font-size: 18px;
+      font-weight: bold;
+      margin: 14px 0 0;
+    }
+
+    .menu {
+      margin: 28px 0;
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .menu a {
+      display: block;
+      text-decoration: none;
+      color: var(--white);
+      background: #101010;
+      border: 3px solid var(--gold);
+      padding: 12px;
+      text-align: center;
+      font-weight: bold;
+      box-shadow: 4px 4px 0 #000;
+      transition: transform 0.1s ease, background 0.1s ease;
+    }
+
+    .menu a:hover {
+      transform: translate(-2px, -2px);
+      background: #35210e;
+      box-shadow: 6px 6px 0 #000;
+    }
+
+    .scene {
+      display: grid;
+      grid-template-columns: 1.05fr 0.95fr;
+      gap: 22px;
+      margin-top: 24px;
+    }
+
+    .dialogue,
+    .card,
+    .panel,
+    .quest {
+      border: var(--pixel) solid var(--shadow);
+      box-shadow: 8px 8px 0 var(--shadow);
+      background: var(--paper);
+      color: var(--ink);
+    }
+
+    .dialogue {
+      padding: 22px;
+      position: relative;
+    }
+
+    .dialogue::before {
+      content: "🦜";
+      position: absolute;
+      right: 14px;
+      top: -28px;
+      font-size: 42px;
+      filter: drop-shadow(3px 3px 0 #000);
+    }
+
+    .dialogue h2,
+    .card h2,
+    .panel h2,
+    .quest h2 {
+      margin: 0 0 14px;
+      font-size: 25px;
+      text-transform: uppercase;
+      color: #4a2600;
+      border-bottom: 4px solid var(--paper-dark);
+      padding-bottom: 8px;
+    }
+
+    .speech {
+      background: #1b1b1b;
+      color: var(--gold);
+      border: 3px solid #000;
+      padding: 16px;
+      margin: 16px 0 0;
+      box-shadow: inset 0 0 0 3px #503000;
+      font-weight: bold;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+      margin-top: 18px;
+    }
+
+    .stat {
+      background: #0b1f33;
+      color: var(--white);
+      border: 3px solid #000;
+      padding: 14px;
+      box-shadow: 4px 4px 0 #000;
+    }
+
+    .stat strong {
+      display: block;
+      color: var(--gold);
+      font-size: 30px;
+      line-height: 1;
+    }
+
+    .stat span {
+      display: block;
+      font-size: 12px;
+      text-transform: uppercase;
+      margin-top: 6px;
+    }
+
+    .inventory {
+      background: #121212;
+      border: var(--pixel) solid #000;
+      box-shadow: 8px 8px 0 #000;
+      padding: 18px;
+    }
+
+    .inventory h2 {
+      color: var(--gold);
+      margin: 0 0 14px;
+      text-transform: uppercase;
+      border-bottom: 3px solid var(--gold);
+      padding-bottom: 8px;
+    }
+
+    .items {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+    }
+
+    .item {
+      border: 3px solid #7a5200;
+      background: #281b06;
+      color: var(--white);
+      padding: 12px;
+      min-height: 88px;
+    }
+
+    .item b {
+      color: var(--gold);
+      display: block;
+      margin-bottom: 5px;
+      text-transform: uppercase;
+    }
+
+    .section {
+      margin-top: 34px;
+    }
+
+    .section-title {
+      display: inline-block;
+      background: var(--red);
+      color: var(--white);
+      border: 4px solid #000;
+      box-shadow: 6px 6px 0 #000;
+      padding: 10px 16px;
+      text-transform: uppercase;
+      font-size: 24px;
+      margin: 0 0 20px;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .card,
+    .panel,
+    .quest {
+      padding: 20px;
+    }
+
+    .tag {
+      display: inline-block;
+      background: var(--blue);
+      color: #fff;
+      border: 2px solid #000;
+      padding: 3px 8px;
+      font-size: 12px;
+      font-weight: bold;
+      text-transform: uppercase;
+      margin: 0 6px 8px 0;
+      box-shadow: 2px 2px 0 #000;
+    }
+
+    .tag.hot {
+      background: var(--red);
+    }
+
+    .tag.win {
+      background: var(--green);
+      color: #001b14;
+    }
+
+    .tag.mid {
+      background: var(--orange);
+      color: #1b0b00;
+    }
+
+    .tag.dark {
+      background: var(--purple);
+    }
+
+    ul {
+      padding-left: 22px;
+      margin: 10px 0;
+    }
+
+    li {
+      margin-bottom: 8px;
+    }
+
+    .pixel-list {
+      list-style: none;
+      padding: 0;
+    }
+
+    .pixel-list li {
+      position: relative;
+      padding-left: 28px;
+      margin-bottom: 12px;
+    }
+
+    .pixel-list li::before {
+      content: "▶";
+      position: absolute;
+      left: 0;
+      color: var(--red);
+      font-weight: bold;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: #fff8dc;
+      color: #1a1a1a;
+      border: 4px solid #000;
+      box-shadow: 6px 6px 0 #000;
+      margin: 14px 0 0;
+    }
+
+    th {
+      background: #1b1b1b;
+      color: var(--gold);
+      text-transform: uppercase;
+    }
+
+    th,
+    td {
+      border: 3px solid #000;
+      padding: 10px;
+      vertical-align: top;
+      font-size: 14px;
+    }
+
+    tr:nth-child(even) td {
+      background: #ffe7a6;
+    }
+
+    .quest {
+      background: #18324a;
+      color: var(--white);
+      border-color: #000;
+    }
+
+    .quest h2 {
+      color: var(--gold);
+      border-bottom-color: #7a5200;
+    }
+
+    .quest .reward {
+      background: #000;
+      color: var(--green);
+      padding: 10px;
+      border: 3px solid var(--green);
+      margin-top: 12px;
+      font-weight: bold;
+    }
+
+    .priority {
+      display: inline-block;
+      min-width: 42px;
+      text-align: center;
+      background: var(--red);
+      color: #fff;
+      border: 3px solid #000;
+      box-shadow: 3px 3px 0 #000;
+      padding: 5px;
+      font-weight: bold;
+      margin-right: 8px;
+    }
+
+    .timeline {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .timeline .panel {
+      background: #ffe9aa;
+    }
+
+    .quote {
+      background: #101010;
+      color: #ffe66d;
+      border: 3px solid #000;
+      padding: 12px;
+      margin-top: 12px;
+      font-style: italic;
+    }
+
+    .footer {
+      margin-top: 42px;
+      background: #000;
+      color: var(--gold);
+      padding: 18px;
+      border: 4px solid var(--gold);
+      text-align: center;
+      box-shadow: 8px 8px 0 #000;
+      font-weight: bold;
+    }
+
+    .print-btn {
+      position: fixed;
+      right: 16px;
+      bottom: 16px;
+      background: var(--gold);
+      color: #000;
+      border: 4px solid #000;
+      box-shadow: 5px 5px 0 #000;
+      padding: 12px 16px;
+      font-family: inherit;
+      font-weight: bold;
+      cursor: pointer;
+      z-index: 1000;
+    }
+
+    .print-btn:hover {
+      transform: translate(-2px, -2px);
+      box-shadow: 7px 7px 0 #000;
+    }
+
+    @media (max-width: 900px) {
+      .scene,
+      .grid-2,
+      .grid-3,
+      .timeline {
+        grid-template-columns: 1fr;
+      }
+
+      .menu {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .stats {
+        grid-template-columns: 1fr;
+      }
+
+      .items {
+        grid-template-columns: 1fr;
+      }
+
+      .hero::after {
+        display: none;
+      }
+    }
+
+    @media print {
+      body::before,
+      .print-btn,
+      .menu {
+        display: none;
+      }
+
+      body {
+        background: #fff;
+        color: #000;
+      }
+
+      .hero,
+      .dialogue,
+      .inventory,
+      .card,
+      .panel,
+      .quest,
+      table,
+      .footer {
+        box-shadow: none;
+      }
+
+      .page {
+        max-width: none;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <button class="print-btn" onclick="window.print()">IMPRIMIR / PDF</button>
+
+  <main class="page">
+
+    <header class="hero">
+      <span class="eyebrow">Aventura CRM · Pull&Bear · eCommerce Internacional</span>
+      <h1>El mapa del tesoro CRM</h1>
+      <p class="subtitle">
+        Plan de acciones para Marketing Digital basado en la encuesta internacional:
+        loyalty, newsletters, push, personalización, journeys, post-compra y comunicación local.
+      </p>
+    </header>
+
+    <nav class="menu">
+      <a href="#diagnostico">Diagnóstico</a>
+      <a href="#acciones">Acciones CRM</a>
+      <a href="#mercados">Mercados</a>
+      <a href="#roadmap">Roadmap</a>
+    </nav>
+
+    <section class="scene" id="diagnostico">
+      <div class="dialogue">
+        <h2>Escena 1: El briefing del capitán</h2>
+        <p>
+          La encuesta muestra que CRM debe evolucionar desde comunicaciones genéricas hacia
+          una experiencia más local, personalizada y conectada con el journey real del cliente.
+        </p>
+
+        <div class="speech">
+          “No necesitamos enviar más mensajes. Necesitamos enviar mejores mensajes:
+          más locales, más útiles y más conectados con conversión, delivery y post-compra.”
+        </div>
+
+        <div class="stats">
+          <div class="stat">
+            <strong>28</strong>
+            <span>Mercados Pull&Bear analizados</span>
+          </div>
+          <div class="stat">
+            <strong>24+</strong>
+            <span>Menciones aprox. sobre loyalty</span>
+          </div>
+          <div class="stat">
+            <strong>5</strong>
+            <span>Misiones CRM prioritarias</span>
+          </div>
+        </div>
+      </div>
+
+      <aside class="inventory">
+        <h2>Inventario del CRM Manager</h2>
+        <div class="items">
+          <div class="item">
+            <b>Mapa local</b>
+            Calendarios por clima, eventos, festivales y momentos comerciales.
+          </div>
+          <div class="item">
+            <b>Brújula de datos</b>
+            Segmentos dinámicos por comportamiento, compra, wishlist y app.
+          </div>
+          <div class="item">
+            <b>Pergamino loyalty</b>
+            Programa modular con puntos, ventajas, acceso y personalización.
+          </div>
+          <div class="item">
+            <b>Catalejo post-compra</b>
+            Tracking, retrasos, devoluciones y refunds más visibles.
+          </div>
+        </div>
+      </aside>
+    </section>
+
+    <section class="section">
+      <h2 class="section-title">Diagnóstico CRM principal</h2>
+
+      <div class="grid-3">
+        <article class="card">
+          <h2>1. Loyalty ausente o poco claro</h2>
+          <span class="tag hot">Alta prioridad</span>
+          <span class="tag">Retención</span>
+          <p>
+            La necesidad de programas de fidelización aparece de forma repetida. Los competidores
+            ofrecen puntos, descuentos, birthday vouchers, early access, free delivery, free returns
+            y beneficios por niveles.
+          </p>
+          <div class="quote">
+            Francia: “There is a lack of clarity around the rewards and how customers can progress.”
+          </div>
+        </article>
+
+        <article class="card">
+          <h2>2. Comunicaciones poco localizadas</h2>
+          <span class="tag hot">Alta prioridad</span>
+          <span class="tag">Localización</span>
+          <p>
+            Newsletters y push no siempre reflejan idioma, clima, eventos locales o prioridades
+            comerciales del mercado.
+          </p>
+          <div class="quote">
+            Polonia: “Newsletter title is almost always in English.”
+          </div>
+        </article>
+
+        <article class="card">
+          <h2>3. Personalización insuficiente</h2>
+          <span class="tag mid">Conversión</span>
+          <span class="tag">CRM Data</span>
+          <p>
+            Se repite que los emails son genéricos y que las recomendaciones no siempre coinciden
+            con historial, preferencias o comportamiento del cliente.
+          </p>
+          <div class="quote">
+            Polonia: “The products recommended in the newsletter do not match the customer’s previous selections.”
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="section" id="acciones">
+      <h2 class="section-title">Misiones CRM prioritarias</h2>
+
+      <div class="grid-2">
+
+        <article class="quest">
+          <h2><span class="priority">P1</span>Lanzar loyalty modular</h2>
+          <p>
+            Crear un programa flexible por mercado, con capas de beneficios según madurez local.
+          </p>
+          <ul class="pixel-list">
+            <li>Welcome discount y birthday promo.</li>
+            <li>Puntos por compra, app login, wishlist o newsletter.</li>
+            <li>Early access a Sales, Black Friday y drops.</li>
+            <li>Free shipping/free returns para clientes de mayor valor.</li>
+            <li>Gamificación, niveles, charms o collectibles digitales.</li>
+          </ul>
+          <div class="reward">Impacto esperado: mayor repetición, retención y compra full-price.</div>
+        </article>
+
+        <article class="quest">
+          <h2><span class="priority">P2</span>Local CRM QA obligatorio</h2>
+          <p>
+            Implantar revisión local antes de lanzar newsletters, push y campañas clave.
+          </p>
+          <ul class="pixel-list">
+            <li>Idioma correcto y asunto localizado.</li>
+            <li>Fechas, moneda y umbrales de free shipping correctos.</li>
+            <li>Producto adaptado al clima y evento local.</li>
+            <li>Links, CTA y landing correctos.</li>
+            <li>Validación local en Sales, BF, loyalty y campañas de free shipping.</li>
+          </ul>
+          <div class="reward">Impacto esperado: más relevancia, menos errores y más CTR.</div>
+        </article>
+
+        <article class="quest">
+          <h2><span class="priority">P3</span>Automatizar journeys de conversión</h2>
+          <p>
+            Pasar de campañas masivas a automatizaciones basadas en intención.
+          </p>
+          <ul class="pixel-list">
+            <li>Abandoned cart.</li>
+            <li>Browse abandonment.</li>
+            <li>Wishlist reminder.</li>
+            <li>Back in stock.</li>
+            <li>Price drop.</li>
+            <li>New arrivals por preferencia.</li>
+            <li>Post-purchase cross-sell.</li>
+          </ul>
+          <div class="reward">Impacto esperado: recuperación de ventas y mayor conversión.</div>
+        </article>
+
+        <article class="quest">
+          <h2><span class="priority">P4</span>Mejorar push y app messaging</h2>
+          <p>
+            Usar push de forma más inteligente, no simplemente con más frecuencia.
+          </p>
+          <ul class="pixel-list">
+            <li>Push de carrito, wishlist, low stock y price drop.</li>
+            <li>Push locales por festivales, clima, BTS o Women’s Day.</li>
+            <li>Push de free shipping en mercados price-sensitive.</li>
+            <li>Push post-compra para tracking, retrasos y refunds.</li>
+            <li>Segmentación por país, idioma, historial y app engagement.</li>
+          </ul>
+          <div class="reward">Impacto esperado: más engagement sin saturación.</div>
+        </article>
+
+        <article class="quest">
+          <h2><span class="priority">P5</span>Post-compra proactiva</h2>
+          <p>
+            CRM debe ayudar a reducir contactos a Customer Care con comunicaciones claras.
+          </p>
+          <ul class="pixel-list">
+            <li>Pedido recibido.</li>
+            <li>Pedido en preparación.</li>
+            <li>Pedido enviado.</li>
+            <li>Pedido retrasado.</li>
+            <li>Nueva fecha estimada.</li>
+            <li>Devolución recibida.</li>
+            <li>Refund procesado.</li>
+          </ul>
+          <div class="reward">Impacto esperado: menos incertidumbre, menos contactos y más confianza.</div>
+        </article>
+
+        <article class="quest">
+          <h2><span class="priority">P6</span>Preference Center avanzado</h2>
+          <p>
+            Dar al cliente control sobre qué recibe, por qué canal y con qué frecuencia.
+          </p>
+          <ul class="pixel-list">
+            <li>Elegir Woman, Man o ambos.</li>
+            <li>Elegir idioma.</li>
+            <li>Elegir tipo de comunicación: new in, sale, loyalty, free shipping.</li>
+            <li>Elegir canal: email, push, SMS o WhatsApp donde aplique.</li>
+            <li>Elegir frecuencia: alta, media o solo importante.</li>
+          </ul>
+          <div class="reward">Impacto esperado: menor unsubscribe y mayor relevancia.</div>
+        </article>
+
+      </div>
+    </section>
+
+    <section class="section" id="mercados">
+      <h2 class="section-title">Mapa de mercados prioritarios</h2>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Mercado</th>
+            <th>Acción CRM recomendada</th>
+            <th>Motivo detectado</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><b>Francia</b></td>
+            <td>Reforzar PB Pass, explicar recompensas y añadir challenges/push personalizados.</td>
+            <td>Loyalty existe pero se percibe poco claro y poco visible.</td>
+          </tr>
+          <tr>
+            <td><b>Países Bajos</b></td>
+            <td>Loyalty avanzado con personalización, comunidad, acceso y omnicanalidad.</td>
+            <td>Mercado maduro, benchmark fuerte y expectativa de experiencias frictionless.</td>
+          </tr>
+          <tr>
+            <td><b>Polonia</b></td>
+            <td>Newsletter en polaco, recomendaciones por historial y programa de puntos/descuentos.</td>
+            <td>Mercado price-sensitive; errores de idioma y falta de personalización.</td>
+          </tr>
+          <tr>
+            <td><b>Rumanía</b></td>
+            <td>Push y banners de free shipping, loyalty con descuentos/puntos y updates de delivery.</td>
+            <td>Free-over alto, cliente sensible a precio y retrasos frecuentes.</td>
+          </tr>
+          <tr>
+            <td><b>Italia</b></td>
+            <td>Personalización, loyalty estructurado y post-compra clara sobre delivery/returns.</td>
+            <td>Newsletters repetitivas, Customer Care tensionado y checkout/payment friction.</td>
+          </tr>
+          <tr>
+            <td><b>Kazajistán</b></td>
+            <td>Birthday promo, cashback/puntos, idioma local y comunicaciones adaptadas.</td>
+            <td>Competidores tienen loyalty; se pide Kazakh language y beneficios locales.</td>
+          </tr>
+          <tr>
+            <td><b>Benelux</b></td>
+            <td>Emails personalizados, loyalty y comunicación transaccional más visual.</td>
+            <td>Marketplaces marcan el estándar en comodidad, returns y personalización.</td>
+          </tr>
+          <tr>
+            <td><b>Nordics</b></td>
+            <td>Smart push, loyalty con beneficios de delivery/returns y local imagery por temporada.</td>
+            <td>Falta programa estructurado y fuerte necesidad de localización estacional.</td>
+          </tr>
+          <tr>
+            <td><b>Ucrania</b></td>
+            <td>Push transaccional, mensajes sobre Act of Return y Help/FAQ conectado a CRM.</td>
+            <td>Returns complejos por legislación y necesidad de información clara.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="section">
+      <h2 class="section-title">Segmentos CRM que desbloquean conversión</h2>
+
+      <div class="grid-3">
+        <div class="panel">
+          <h2>Nuevos clientes</h2>
+          <ul>
+            <li>Welcome journey.</li>
+            <li>Primer incentivo.</li>
+            <li>Explicación de beneficios y canales.</li>
+          </ul>
+        </div>
+
+        <div class="panel">
+          <h2>Clientes activos</h2>
+          <ul>
+            <li>New arrivals por categoría.</li>
+            <li>Cross-sell post-compra.</li>
+            <li>Early access a campañas.</li>
+          </ul>
+        </div>
+
+        <div class="panel">
+          <h2>High value</h2>
+          <ul>
+            <li>Acceso prioritario.</li>
+            <li>Beneficios de delivery.</li>
+            <li>Drops exclusivos.</li>
+          </ul>
+        </div>
+
+        <div class="panel">
+          <h2>Wishlist active</h2>
+          <ul>
+            <li>Back in stock.</li>
+            <li>Low stock.</li>
+            <li>Price drop.</li>
+          </ul>
+        </div>
+
+        <div class="panel">
+          <h2>Price-sensitive</h2>
+          <ul>
+            <li>Free shipping.</li>
+            <li>Sales.</li>
+            <li>Bundles o ventajas loyalty.</li>
+          </ul>
+        </div>
+
+        <div class="panel">
+          <h2>Lapsed users</h2>
+          <ul>
+            <li>Winback.</li>
+            <li>Novedades locales.</li>
+            <li>Incentivo limitado.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2 class="section-title">Calendario local CRM</h2>
+
+      <div class="card">
+        <h2>De campaña global a campaña local</h2>
+        <p>
+          Cada mercado debería tener una parrilla mensual con eventos, clima, producto,
+          canal, segmento y owner. El objetivo es que CRM no dependa solo del calendario global,
+          sino que active momentos relevantes para el país.
+        </p>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Mercado</th>
+              <th>Momento local</th>
+              <th>Producto / Mensaje</th>
+              <th>Canal CRM</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Polonia</td>
+              <td>Women’s Day</td>
+              <td>Dresses, gifting, mensaje en polaco</td>
+              <td>Newsletter + Push</td>
+            </tr>
+            <tr>
+              <td>Rumanía</td>
+              <td>Festival season</td>
+              <td>Denim, tops, looks de evento</td>
+              <td>Push + App banner</td>
+            </tr>
+            <tr>
+              <td>Países Bajos</td>
+              <td>ADE / night-out</td>
+              <td>Denim, party, community content</td>
+              <td>Email + Push + Audiencias paid</td>
+            </tr>
+            <tr>
+              <td>Kazajistán</td>
+              <td>Adha Mubarak / cumpleaños</td>
+              <td>Producto especial + birthday promo</td>
+              <td>Email + Push</td>
+            </tr>
+            <tr>
+              <td>Francia</td>
+              <td>Diferencias regionales</td>
+              <td>Looks por clima: París vs Côte d’Azur</td>
+              <td>Newsletter segmentada</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2 class="section-title">KPIs del tesoro</h2>
+
+      <div class="grid-2">
+        <div class="card">
+          <h2>KPIs comerciales</h2>
+          <ul class="pixel-list">
+            <li>Revenue per recipient.</li>
+            <li>CTR email y push.</li>
+            <li>Conversion rate por campaña.</li>
+            <li>Cart recovery rate.</li>
+            <li>Wishlist click-to-purchase.</li>
+            <li>Incremental conversion de free shipping.</li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <h2>KPIs de retención</h2>
+          <ul class="pixel-list">
+            <li>Repeat purchase rate.</li>
+            <li>Time to second purchase.</li>
+            <li>Enrollment rate loyalty.</li>
+            <li>Usuarios activos loyalty.</li>
+            <li>Unsubscribe rate.</li>
+            <li>Engagement app y push opt-in.</li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <h2>KPIs post-compra</h2>
+          <ul class="pixel-list">
+            <li>Contact rate por pedido.</li>
+            <li>Contactos por delivery/refund.</li>
+            <li>Open rate de emails transaccionales.</li>
+            <li>Reducción de contactos repetitivos.</li>
+            <li>Satisfacción post-compra.</li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <h2>KPIs de localización</h2>
+          <ul class="pixel-list">
+            <li>CTR local vs global.</li>
+            <li>Errores detectados en QA local.</li>
+            <li>Performance por evento local.</li>
+            <li>Engagement por idioma.</li>
+            <li>Uplift de campañas adaptadas.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="roadmap">
+      <h2 class="section-title">Roadmap 30 / 60 / 90 días</h2>
+
+      <div class="timeline">
+        <div class="panel">
+          <h2>Primeros 30 días</h2>
+          <span class="tag win">Quick wins</span>
+          <ul>
+            <li>Activar QA local de newsletters y push.</li>
+            <li>Revisar Polonia, Bulgaria, Benelux, Italia y Francia.</li>
+            <li>Activar carrito abandonado en mercados con app madura.</li>
+            <li>Mejorar visibilidad de free shipping.</li>
+            <li>Crear plantillas locales para retrasos y refunds.</li>
+          </ul>
+        </div>
+
+        <div class="panel">
+          <h2>60 días</h2>
+          <span class="tag mid">Pilotos</span>
+          <ul>
+            <li>Pilotos de personalización en Polonia, Francia, Italia y Países Bajos.</li>
+            <li>Wishlist reminders, back in stock y price drop.</li>
+            <li>Calendario CRM local por mercado.</li>
+            <li>Revisión del preference center.</li>
+            <li>Medición local vs global.</li>
+          </ul>
+        </div>
+
+        <div class="panel">
+          <h2>90 días</h2>
+          <span class="tag hot">Escalado</span>
+          <ul>
+            <li>Piloto loyalty en Francia o Países Bajos.</li>
+            <li>Birthday campaign en Kazajistán, Polonia y Rumanía.</li>
+            <li>Early access a Sales/BF.</li>
+            <li>Audiencias CRM conectadas con paid media.</li>
+            <li>Dashboard CRM internacional por mercado.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2 class="section-title">Las 5 acciones que tomaría ya</h2>
+
+      <div class="card">
+        <ol>
+          <li>
+            <b>Local CRM QA obligatorio</b> para newsletters, push y campañas clave.
+            Prioridad: Polonia, Bulgaria, Bélgica/Luxemburgo, Italia y Francia.
+          </li>
+          <li>
+            <b>Automatizar journeys de conversión</b>: abandoned cart, wishlist, back in stock,
+            price drop y browse abandonment.
+          </li>
+          <li>
+            <b>Diseñar loyalty modular</b>: empezar con Francia/Países Bajos como mercados maduros
+            y Polonia/Rumanía/Kazajistán como mercados price-sensitive.
+          </li>
+          <li>
+            <b>Mejorar comunicaciones post-compra</b>: tracking, retrasos, refunds y returns
+            con mensajes visuales y proactivos.
+          </li>
+          <li>
+            <b>Personalizar por mercado, clima, evento e historial</b>: dejar de depender de campañas
+            genéricas y usar CRM como motor de relevancia local.
+          </li>
+        </ol>
+
+        <div class="speech">
+          Fin de la misión: CRM debe pasar de “canal de envío” a “motor de relación,
+          conversión y confianza”.
+        </div>
+      </div>
+    </section>
+
+    <footer class="footer">
+      Pull&Bear CRM Quest · Marketing Digital · Informe accionable basado en encuesta internacional deduplicada por mercado + marca
+    </footer>
+
+  </main>
+</body>
+</html>
