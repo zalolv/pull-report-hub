@@ -1,0 +1,470 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Pull&amp;Bear Turquia | Salida rebajas 2026</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #000000;
+      --surface: #0d0d0d;
+      --surface-2: #151515;
+      --content: #ffffff;
+      --low: #c4c4c4;
+      --muted: #757575;
+      --line: #363636;
+      --line-strong: #ffffff;
+      --good: #30d158;
+      --warn: #ff9f0a;
+      --bad: #ff453a;
+      --max: 1240px;
+    }
+
+    * { box-sizing: border-box; }
+    html { background: var(--bg); scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background:
+        linear-gradient(90deg, rgba(255,255,255,0.045) 1px, transparent 1px),
+        linear-gradient(rgba(255,255,255,0.035) 1px, transparent 1px),
+        radial-gradient(circle at 82% 12%, rgba(255,255,255,0.12), transparent 28rem),
+        var(--bg);
+      background-size: 48px 48px, 48px 48px, auto, auto;
+      color: var(--content);
+      font-family: "Neue Haas", "Helvetica Now Text", Helvetica, Arial, sans-serif;
+      letter-spacing: 0.7px;
+    }
+
+    main {
+      width: min(var(--max), calc(100% - 32px));
+      margin: 0 auto;
+      padding: 24px 0 60px;
+    }
+
+    section {
+      min-height: min(800px, calc(100vh - 48px));
+      margin-bottom: 18px;
+      border: 1px solid var(--line-strong);
+      background: rgba(0,0,0,0.78);
+      padding: clamp(28px, 6vw, 76px);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      overflow: hidden;
+      position: relative;
+    }
+
+    section.alt { background: rgba(21,21,21,0.9); border-color: var(--line); }
+    section.compact { min-height: auto; }
+
+    .topline {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 24px;
+      color: var(--low);
+      font-size: 11px;
+      line-height: 16px;
+      margin-bottom: clamp(38px, 8vw, 110px);
+    }
+
+    .brand {
+      color: var(--content);
+      font-size: 13px;
+      line-height: 17px;
+      text-transform: uppercase;
+      font-weight: 400;
+    }
+
+    .eyebrow {
+      color: var(--low);
+      font-size: 11px;
+      line-height: 16px;
+      text-transform: uppercase;
+      letter-spacing: 0.9px;
+      margin-bottom: 18px;
+    }
+
+    h1, h2, h3, p { margin: 0; }
+
+    h1 {
+      max-width: 1060px;
+      font-size: clamp(52px, 10vw, 120px);
+      line-height: 0.92;
+      letter-spacing: -2px;
+      font-weight: 400;
+    }
+
+    h2 {
+      max-width: 980px;
+      font-size: clamp(34px, 6.4vw, 76px);
+      line-height: 0.98;
+      letter-spacing: -2px;
+      font-weight: 400;
+    }
+
+    h3 {
+      font-size: clamp(18px, 2vw, 26px);
+      line-height: 1.08;
+      letter-spacing: -0.4px;
+      font-weight: 400;
+    }
+
+    .lead {
+      max-width: 850px;
+      margin-top: 26px;
+      color: var(--low);
+      font-size: clamp(18px, 2vw, 25px);
+      line-height: 1.28;
+      letter-spacing: 0.1px;
+    }
+
+    .hero-grid,
+    .split {
+      display: grid;
+      grid-template-columns: minmax(0, 1.12fr) minmax(320px, 0.88fr);
+      gap: clamp(30px, 6vw, 82px);
+      align-items: end;
+    }
+
+    .hero-card {
+      border: 1px solid var(--line-strong);
+      background: var(--content);
+      color: #000;
+      padding: 22px;
+      min-height: 280px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .hero-card span,
+    .kpi span,
+    .note {
+      color: var(--low);
+      font-size: 13px;
+      line-height: 18px;
+    }
+
+    .hero-card span { color: #5a5a5a; text-transform: uppercase; font-size: 11px; }
+
+    .hero-value {
+      font-size: clamp(48px, 8vw, 102px);
+      line-height: 0.92;
+      letter-spacing: -2px;
+      font-weight: 400;
+    }
+
+    .hero-card .note { color: #5a5a5a; }
+
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      border-top: 1px solid var(--line-strong);
+      border-left: 1px solid var(--line-strong);
+      margin-top: 42px;
+    }
+
+    .kpi {
+      min-height: 190px;
+      border-right: 1px solid var(--line-strong);
+      border-bottom: 1px solid var(--line-strong);
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      background: #050505;
+    }
+
+    .kpi strong {
+      font-size: clamp(32px, 5vw, 60px);
+      line-height: 0.95;
+      letter-spacing: -1.5px;
+      font-weight: 400;
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-top: 40px;
+    }
+
+    .card {
+      border: 1px solid var(--line);
+      background: #050505;
+      min-height: 260px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      width: fit-content;
+      height: 28px;
+      padding: 0 10px;
+      border: 1px solid var(--line-strong);
+      color: var(--content);
+      font-size: 11px;
+      line-height: 14px;
+      text-transform: uppercase;
+    }
+
+    .big {
+      display: block;
+      font-size: clamp(46px, 8vw, 100px);
+      line-height: 0.92;
+      letter-spacing: -2px;
+      font-weight: 400;
+    }
+
+    .positive { color: var(--good); }
+    .warning { color: var(--warn); }
+    .negative { color: var(--bad); }
+
+    .bars { display: grid; gap: 14px; margin-top: 34px; }
+
+    .bar-row {
+      display: grid;
+      grid-template-columns: 140px 1fr 104px;
+      gap: 16px;
+      align-items: center;
+      font-size: 13px;
+      line-height: 18px;
+    }
+
+    .bar {
+      height: 22px;
+      border: 1px solid var(--line-strong);
+      background: #000;
+    }
+
+    .bar i { display: block; height: 100%; background: var(--content); }
+    .bar i.dim { background: var(--line); }
+
+    .matrix {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 18px;
+      margin-top: 42px;
+    }
+
+    .matrix-box {
+      border: 1px solid var(--line);
+      background: #050505;
+      padding: 22px;
+    }
+
+    .table-wrap { overflow-x: auto; margin-top: 34px; }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      border: 1px solid var(--line-strong);
+      background: #050505;
+      font-size: 12px;
+      line-height: 16px;
+    }
+
+    th, td {
+      padding: 13px 12px;
+      border-bottom: 1px solid var(--line);
+      text-align: right;
+      white-space: nowrap;
+    }
+
+    th:first-child, td:first-child,
+    th:nth-child(2), td:nth-child(2) { text-align: left; }
+
+    th {
+      color: var(--low);
+      background: #111;
+      font-weight: 400;
+      text-transform: uppercase;
+      position: sticky;
+      top: 0;
+    }
+
+    .source {
+      max-width: 1060px;
+      margin-top: 22px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 18px;
+    }
+
+    @media (max-width: 900px) {
+      main { width: calc(100% - 20px); padding-top: 10px; }
+      section { min-height: auto; padding: 24px; }
+      .hero-grid, .split, .cards, .matrix { grid-template-columns: 1fr; }
+      .kpi-grid { grid-template-columns: 1fr 1fr; }
+      .bar-row { grid-template-columns: 96px 1fr 72px; }
+      .topline { flex-direction: column; margin-bottom: 46px; }
+    }
+
+    @media (max-width: 560px) {
+      .kpi-grid { grid-template-columns: 1fr; }
+      h1 { font-size: 46px; }
+      h2 { font-size: 34px; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <section>
+      <div class="topline">
+        <div class="brand">Pull&amp;Bear</div>
+        <div>Turquia · salida rebajas<br>24/06/2026 · 16:00 hora espanola</div>
+      </div>
+      <div class="hero-grid">
+        <div>
+          <div class="eyebrow">Analisis comercial</div>
+          <h1>Una salida mas grande en total, impulsada por Web y Trendyol.</h1>
+          <p class="lead">Con el calendario Colabora corregido, 2026 supera a 2025 en pedidos totales de las primeras seis horas. La app sigue siendo el principal motor del canal directo, pero queda por debajo del ano anterior; el crecimiento viene de Web propia y, sobre todo, de Trendyol.</p>
+        </div>
+        <aside class="hero-card">
+          <span>Pedidos primeras 6h 2026</span>
+          <div class="hero-value">44.585</div>
+          <p class="note">App propia 25.914 · Web propia 2.813 · Trendyol 15.858.</p>
+        </aside>
+      </div>
+    </section>
+
+    <section class="compact alt">
+      <div class="eyebrow">Scorecard ejecutivo</div>
+      <h2>2026 mejora el total, pero con una mezcla de canales diferente.</h2>
+      <div class="kpi-grid">
+        <div class="kpi"><span>Total primeras 6h</span><strong>44.585</strong><span>vs 39.930 pedidos en 2025.</span></div>
+        <div class="kpi"><span>App primeras 6h</span><strong>25.914</strong><span>vs 29.495 pedidos en 2025.</span></div>
+        <div class="kpi"><span>Web primeras 6h</span><strong>2.813</strong><span>vs 922 pedidos en 2025.</span></div>
+        <div class="kpi"><span>Trendyol primeras 6h</span><strong>15.858</strong><span>vs 9.513 pedidos en 2025.</span></div>
+      </div>
+    </section>
+
+    <section>
+      <div class="split">
+        <div>
+          <div class="eyebrow">Canal propio</div>
+          <h2>La app concentra la venta directa, aunque 2026 queda por debajo de 2025.</h2>
+          <p class="lead">En primeras seis horas, app genera el 90% del canal propio y mantiene una conversion alta del 8,98%. Aun asi, pierde volumen frente a 2025; la mejora del canal propio viene de Web, que triplica pedidos sobre el ano anterior.</p>
+        </div>
+        <div class="bars">
+          <div class="bar-row"><span>App 6h</span><div class="bar"><i style="width:100%"></i></div><strong>25.914</strong></div>
+          <div class="bar-row"><span>Web 6h</span><div class="bar"><i style="width:10.9%"></i></div><strong>2.813</strong></div>
+          <div class="bar-row"><span>App 1h</span><div class="bar"><i style="width:74.9%"></i></div><strong>19.400</strong></div>
+          <div class="bar-row"><span>Web 1h</span><div class="bar"><i style="width:7.5%"></i></div><strong>1.942</strong></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="alt">
+      <div class="split">
+        <div>
+          <div class="eyebrow">Marketplace</div>
+          <h2>Trendyol acelera el crecimiento y gana peso frente a 2025.</h2>
+          <p class="lead">Trendyol aporta 15.858 pedidos en primeras seis horas, un 66,7% mas que en 2025. No supera a la app propia, pero explica la mayor parte del crecimiento incremental de la salida.</p>
+        </div>
+        <div class="bars">
+          <div class="bar-row"><span>Trendyol 6h</span><div class="bar"><i style="width:100%"></i></div><strong>15.858</strong></div>
+          <div class="bar-row"><span>Trendyol 2h</span><div class="bar"><i style="width:60.1%"></i></div><strong>9.538</strong></div>
+          <div class="bar-row"><span>Trendyol 1h</span><div class="bar"><i style="width:43.1%"></i></div><strong>6.828</strong></div>
+          <div class="bar-row"><span>Pre -2h</span><div class="bar"><i class="dim" style="width:27.7%"></i></div><strong>4.399</strong></div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="eyebrow">Lectura comercial</div>
+      <h2>La lectura cambia: no es un crecimiento homogeneo, es una redistribucion de demanda.</h2>
+      <div class="cards">
+        <article class="card">
+          <span class="tag">Total 2026</span>
+          <div>
+            <h3>El total crece frente al calendario comparable.</h3>
+            <p class="note" style="margin-top:16px">Primeras seis horas suman 44.585 pedidos frente a 39.930 en 2025. El crecimiento total es positivo, pero no procede de todos los canales por igual.</p>
+          </div>
+          <strong class="big positive">+11,7%</strong>
+        </article>
+        <article class="card">
+          <span class="tag">App first</span>
+          <div>
+            <h3>App propia sigue liderando el canal directo.</h3>
+            <p class="note" style="margin-top:16px">En seis horas genera 25.914 pedidos, 1.134.506 euros y 66.093 unidades. Es el mayor canal individual, aunque cae frente a 2025.</p>
+          </div>
+          <strong class="big">8,98%</strong>
+        </article>
+        <article class="card">
+          <span class="tag">Marketplace</span>
+          <div>
+            <h3>Trendyol aporta el mayor crecimiento incremental.</h3>
+            <p class="note" style="margin-top:16px">En primeras seis horas vende 15.858 pedidos y 23.250 unidades. Crece un 66,7% frente a 2025 y absorbe demanda adicional.</p>
+          </div>
+          <strong class="big">15.858</strong>
+        </article>
+      </div>
+    </section>
+
+    <section class="alt compact">
+      <div class="eyebrow">Detalle primeras ventanas</div>
+      <h2>Canal propio y Trendyol.</h2>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Canal</th>
+              <th>Ventana</th>
+              <th>Pedidos 2026</th>
+              <th>Pedidos 2025</th>
+              <th>Revenue 2026</th>
+              <th>Revenue 2025</th>
+              <th>CVR / UPT 2026</th>
+              <th>CVR / UPT 2025</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>App propia</td><td>Primera hora</td><td>19.400</td><td>21.615</td><td>875.407 EUR</td><td>887.071 EUR</td><td>CVR 17,65% · UPT 2,64</td><td>CVR 19,12% · UPT 2,62</td></tr>
+            <tr><td>App propia</td><td>Primeras 2h</td><td>21.801</td><td>24.447</td><td>971.163 EUR</td><td>993.219 EUR</td><td>CVR 14,17% · UPT 2,61</td><td>CVR 15,14% · UPT 2,60</td></tr>
+            <tr><td>App propia</td><td>Primeras 6h</td><td>25.914</td><td>29.495</td><td>1.134.506 EUR</td><td>1.170.410 EUR</td><td>CVR 8,98% · UPT 2,55</td><td>CVR 9,51% · UPT 2,53</td></tr>
+            <tr><td>Web propia</td><td>Primera hora</td><td>1.942</td><td>248</td><td>94.860 EUR</td><td>8.722 EUR</td><td>CVR 10,80% · UPT 2,90</td><td>CVR 3,08% · UPT 2,27</td></tr>
+            <tr><td>Web propia</td><td>Primeras 2h</td><td>2.226</td><td>388</td><td>106.474 EUR</td><td>13.887 EUR</td><td>CVR 8,06% · UPT 2,83</td><td>CVR 2,55% · UPT 2,31</td></tr>
+            <tr><td>Web propia</td><td>Primeras 6h</td><td>2.813</td><td>922</td><td>130.250 EUR</td><td>32.704 EUR</td><td>CVR 4,57% · UPT 2,72</td><td>CVR 2,19% · UPT 2,23</td></tr>
+            <tr><td>Trendyol</td><td>Primera hora</td><td>6.828</td><td>1.553</td><td>9.312.438 local</td><td>1.705.739 local</td><td>UPT 1,50</td><td>UPT 1,38</td></tr>
+            <tr><td>Trendyol</td><td>Primeras 2h</td><td>9.538</td><td>3.573</td><td>12.913.135 local</td><td>3.873.811 local</td><td>UPT 1,49</td><td>UPT 1,37</td></tr>
+            <tr><td>Trendyol</td><td>Primeras 6h</td><td>15.858</td><td>9.513</td><td>21.358.181 local</td><td>10.316.302 local</td><td>UPT 1,47</td><td>UPT 1,36</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="compact">
+      <div class="eyebrow">Puntos de accion</div>
+      <h2>Que validaria para convertir la lectura en plan de accion.</h2>
+      <div class="matrix">
+        <div class="matrix-box">
+          <span class="tag">Calendario</span>
+          <p class="lead" style="margin-top:18px">La comparativa usa Colabora como referencia: 2026 sale el 24/06 a las 17:00 de Turquia; 2025 app sale el 25/06 a las 17:00 y web/public a las 18:00. Mantener esta trazabilidad en cualquier lectura YoY.</p>
+        </div>
+        <div class="matrix-box">
+          <span class="tag">Operacion Trendyol</span>
+          <p class="lead" style="margin-top:18px">Comparar stock publicado, visibilidad, campanas, pricing y activacion previa. Trendyol crece un 66,7% en primeras seis horas y explica gran parte del avance total.</p>
+        </div>
+        <div class="matrix-box">
+          <span class="tag">App propia</span>
+          <p class="lead" style="margin-top:18px">Desglosar iOS/Android, push, trafico directo y disponibilidad. La app mantiene liderazgo, pero cae en pedidos y conversion frente a 2025.</p>
+        </div>
+        <div class="matrix-box">
+          <span class="tag">Web propia</span>
+          <p class="lead" style="margin-top:18px">Revisar que palancas explican el salto YoY de Web: entrada de trafico, experiencia de lista/PDP, performance, disponibilidad y friccion de checkout.</p>
+        </div>
+      </div>
+      <p class="source">Fuentes: web/app propia desde `DATAWAREHOUSE_PULL.PB_ECOMMERCE.T_ZENIT_TRAFFIC_AND_CONVERSION_GROUPED_BY_HOUR`, `COD_COUNTRY = 21`; Trendyol desde `DATAWAREHOUSE_PULL.DMECOMMERCE_VISTAS.V_DIGITAL_ORDER_TEC`, `COUNTRY_ISO = 'TR'`, `BRAND = 'PB'`, `EXTERNAL_PLATFORM = 'Trendyol'`. Importes de canal propio en euros; importes Trendyol en moneda local de la fuente. Calendario validado en Colabora: 2026 sale 24/06/2026 17:00 Turquia / 16:00 Espana; 2025 app sale 25/06/2025 17:00 Turquia / 16:00 Espana y web/public sale 25/06/2025 18:00 Turquia / 17:00 Espana.</p>
+    </section>
+  </main>
+</body>
+</html>

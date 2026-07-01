@@ -1,0 +1,427 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>PBAND-SP2607 Android Release Control</title>
+  <style>
+    :root { --bg:#fff; --surface:#f7f7f7; --ink:#000; --muted:#6f6f6f; --line:#e2e2e2; --danger:#ff3b30; --warning:#ff9500; --info:#007aff; --success:#34c759; }
+    * { box-sizing:border-box; }
+    body { margin:0; background:var(--bg); color:var(--ink); font-family:"Neue Haas", "Helvetica Now Text", Helvetica, Arial, sans-serif; letter-spacing:.45px; }
+    a { color:inherit; text-decoration:none; border-bottom:1px solid currentColor; }
+    .page { max-width:1560px; margin:0 auto; padding:32px; }
+    .hero { min-height:360px; border:1px solid #000; padding:32px; display:grid; grid-template-columns:minmax(0,1.2fr) minmax(320px,.8fr); gap:32px; align-items:end; }
+    .eyebrow,.label { font-size:11px; line-height:18px; text-transform:uppercase; color:var(--muted); letter-spacing:.9px; }
+    h1 { margin:16px 0 0; font-size:clamp(44px,7vw,96px); line-height:.92; letter-spacing:-2px; font-weight:350; }
+    h2 { margin:0; font-size:clamp(28px,4vw,54px); line-height:1; letter-spacing:-1px; font-weight:350; }
+    h3 { margin:0 0 14px; font-size:14px; text-transform:uppercase; font-weight:500; }
+    .hero-copy { font-size:18px; line-height:1.45; max-width:680px; margin:24px 0 0; }
+    .hero-card,.panel,.kpi { border:1px solid var(--line); background:#fff; }
+    .hero-card,.panel { padding:20px; }
+    .hero-card { background:var(--surface); }
+    .hero-card p,.panel p,.section-note { color:var(--muted); line-height:1.45; }
+    .grid { display:grid; gap:16px; }
+    .kpis { grid-template-columns:repeat(6,minmax(0,1fr)); margin:24px 0; }
+    .kpi { min-height:132px; padding:20px; display:flex; flex-direction:column; justify-content:space-between; }
+    .kpi strong { font-size:clamp(34px,5vw,62px); font-weight:350; letter-spacing:-2px; }
+    .kpi span { color:var(--muted); font-size:11px; line-height:18px; text-transform:uppercase; }
+    .section { margin-top:48px; }
+    .section-head { display:flex; justify-content:space-between; align-items:end; gap:24px; margin-bottom:16px; }
+    .section-note { max-width:760px; margin:0; }
+    .three-col { grid-template-columns:repeat(3,minmax(0,1fr)); }
+    .filter-bar { display:flex; flex-wrap:wrap; gap:8px; align-items:center; }
+    .filter-chip { border:1px solid var(--line); background:#fff; color:var(--ink); padding:7px 10px; font:inherit; font-size:11px; text-transform:uppercase; cursor:pointer; }
+    .filter-chip.active { background:#000; color:#fff; border-color:#000; }
+    .kanban { display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:12px; }
+    .lane { border:1px solid var(--line); background:#fff; min-height:260px; }
+    .lane-head { border-bottom:1px solid var(--line); padding:14px; display:flex; justify-content:space-between; gap:12px; align-items:center; }
+    .lane-body { padding:10px; display:grid; gap:8px; }
+    .card { border:1px solid var(--line); background:var(--surface); padding:10px; }
+    .card.risk { border-color:var(--danger); background:#fff; }
+    .card.review { border-color:var(--info); background:#fff; }
+    .card-title { margin:8px 0; font-size:12px; line-height:1.3; }
+    .card-more { color:var(--muted); font-size:11px; line-height:1.4; padding:8px; border:1px dashed var(--line); }
+    .load-grid { display:grid; grid-template-columns:320px minmax(0,1fr); gap:16px; align-items:center; }
+    .donut { width:250px; height:250px; border-radius:50%; background:var(--surface); margin:auto; position:relative; border:1px solid var(--line); }
+    .donut::after { content:""; position:absolute; inset:56px; background:#fff; border-radius:50%; border:1px solid var(--line); }
+    .legend { display:grid; gap:8px; }
+    .legend-row { display:grid; grid-template-columns:14px minmax(0,1fr) auto; gap:8px; align-items:center; font-size:12px; }
+    .swatch { width:14px; height:14px; border:1px solid var(--line); }
+    .table-wrap { border:1px solid var(--line); overflow:auto; background:#fff; }
+    table { width:100%; border-collapse:collapse; font-size:12px; min-width:1180px; }
+    th,td { border-bottom:1px solid var(--line); padding:9px 8px; text-align:left; vertical-align:top; }
+    th { color:var(--muted); text-transform:uppercase; font-size:10px; font-weight:500; background:#fff; position:sticky; top:0; z-index:1; }
+    tr:last-child td { border-bottom:0; }
+    .summary { min-width:320px; }
+    .status { white-space:nowrap; }
+    .pill { display:inline-block; border:1px solid var(--line); padding:3px 7px; font-size:10px; text-transform:uppercase; color:var(--muted); background:#fff; white-space:nowrap; }
+    .pill.blocker { color:var(--danger); border-color:var(--danger); }
+    .pill.critical { color:var(--warning); border-color:var(--warning); }
+    .pill.review { color:var(--info); border-color:var(--info); }
+    .pill.good { color:var(--success); border-color:var(--success); }
+    .pill.rtv-warning { color:var(--warning); border-color:var(--warning); background:#fff4e5; }
+    .pill.rtv-danger { color:var(--danger); border-color:var(--danger); background:#fff0f0; }
+    .callout { border-left:4px solid var(--info); padding:16px 18px; background:var(--surface); color:var(--muted); line-height:1.45; }
+    .query { background:#000; color:#fff; padding:16px; overflow:auto; font-size:12px; line-height:1.5; }
+    .query code { white-space:pre; }
+    footer { margin:48px 0 0; padding-top:20px; border-top:1px solid var(--line); color:var(--muted); font-size:12px; line-height:1.5; }
+    @media (max-width:1100px){ .hero{grid-template-columns:1fr;} .kpis,.three-col{grid-template-columns:repeat(3,1fr);} .kanban{grid-template-columns:repeat(2,1fr);} .load-grid{grid-template-columns:1fr;} }
+    @media (max-width:720px){ .page{padding:16px;} .hero{padding:20px; min-height:auto;} .kpis,.three-col,.kanban{grid-template-columns:1fr;} .section-head{display:block;} .section-note{margin-top:12px;} }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <section class="hero">
+      <div>
+        <div class="eyebrow">Pull&amp;Bear Android · PBAND · Sprint PBAND-SP2607</div>
+        <h1>Release control, no recortes.</h1>
+        <p class="hero-copy">Snapshot live de Jira ordenado por Rank ASC. Esta version ya no ensena solo ejemplos bonitos: pinta todas las filas relevantes, incluidas las siete de To Rework. Spoiler: siguen siendo siete.</p>
+      </div>
+      <aside class="hero-card">
+        <div class="label">Fuente de verdad</div>
+        <p><strong>Jira live:</strong> project = PBAND AND Sprint = "PBAND-SP2607" AND statusCategory != Done ORDER BY Rank ASC</p>
+        <p>Generado el 23/06/2026 16:00 +0200. Snapshot sin cache; no modifica Jira.</p>
+      </aside>
+    </section>
+
+    <section class="grid kpis" id="kpis" aria-label="KPIs principales"></section>
+
+    <section class="section">
+      <div class="section-head"><h2>Filtro ejecutivo</h2><p class="section-note">Filtra todo el informe por responsable de desarrollo o por PO / reporter. Porque a veces el problema no es el sprint, es saber a quien mirar con cariño.</p></div>
+      <div class="filter-bar" id="filters"></div>
+    </section>
+
+    <section class="section">
+      <div class="section-head"><h2>Lectura ejecutiva</h2><p class="section-note">Android mantiene un scope activo alto. La validacion concentra mucho volumen y To Rework queda expuesto completo para que no haya que jugar a buscar las piezas bajo la alfombra.</p></div>
+      <div class="grid three-col">
+        <article class="panel"><h3>Validacion masiva</h3><p><strong id="review-count-copy">-</strong> tickets estan en In Review, Ready to Verify o Ready to Validate. Cerca de cerrar no es cerrar; es la zona donde las releases aprenden humildad.</p></article>
+        <article class="panel"><h3>Rework visible</h3><p><strong id="rework-count-copy">-</strong> tickets estan en To Rework y se muestran todos. Jira live movio PBAND-29 a In Review; el informe obedece, aunque nos rompa el chiste de los siete.</p></article>
+        <article class="panel"><h3>RTV aging</h3><p>La columna <strong>Tiempo en Ready to Verify</strong> usa la ultima entrada a Ready to Verify extraida del changelog live para los tickets que siguen en ese estado.</p></article>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-head"><h2>Kanban ejecutivo</h2><p class="section-note">Vista rapida por bloques. Las tarjetas son compactas; el detalle completo vive en las tablas de abajo, como debe ser cuando hay 119 tickets y una sola paciencia.</p></div>
+      <div class="kanban" id="kanban"></div>
+    </section>
+
+    <section class="section">
+      <div class="section-head"><h2>Carga por desarrollador</h2><p class="section-note">Distribucion por owner usando Puntos de Historia como metrica principal. Los tickets sin estimacion se muestran aparte; contar JIRAs como esfuerzo es tentador, pero no serio.</p></div>
+      <div class="panel load-grid"><div class="donut" id="owner-donut"></div><div class="legend" id="owner-legend"></div></div>
+    </section>
+
+    <section class="section">
+      <div class="section-head"><h2>Ready to Verify completo</h2><p class="section-note">Unico modulo con columna de tiempo en Ready to Verify. Si lleva muchos dias, no es vintage: es pendiente de validar.</p></div>
+      <div class="table-wrap"><table id="ready-table"></table></div>
+    </section>
+
+    <section class="section">
+      <div class="section-head"><h2>To Rework completo</h2><p class="section-note">Todas las filas en To Rework, ordenadas por Rank ASC.</p></div>
+      <div class="table-wrap"><table id="rework-table"></table></div>
+    </section>
+
+    <section class="section">
+      <div class="section-head"><h2>In Review / Ready to Validate</h2><p class="section-note">Validacion sin Ready to Verify, para que la columna de tiempo RTV no se cuele donde no toca.</p></div>
+      <div class="table-wrap"><table id="review-table"></table></div>
+    </section>
+
+    <section class="section">
+      <div class="section-head"><h2>Refinement PO</h2><p class="section-note">Tickets en Refinement o Epic Refinement dentro del sprint. Si estan dentro, no hace falta montar un radar externo para encontrarlos.</p></div>
+      <div class="table-wrap"><table id="refinement-table"></table></div>
+    </section>
+
+    <section class="section">
+      <div class="section-head"><h2>Sin owner activo</h2><p class="section-note">Tickets activos sin assignee claro. Son candidatos obvios a decision operativa.</p></div>
+      <div class="table-wrap"><table id="unassigned-table"></table></div>
+    </section>
+
+    <section class="section">
+      <div class="section-head"><h2>Scope activo completo</h2><p class="section-note">Las 119 filas activas del sprint, sin paginacion visual ni muestra representativa.</p></div>
+      <div class="table-wrap"><table id="all-table"></table></div>
+    </section>
+
+    <section class="section">
+      <div class="section-head"><h2>Resumen final</h2><p class="section-note">Lectura automatica del scope filtrado, con el sarcasmo justo para seguir siendo verdad.</p></div>
+      <div class="panel" id="final-summary"></div>
+    </section>
+
+    <section class="section">
+      <div class="section-head"><h2>Consultas usadas</h2><p class="section-note">Base JQL del informe.</p></div>
+      <pre class="query"><code>project = PBAND AND Sprint = "PBAND-SP2607" AND statusCategory != Done ORDER BY Rank ASC
+project = PBAND AND Sprint = "PBAND-SP2607" AND status = "Ready to Verify" ORDER BY Rank ASC expand=changelog
+fields incluye customfield_10866 / Puntos de Historia</code></pre>
+    </section>
+
+    <footer>Informe Android regenerado desde Jira live para Pull&amp;Bear. Si una version no muestra los 7 To Rework, esa version esta incompleta.</footer>
+  </main>
+
+  <script>
+    const GENERATED_AT = '2026-06-23T16:00:00+02:00';
+    const rows = [
+      {key:'PBAND-155',summary:'[Analitica] - Analitica Checkout Fase V GA4 - Android',status:'Ready to Verify',priority:'A++ (Bloqueo)',owner:'Javier Chaqués Baltasar',reporter:'Julian Molina Sánchez',updated:'2026-06-23T07:14:00.000+0200',rtv:'2026-06-23 07:14:00.634000+02:00'},
+      {key:'PBAND-1177',summary:'[Analitica] - Analitica Checkout Fase V GA4 - Android ANEXO',status:'Ready to Verify',priority:'C (Menor)',owner:'Javier Chaqués Baltasar',reporter:'Julian Molina Sánchez',updated:'2026-06-23T07:14:05.000+0200',rtv:'2026-06-23 07:14:05.357000+02:00'},
+      {key:'PBAND-1174',summary:'Mostrar datos de personalización en el resumen de compra',status:'To Rework',priority:'A (Muy Importante)',owner:'Javier Chaqués Baltasar',reporter:'Danilo Linares Garcia',updated:'2026-06-15T11:56:00.000+0200'},
+      {key:'PBAND-1405',summary:'Mostrar nombre y apellidos en los métodos de envío seleccionados',status:'To Rework',priority:'D (Trivial)',owner:'Javier Chaqués Baltasar',reporter:'Danilo Linares Garcia',updated:'2026-06-23T07:14:53.000+0200'},
+      {key:'PBAND-224',summary:'Editar un producto',status:'To Rework',priority:'A+ (Crítico)',owner:'Manuel Acevedo Sanchez',reporter:'Angel Rodriguez Cerdeira',updated:'2026-06-22T23:35:54.000+0200'},
+      {key:'PBAND-222',summary:'Observability',status:'En Cartera',priority:'A (Muy Importante)',owner:'Javier Chaqués Baltasar',reporter:'Angel Rodriguez Cerdeira',updated:'2026-06-15T23:35:43.000+0200'},
+      {key:'PBAND-119',summary:'[Checkout] Cestas con propósito',status:'Ready to Verify',priority:'A++ (Bloqueo)',owner:'Martin Andres Arturo Chavez Suarez',reporter:'Jose Ramon Lopez Vazquez',updated:'2026-06-22T23:35:54.000+0200',rtv:'2026-06-04 17:37:39.383000+02:00'},
+      {key:'PBAND-891',summary:'[Checkout][Subcestas] Mostrar aviso si tiene tarjeta regalo virtual',status:'Ready to Verify',priority:'A+ (Crítico)',owner:'Martin Andres Arturo Chavez Suarez',reporter:'Jose Ramon Lopez Vazquez',updated:'2026-06-12T11:07:02.000+0200',rtv:'2026-06-04 17:37:48.273000+02:00'},
+      {key:'PBAND-895',summary:'[Checkout][Subcestas] Generar subcesta con tarjeta regalo',status:'Ready to Verify',priority:'A+ (Crítico)',owner:'Martin Andres Arturo Chavez Suarez',reporter:'Jose Ramon Lopez Vazquez',updated:'2026-06-12T11:06:58.000+0200',rtv:'2026-06-04 17:37:56.689000+02:00'},
+      {key:'PBAND-896',summary:'[Checkout][Subcestas] Mostrar aviso si tiene stock out',status:'Ready to Verify',priority:'A+ (Crítico)',owner:'Martin Andres Arturo Chavez Suarez',reporter:'Jose Ramon Lopez Vazquez',updated:'2026-06-12T11:07:26.000+0200',rtv:'2026-06-04 17:38:14.192000+02:00'},
+      {key:'PBAND-1005',summary:'[Checkout][Subcestas] Generar subcesta con productos en stock',status:'Ready to Verify',priority:'A+ (Crítico)',owner:'Martin Andres Arturo Chavez Suarez',reporter:'Jose Ramon Lopez Vazquez',updated:'2026-06-12T11:06:53.000+0200',rtv:'2026-06-04 17:38:05.843000+02:00'},
+      {key:'PBAND-1198',summary:'[Checkout][Subcestas] Generar subcesta con productos con stock parcial',status:'Ready to Verify',priority:'A+ (Crítico)',owner:'Martin Andres Arturo Chavez Suarez',reporter:'Jose Ramon Lopez Vazquez',updated:'2026-06-12T11:06:43.000+0200',rtv:'2026-06-12 11:06:43.878000+02:00'},
+      {key:'PBAND-104',summary:'[Analitica] - Proyecto Subcestas - Android',status:'En Curso',priority:'A+ (Crítico)',owner:'Martin Andres Arturo Chavez Suarez',reporter:'Julian Molina Sánchez',updated:'2026-06-18T23:35:08.000+0200'},
+      {key:'PBAND-959',summary:'[WISHLIST] Adaptar a la nueva wishlist el jira PBAND-89',status:'Ready to Start',priority:'A+ (Crítico)',owner:'Hector Herrera Barragan',reporter:'Cesar Bernardo Martinez',updated:'2026-06-18T17:29:29.000+0200'},
+      {key:'PBAND-195',summary:'[WISHLIST] Creación de nueva lista.',status:'En Curso',priority:'A+ (Crítico)',owner:'Juan Jose Rejon',reporter:'Cesar Bernardo Martinez',updated:'2026-06-22T23:35:54.000+0200'},
+      {key:'PBAND-188',summary:'[WISHLIST] Edición listas personalizadas',status:'Refinement',priority:'A+ (Crítico)',owner:'Juan Jose Rejon',reporter:'Cesar Bernardo Martinez',updated:'2026-06-15T23:35:43.000+0200'},
+      {key:'PBAND-94',summary:'[WISHLIST] Añadir items a lista Coming soon',status:'Ready to Verify',priority:'A+ (Crítico)',owner:'Hector Herrera Barragan',reporter:'Cesar Bernardo Martinez',updated:'2026-06-15T23:35:45.000+0200',rtv:'2026-05-18 10:27:30.989000+02:00'},
+      {key:'PBAND-883',summary:'[WISHLIST] 06 - Refactor casos de uso de añadir y eliminar.',status:'Ready to Verify',priority:'A+ (Crítico)',owner:'Hector Herrera Barragan',reporter:'Cesar Bernardo Martinez',updated:'2026-06-15T10:52:53.000+0200',rtv:'2026-06-10 14:22:05.909000+02:00'},
+      {key:'PBAND-873',summary:'[WISHLIST] Eliminar item desde compra rápida',status:'Ready to Verify',priority:'A+ (Crítico)',owner:'Juan Jose Rejon',reporter:'Cesar Bernardo Martinez',updated:'2026-06-15T10:52:54.000+0200',rtv:'2026-06-10 14:26:47.463000+02:00'},
+      {key:'PBAND-872',summary:'[WISHLIST] Eliminar item desde el buscador',status:'Ready to Verify',priority:'A+ (Crítico)',owner:'Juan Jose Rejon',reporter:'Cesar Bernardo Martinez',updated:'2026-06-15T10:52:54.000+0200',rtv:'2026-06-10 14:26:40.582000+02:00'},
+      {key:'PBAND-871',summary:'[WISHLIST] Eliminar item desde shuffle',status:'Ready to Verify',priority:'A+ (Crítico)',owner:'Juan Jose Rejon',reporter:'Cesar Bernardo Martinez',updated:'2026-06-15T10:52:54.000+0200',rtv:'2026-06-10 14:26:33.329000+02:00'},
+      {key:'PBAND-869',summary:'[WISHLIST] Eliminar item desde recomendados',status:'Ready to Verify',priority:'A+ (Crítico)',owner:'Juan Jose Rejon',reporter:'Cesar Bernardo Martinez',updated:'2026-06-15T10:52:55.000+0200',rtv:'2026-06-10 14:26:25.027000+02:00'},
+      {key:'PBAND-867',summary:'[WISHLIST] Añadir item desde compra rápida',status:'Ready to Verify',priority:'A+ (Crítico)',owner:'Juan Jose Rejon',reporter:'Cesar Bernardo Martinez',updated:'2026-06-15T10:52:55.000+0200',rtv:'2026-06-10 14:26:14.839000+02:00'},
+      {key:'PBAND-866',summary:'[WISHLIST] Añadir item desde el buscador',status:'Ready to Verify',priority:'A+ (Crítico)',owner:'Juan Jose Rejon',reporter:'Cesar Bernardo Martinez',updated:'2026-06-15T10:52:55.000+0200',rtv:'2026-06-10 14:26:07.762000+02:00'},
+      {key:'PBAND-864',summary:'[WISHLIST] Añadir item desde shuffle',status:'Ready to Verify',priority:'A+ (Crítico)',owner:'Juan Jose Rejon',reporter:'Cesar Bernardo Martinez',updated:'2026-06-15T10:52:56.000+0200',rtv:'2026-06-10 14:26:00.211000+02:00'},
+      {key:'PBAND-863',summary:'[WISHLIST] Añadir item desde recomendados',status:'Ready to Verify',priority:'A+ (Crítico)',owner:'Juan Jose Rejon',reporter:'Cesar Bernardo Martinez',updated:'2026-06-15T10:52:56.000+0200',rtv:'2026-06-10 14:25:36.181000+02:00'},
+      {key:'PBAND-837',summary:'[WISHLIST] 08 - Implementación de la pantalla wishlist',status:'Ready to Verify',priority:'A+ (Crítico)',owner:'Juan Jose Rejon',reporter:'Cesar Bernardo Martinez',updated:'2026-06-18T11:03:47.000+0200',rtv:'2026-06-12 13:30:28.754000+02:00'},
+      {key:'PBAND-1034',summary:'[WISHLIST] 09 - Migración comprobar si un elemento está en la wishlist',status:'Ready to Verify',priority:'A+ (Crítico)',owner:'Hector Herrera Barragan',reporter:'Cesar Bernardo Martinez',updated:'2026-06-15T10:52:57.000+0200',rtv:'2026-05-19 13:44:32.641000+02:00'},
+      {key:'PBAND-47',summary:' [Wishlist] Recomendación de productos',status:'Ready to Verify',priority:'A+ (Crítico)',owner:'Juan Jose Rejon',reporter:'Cesar Bernardo Martinez',updated:'2026-06-18T23:35:08.000+0200',rtv:'2026-06-04 14:32:23.197000+02:00'},
+      {key:'PBAND-966',summary:'[Analitica][Zenit] - Guía de etiquetado Wishlist 2.0 - Android',status:'En Curso',priority:'A (Muy Importante)',owner:'Unassigned',reporter:'María Emilia Baez',updated:'2026-06-18T13:22:31.000+0200'},
+      {key:'PBAND-1408',summary:'[Analitica][Zenit] Visualizar una lista ya creada en Wishlist.',status:'En Cartera',priority:'A (Muy Importante)',owner:'Unassigned',reporter:'María Emilia Baez',updated:'2026-06-12T10:12:43.000+0200'},
+      {key:'PBAND-1409',summary:'[Analitica][Zenit] Visualizar página confirmación "Coming Soon"',status:'En Cartera',priority:'A (Muy Importante)',owner:'Unassigned',reporter:'María Emilia Baez',updated:'2026-06-12T10:12:44.000+0200'},
+      {key:'PBAND-1410',summary:'[Analitica][Zenit] Visualizar página editar una lista de Wishlist',status:'En Cartera',priority:'A (Muy Importante)',owner:'Unassigned',reporter:'María Emilia Baez',updated:'2026-06-12T10:12:44.000+0200'},
+      {key:'PBAND-1411',summary:'[Analitica][Zenit] Visualizar página crear una nueva lista en Wishlist',status:'En Cartera',priority:'A (Muy Importante)',owner:'Unassigned',reporter:'María Emilia Baez',updated:'2026-06-12T10:12:45.000+0200'},
+      {key:'PBAND-1412',summary:'[Analitica][Zenit] Visualizar página compartir una lista de Wishlist',status:'En Cartera',priority:'A (Muy Importante)',owner:'Unassigned',reporter:'María Emilia Baez',updated:'2026-06-12T10:12:45.000+0200'},
+      {key:'PBAND-1413',summary:'[Analitica][Zenit] Visualizar Impresiones de artículos de la lista de Wishlist',status:'En Cartera',priority:'A (Muy Importante)',owner:'Unassigned',reporter:'María Emilia Baez',updated:'2026-06-12T10:12:46.000+0200'},
+      {key:'PBAND-1414',summary:'[Analitica][Zenit] Visualizar Impresiones del módulo de personalización de una lista de Wishlist',status:'En Cartera',priority:'A (Muy Importante)',owner:'Unassigned',reporter:'María Emilia Baez',updated:'2026-06-12T10:22:49.000+0200'},
+      {key:'PBAND-1415',summary:'[Analitica][Zenit] Visualizar Impresiones de artículos de una lista vacía de Wishlist',status:'En Curso',priority:'A (Muy Importante)',owner:'Jorge Lopez Hidalgo',reporter:'María Emilia Baez',updated:'2026-06-18T13:12:02.000+0200'},
+      {key:'PBAND-1418',summary:'[Analitica][Zenit] Click para añadir un producto a cesta desde una lista de Wishlist. B) Segundo click: seleccionar talla',status:'Ready to Verify',priority:'A (Muy Importante)',owner:'Jorge Lopez Hidalgo',reporter:'María Emilia Baez',updated:'2026-06-22T12:38:05.000+0200',rtv:'2026-06-22 12:38:05.231000+02:00'},
+      {key:'PBAND-1419',summary:'[Analitica][Zenit] Click para eliminar una lista de Wishlist',status:'En Cartera',priority:'A (Muy Importante)',owner:'Unassigned',reporter:'María Emilia Baez',updated:'2026-06-12T10:35:34.000+0200'},
+      {key:'PBAND-1420',summary:'[Analitica][Zenit] Click para eliminar un producto de una lista de Wishlist',status:'In Review',priority:'A (Muy Importante)',owner:'Jorge Lopez Hidalgo',reporter:'María Emilia Baez',updated:'2026-06-16T14:48:35.000+0200'},
+      {key:'PBAND-1421',summary:'[Analitica][Zenit] Click en botón compartir una lista de Wishlist',status:'En Cartera',priority:'A (Muy Importante)',owner:'Unassigned',reporter:'María Emilia Baez',updated:'2026-06-12T10:37:36.000+0200'},
+      {key:'PBAND-1422',summary:'[Analitica][Zenit] Añadir producto/s a cesta desde una lista de Wishlist A) Añadir a Wishlist',status:'In Review',priority:'A (Muy Importante)',owner:'Jorge Lopez Hidalgo',reporter:'María Emilia Baez',updated:'2026-06-22T14:38:38.000+0200'},
+      {key:'PBAND-1423',summary:'[Analitica][Zenit] Añadir producto/s a cesta desde una lista de Wishlist B) Remover de la cesta',status:'In Review',priority:'A (Muy Importante)',owner:'Jorge Lopez Hidalgo',reporter:'María Emilia Baez',updated:'2026-06-22T14:38:25.000+0200'},
+      {key:'PBAND-1425',summary:'[Analitica][Zenit] Añadir producto/s a cesta desde una lista de Wishlist',status:'En Cartera',priority:'A (Muy Importante)',owner:'Unassigned',reporter:'María Emilia Baez',updated:'2026-06-12T10:43:53.000+0200'},
+      {key:'PBAND-122',summary:'[WHISLIST] Añadir Items a una lista',status:'Ready to Verify',priority:'A+ (Crítico)',owner:'Juan Jose Rejon',reporter:'Cesar Bernardo Martinez',updated:'2026-06-15T23:35:44.000+0200',rtv:'2026-06-10 14:27:29.143000+02:00'},
+      {key:'PBAND-193',summary:'[WHISLIST] Borrar Items de una lista',status:'Ready to Verify',priority:'A+ (Crítico)',owner:'Juan Jose Rejon',reporter:'Cesar Bernardo Martinez',updated:'2026-06-18T23:35:07.000+0200',rtv:'2026-06-18 11:05:09.609000+02:00'},
+      {key:'PBAND-176',summary:'[WHISLIST] Mover Items de una lista a otra lista',status:'Ready to Start',priority:'A+ (Crítico)',owner:'Juan Jose Rejon',reporter:'Cesar Bernardo Martinez',updated:'2026-06-15T23:35:43.000+0200'},
+      {key:'PBAND-70',summary:'[Analitica] - Añadir al carrito desde wishlist - Android',status:'Ready to Verify',priority:'A (Muy Importante)',owner:'Jorge Lopez Hidalgo',reporter:'Julian Molina Sánchez',updated:'2026-06-15T23:35:45.000+0200',rtv:'2026-06-11 10:50:05.242000+02:00'},
+      {key:'PBAND-711',summary:'[PDP] Migración API detail',status:'En Curso',priority:'A++ (Bloqueo)',owner:'Jorge Andrés Elías Rivas Pérez',reporter:'Raul Gundin Sariego',updated:'2026-06-15T10:50:39.000+0200'},
+      {key:'PBAND-36',summary:'[PDP] Migración API Extra detail',status:'En Curso',priority:'A++ (Bloqueo)',owner:'Jorge Andrés Elías Rivas Pérez',reporter:'Fernando Gomez Ferreiro',updated:'2026-06-23T11:34:21.000+0200'},
+      {key:'PBAND-1235',summary:'[PDP] Migración API detail - modelos de vista primera integracion',status:'En Curso',priority:'A++ (Bloqueo)',owner:'Jorge Andrés Elías Rivas Pérez',reporter:'Jorge Andrés Elías Rivas Pérez',updated:'2026-06-15T10:50:40.000+0200'},
+      {key:'PBAND-1248',summary:'[PDP] Migración API detail - setup growthbook y debug tools',status:'In Review',priority:'A++ (Bloqueo)',owner:'Jorge Andrés Elías Rivas Pérez',reporter:'Jorge Andrés Elías Rivas Pérez',updated:'2026-06-15T10:50:41.000+0200'},
+      {key:'PBAND-1388',summary:'[PDP] Migración API detail - acciones de cesta, wishlist, color.',status:'En Curso',priority:'A++ (Bloqueo)',owner:'Jorge Andrés Elías Rivas Pérez',reporter:'Jorge Andrés Elías Rivas Pérez',updated:'2026-06-18T13:42:24.000+0200'},
+      {key:'PBAND-1249',summary:'[Analitica] Zenit - Enviar "list" en evento AddToCart y Click, añadir objeto "personalization"- Android',status:'Ready to Verify',priority:'A++ (Bloqueo)',owner:'Hugo Contramaestre Paiva',reporter:'María Emilia Baez',updated:'2026-06-19T10:30:56.000+0200',rtv:'2026-06-19 10:30:56.282000+02:00'},
+      {key:'PBAND-1424',summary:'[Menu][CMS] Peticiones a /category',status:'In Review',priority:'A++ (Bloqueo)',owner:'Javier Suarez Torres',reporter:'Millan Rivera Pardo',updated:'2026-06-23T11:39:54.000+0200'},
+      {key:'PBAND-1217',summary:'[Ficha de producto] Ajustar imágenes y vídeos al ancho disponible con espaciado vertical',status:'Ready to Verify',priority:'A++ (Bloqueo)',owner:'Diego Castrillo Martinez',reporter:'Jose Ramon Lopez Vazquez',updated:'2026-06-18T16:37:39.000+0200',rtv:'2026-06-18 16:37:39.019000+02:00'},
+      {key:'PBAND-1026',summary:'[PullGR] Formulario de devolución - Adaptación campos',status:'Ready to Verify',priority:'A++ (Bloqueo)',owner:'Jorge Lopez Hidalgo',reporter:'Diana Queijo Bello',updated:'2026-06-11T17:23:26.000+0200',rtv:'2026-05-25 08:55:39.959000+02:00'},
+      {key:'PBAND-1087',summary:'[Menú] Adaptación assets - settings',status:'Refinement',priority:'A++ (Bloqueo)',owner:'Manuel Acevedo Sanchez',reporter:'Julian Garcia Vidal',updated:'2026-06-12T18:13:12.000+0200'},
+      {key:'PBAND-1243',summary:'[MENU] Peticiones /category',status:'In Review',priority:'A++ (Bloqueo)',owner:'Javier Chaqués Baltasar',reporter:'Javier Lopez Abeledo',updated:'2026-06-22T08:47:45.000+0200'},
+      {key:'PBAND-712',summary:'[YODA - CARD PRODUCTO] Restyling y unificación ',status:'In Review',priority:'A+ (Crítico)',owner:'David Gonzalez Lomeña',reporter:'Cesar Bernardo Martinez',updated:'2026-06-19T12:14:21.000+0200'},
+      {key:'PBAND-1325',summary:'[Promociones] Peticiones a /rewards innecesarias con usuario no logado',status:'Ready to Verify',priority:'A+ (Crítico)',owner:'David Gonzalez Lomeña',reporter:'Carlos Belmonte Ceniza',updated:'2026-06-18T13:36:47.000+0200',rtv:'2026-06-18 13:36:47.762000+02:00'},
+      {key:'PBAND-1353',summary:'[Checkout] Resumen de Pedido - Mejoras de UX en las promociones ',status:'Ready to Verify',priority:'A+ (Crítico)',owner:'Manuel Acevedo Sanchez',reporter:'Carlos Belmonte Ceniza',updated:'2026-06-18T14:22:56.000+0200',rtv:'2026-06-18 14:13:57.925000+02:00'},
+      {key:'PBAND-1250',summary:'Revisar en Grafana errores 400 /query',status:'En Cartera',priority:'A+ (Crítico)',owner:'Angel Rodriguez Cerdeira',reporter:'Angel Rodriguez Cerdeira',updated:'2026-06-11T17:26:37.000+0200'},
+      {key:'PBAND-86',summary:'[Analítca] Zenit - Nueva información de producto : Buscador',status:'In Review',priority:'A+ (Crítico)',owner:'Manuel Acevedo Sanchez',reporter:'Julen Zugasti Bilbao',updated:'2026-06-22T23:35:54.000+0200'},
+      {key:'PBAND-858',summary:'[Ficha de producto] Cambios en componente de selección de color',status:'Ready to Verify',priority:'A+ (Crítico)',owner:'Diego Castrillo Martinez',reporter:'Jose Ramon Lopez Vazquez',updated:'2026-06-16T23:34:19.000+0200',rtv:'2026-06-16 10:28:52.750000+02:00'},
+      {key:'PBAND-1145',summary:'[HOME] Corregir franja gris horizontal durante la carga',status:'En Cartera',priority:'A+ (Crítico)',owner:'Hector Herrera Barragan',reporter:'Angel Rodriguez Cerdeira',updated:'2026-06-11T17:26:51.000+0200'},
+      {key:'PBAND-50',summary:'Deeplinks URLs únicas producto - mejoras',status:'En Cartera',priority:'A+ (Crítico)',owner:'Hector Herrera Barragan',reporter:'Millan Rivera Pardo',updated:'2026-06-15T23:35:45.000+0200'},
+      {key:'PBAND-1056',summary:'Adaptación Apps a MileStones ',status:'In Review',priority:'A+ (Crítico)',owner:'Jorge Lopez Hidalgo',reporter:'Pablo Patiño Bello',updated:'2026-06-18T13:29:07.000+0200'},
+      {key:'PBAND-1240',summary:'Mostrar listado de errores al aplicar un PromoCode en cesta/checkout',status:'En Curso',priority:'A+ (Crítico)',owner:'Javier Chaqués Baltasar',reporter:'Carlos Belmonte Ceniza',updated:'2026-06-23T07:16:09.000+0200'},
+      {key:'PBAND-1448',summary:'[Checkout] Gestion de promociones en Fase V',status:'En Curso',priority:'A+ (Crítico)',owner:'Javier Chaqués Baltasar',reporter:'Carlos Belmonte Ceniza',updated:'2026-06-23T07:16:05.000+0200'},
+      {key:'PBAND-955',summary:'[Analítica] [Adjust] Restaurar evento VIEW PRODUCT',status:'En Cartera',priority:'A (Muy Importante)',owner:'Unassigned',reporter:'Angel Rodriguez Cerdeira',updated:'2026-06-15T12:26:17.000+0200'},
+      {key:'PBAND-43',summary:'[CESTA] [YODA] Desajustes en la maquetación',status:'Refinement',priority:'A (Muy Importante)',owner:'David Gonzalez Lomeña',reporter:'Cesar Bernardo Martinez',updated:'2026-06-15T23:35:46.000+0200'},
+      {key:'PBAND-68',summary:'[MECACO] Mantener los Tabs de subcatgorías al abrir una cateogría personalizada',status:'En Curso',priority:'A (Muy Importante)',owner:'Diego Castrillo Martinez',reporter:'Julen Zugasti Bilbao',updated:'2026-06-23T15:44:32.000+0200'},
+      {key:'PBAND-49',summary:'[Analítica] Zenit - Nueva información de producto : Parrillas',status:'In Review',priority:'A+ (Crítico)',owner:'Manuel Acevedo Sanchez',reporter:'Julen Zugasti Bilbao',updated:'2026-06-22T23:35:54.000+0200'},
+      {key:'PBAND-185',summary:'[Analítica] Zenit - Información nueva de producto',status:'In Review',priority:'A+ (Crítico)',owner:'Manuel Acevedo Sanchez',reporter:'Julen Zugasti Bilbao',updated:'2026-06-16T23:34:20.000+0200'},
+      {key:'PBAND-106',summary:'[Analítica] Zenit - Campo de permisos de localización',status:'En Cartera',priority:'A+ (Crítico)',owner:'Javier Suarez Torres',reporter:'Julen Zugasti Bilbao',updated:'2026-06-15T23:35:44.000+0200'},
+      {key:'PBAND-29',summary:'[Analítica] Zenit - Nueva información de producto : Recomendados',status:'In Review',priority:'A+ (Crítico)',owner:'Manuel Acevedo Sanchez',reporter:'Julen Zugasti Bilbao',updated:'2026-06-23T14:37:49.000+0200'},
+      {key:'PBAND-664',summary:'[Analítica][Zenit] PDP : Revisión de listPosition impresiones',status:'En Curso',priority:'A+ (Crítico)',owner:'Manuel Acevedo Sanchez',reporter:'María Emilia Baez',updated:'2026-06-16T10:42:21.000+0200'},
+      {key:'PBAND-1251',summary:'[Analitica] Zenit - Añadir "cartId" en PageHit de CESTA - Android',status:'En Curso',priority:'B (Importante)',owner:'David Gonzalez Lomeña',reporter:'María Emilia Baez',updated:'2026-06-19T10:27:03.000+0200'},
+      {key:'PBAND-1336',summary:'[Analitica] Zenit - Incidencias PRODUCT_BUNDLE_DETAILS (PageHit/ImpressionHit/Click/AddToCart) - Android',status:'En Cartera',priority:'B (Importante)',owner:'Javier Suarez Torres',reporter:'María Emilia Baez',updated:'2026-06-15T11:02:53.000+0200'},
+      {key:'PBAND-111',summary:'[Analitica] - Pop up direccion propuesta - Android',status:'In Review',priority:'C (Menor)',owner:'Hugo Contramaestre Paiva',reporter:'Julian Molina Sánchez',updated:'2026-06-15T23:35:44.000+0200'},
+      {key:'PBAND-159',summary:'[Analitica] - Analitica Tags Ppd Caracteristicas destacadas - Android',status:'Ready to Verify',priority:'B (Importante)',owner:'David Gonzalez Lomeña',reporter:'Julian Molina Sánchez',updated:'2026-06-15T23:35:43.000+0200',rtv:'2026-06-04 11:33:48.639000+02:00'},
+      {key:'PBAND-77',summary:'[Analitica] - Analitica Modal previsualización importe cesta a futuro - Android',status:'Ready to Verify',priority:'D (Trivial)',owner:'Javier Suarez Torres',reporter:'Julian Molina Sánchez',updated:'2026-06-15T23:35:45.000+0200',rtv:'2026-06-04 14:32:43.689000+02:00'},
+      {key:'PBAND-526',summary:'[Analitica] Evento Click Zenit',status:'En Curso',priority:'A++ (Bloqueo)',owner:'Manuel Acevedo Sanchez',reporter:'Julen Zugasti Bilbao',updated:'2026-06-11T23:34:14.000+0200'},
+      {key:'PBAND-529',summary:'[Analítica][Zenit] 2025.12 Revisión V1',status:'En Curso',priority:'A+ (Crítico)',owner:'Manuel Acevedo Sanchez',reporter:'Javier Suarez Torres',updated:'2026-06-11T23:34:14.000+0200'},
+      {key:'PBAND-532',summary:'[PARRILLA] Migración API grid',status:'Ready to Start',priority:'A++ (Bloqueo)',owner:'Jorge Andrés Elías Rivas Pérez',reporter:'Javier Lopez Abeledo',updated:'2026-06-11T23:34:14.000+0200'},
+      {key:'PBAND-537',summary:'Mejora arranque Android',status:'En Curso',priority:'A++ (Bloqueo)',owner:'Hector Herrera Barragan',reporter:'Angel Rodriguez Cerdeira',updated:'2026-06-11T23:34:14.000+0200'},
+      {key:'PBAND-538',summary:'[Analitica] -  Nombre de listado en Evento Purchase - Android',status:'Ready to Validate',priority:'A+ (Crítico)',owner:'Manuel Acevedo Sanchez',reporter:'Julian Molina Sánchez',updated:'2026-06-11T23:34:14.000+0200'},
+      {key:'PBAND-829',summary:'Medición de resultados fase 1 mejora de arranque ',status:'Ready to Verify',priority:'D (Trivial)',owner:'Hector Herrera Barragan',reporter:'Angel Rodriguez Cerdeira',updated:'2026-06-23T10:27:00.000+0200',rtv:'2026-05-06 14:37:13.868000+02:00'},
+      {key:'PBAND-7',summary:'[FIX] No se eliminan las tarjetas del wallet',status:'In Review',priority:'B (Importante)',owner:'Julen Zugasti Bilbao',reporter:'Javier Suarez Torres',updated:'2026-06-11T23:34:20.000+0200'},
+      {key:'PBAND-24',summary:'Minify v2',status:'To Rework',priority:'B (Importante)',owner:'Hector Herrera Barragan',reporter:'Angel Rodriguez Cerdeira',updated:'2026-06-11T23:34:20.000+0200'},
+      {key:'PBAND-1025',summary:'Cambios en navegación de flujo de selector de tienda y género',status:'Ready to Verify',priority:'B (Importante)',owner:'Hector Herrera Barragan',reporter:'Millan Rivera Pardo',updated:'2026-06-11T20:16:08.000+0200',rtv:'2026-06-04 08:47:12.284000+02:00'},
+      {key:'PBAND-1027',summary:'No se inicia Zenit con la app minificada',status:'En Curso',priority:'B (Importante)',owner:'Hector Herrera Barragan',reporter:'Javier Suarez Torres',updated:'2026-06-11T17:16:41.000+0200'},
+      {key:'PBAND-101',summary:'[Help] Acceso a widget de chat desde enlace web en el webview de las FAQS',status:'Refinement',priority:'B (Importante)',owner:'Jorge Lopez Hidalgo',reporter:'Jose Ramon Lopez Vazquez',updated:'2026-06-11T23:34:18.000+0200'},
+      {key:'PBAND-1166',summary:'[HLP][OAuth] Integración token APPETIZE para evitar bloqueo Akamai',status:'Ready to Verify',priority:'B (Importante)',owner:'Javier Chaqués Baltasar',reporter:'Angel Rodriguez Cerdeira',updated:'2026-06-18T23:35:07.000+0200',rtv:'2026-06-18 13:34:15.190000+02:00'},
+      {key:'PBAND-255',summary:'Análisis nuevas apis storefront de CART',status:'En Cartera',priority:'B (Importante)',owner:'Unassigned',reporter:'Angel Rodriguez Cerdeira',updated:'2026-06-11T23:34:15.000+0200'},
+      {key:'PBAND-38',summary:'[BUSCADOR] Actualizar diseño escáner códigos barras producto',status:'To Rework',priority:'B (Importante)',owner:'David Gonzalez Lomeña',reporter:'Angel Rodriguez Cerdeira',updated:'2026-06-22T23:35:54.000+0200'},
+      {key:'PBAND-1035',summary:'Abstraer librería de One trust',status:'Ready to Start',priority:'D (Trivial)',owner:'Javier Chaqués Baltasar',reporter:'Javier Chaqués Baltasar',updated:'2026-06-14T22:42:08.000+0200'},
+      {key:'PBAND-1467',summary:'Migrar Dagger a Koin',status:'En Cartera',priority:'B (Importante)',owner:'Javier Chaqués Baltasar',reporter:'Javier Chaqués Baltasar',updated:'2026-06-21T19:44:08.000+0200'},
+      {key:'PBAND-1466',summary:'Actualizar a SDK 37',status:'En Cartera',priority:'B (Importante)',owner:'Javier Chaqués Baltasar',reporter:'Javier Chaqués Baltasar',updated:'2026-06-21T19:44:12.000+0200'},
+      {key:'PBAND-786',summary:'[QA][FRANJA HOME] Texto no se muestra correctamente accediendo via push ',status:'Ready to Verify',priority:'A+ (Crítico)',owner:'Javier Chaqués Baltasar',reporter:'Angel Rodriguez Cerdeira',updated:'2026-06-22T10:48:05.000+0200',rtv:'2026-06-02 10:51:12.838000+02:00'},
+      {key:'PBAND-1007',summary:'[QA][Android][Localizador] El placeholder del buscador en "Punto de recogida" presenta errores de redacción',status:'Refinement',priority:'C (Menor)',owner:'Diego Castrillo Martinez',reporter:'Pierangela Betti Hernádez',updated:'2026-06-15T12:24:04.000+0200'},
+      {key:'PBAND-828',summary:'[QA][CMS] Colaboraciones - Camarón - No se navega a la landing CMS configurada',status:'Ready to Verify',priority:'D (Trivial)',owner:'Diego Castrillo Martinez',reporter:'Marta Medina Moreno',updated:'2026-06-15T23:35:42.000+0200',rtv:'2026-05-29 10:05:35.865000+02:00'},
+      {key:'PBAND-1022',summary:'[QA][SHUFFLE] No se reproduce el primer video correctamente',status:'En Cartera',priority:'D (Trivial)',owner:'Unassigned',reporter:'Marta Medina Moreno',updated:'2026-06-15T12:24:05.000+0200'},
+      {key:'PBAND-1097',summary:'[QA] [AUTO] [Recomendador de talla] Agregar localizadores a radio buttons',status:'En Cartera',priority:'A+ (Crítico)',owner:'Unassigned',reporter:'Pablo Raúl Peña Marín',updated:'2026-06-15T12:24:07.000+0200'},
+      {key:'PBAND-1205',summary:'[QA] [AUTO] [Recomendados] Agregar localizadores a elementos de productos recomendados',status:'En Curso',priority:'A+ (Crítico)',owner:'David Gonzalez Lomeña',reporter:'Pablo Raúl Peña Marín',updated:'2026-06-17T13:13:57.000+0200'},
+      {key:'PBAND-1206',summary:'[QA] [AUTO] [Datos Personales] Agregar localizador a texto de fecha de nacimiento',status:'Ready to Verify',priority:'A+ (Crítico)',owner:'David Gonzalez Lomeña',reporter:'Pablo Raúl Peña Marín',updated:'2026-06-18T13:36:07.000+0200',rtv:'2026-06-18 13:35:55.211000+02:00'},
+      {key:'PBAND-1252',summary:'[QA] [AUTO] [SHUFFLE] Agregar localizador unico a los elementos de Shuffle',status:'Ready to Verify',priority:'A+ (Crítico)',owner:'David Gonzalez Lomeña',reporter:'Pablo Raúl Peña Marín',updated:'2026-06-18T13:34:58.000+0200',rtv:'2026-06-18 13:34:49.086000+02:00'},
+      {key:'PBAND-1324',summary:'[QA] [AUTO] [OAUTH] Hacer localizadores unicos en OAUTH',status:'Refinement',priority:'A+ (Crítico)',owner:'Unassigned',reporter:'Pablo Raúl Peña Marín',updated:'2026-06-15T12:24:44.000+0200'},
+      {key:'PBAND-1403',summary:'[QA - AUTO] [Menu / Categorias] No se pinta en Menu Mujer la cat. Co-ords sets ',status:'En Cartera',priority:'A (Muy Importante)',owner:'Unassigned',reporter:'Mario Martínez Barea',updated:'2026-06-15T12:24:44.000+0200'},
+      {key:'PBAND-1348',summary:'Error traducción en Letonia.',status:'Ready to Verify',priority:'A (Muy Importante)',owner:'Jorge Lopez Hidalgo',reporter:'Jorge Lopez Hidalgo',updated:'2026-06-11T17:16:53.000+0200',rtv:'2026-06-05 13:50:30.534000+02:00'},
+      {key:'PBAND-1352',summary:'[Devoluciones][Desistimiento] Adaptar flujos de devolución a Directiva 2023/2673 — mercados UE',status:'In Review',priority:'A++ (Bloqueo)',owner:'David Gonzalez Lomeña',reporter:'Jose Ramon Lopez Vazquez',updated:'2026-06-19T10:27:12.000+0200'},
+      {key:'PBAND-1446',summary:'[Analitica] Zenit - Implementar campo "universe" en SearchAssistant - Android',status:'Ready to Start',priority:'A (Muy Importante)',owner:'Javier Suarez Torres',reporter:'María Emilia Baez',updated:'2026-06-16T09:53:45.000+0200'},
+      {key:'PBAND-1468',summary:'2026 SEM25 - Administración & documentación de proyecto',status:'En Curso',priority:'B (Importante)',owner:'Manuel Acevedo Sanchez',reporter:'Javier Suarez Torres',updated:'2026-06-19T11:30:10.000+0200'},
+      {key:'PBAND-1470',summary:'[FIX] No se visualiza en la PDP el botón de VER LOOK',status:'In Review',priority:'A (Muy Importante)',owner:'Javier Suarez Torres',reporter:'Angel Rodriguez Cerdeira',updated:'2026-06-19T13:02:48.000+0200'},
+      {key:'PBAND-1481',summary:'[Detalle pedido][Fast Sint] Pedidos partidos con fast sint',status:'En Curso',priority:'A (Muy Importante)',owner:'Jorge Lopez Hidalgo',reporter:'Jose Ramon Lopez Vazquez',updated:'2026-06-23T09:23:27.000+0200'},
+      {key:'PBAND-1482',summary:'Mostrar empty state cuando no hay delivery points disponibles',status:'To Rework',priority:'D (Trivial)',owner:'Javier Chaqués Baltasar',reporter:'Danilo Linares Garcia',updated:'2026-06-23T07:15:53.000+0200'},
+      {key:'PBAND-1483',summary:'[FIX] No se visualizan algunos videos de Shuffle',status:'In Review',priority:'B (Importante)',owner:'Martin Andres Arturo Chavez Suarez',reporter:'Javier Suarez Torres',updated:'2026-06-23T14:59:09.000+0200'}
+    ];
+
+    const storyPointsByKey = {
+      'PBAND-1174':2,'PBAND-1405':1,'PBAND-224':3,'PBAND-119':21,'PBAND-891':3,'PBAND-895':5,'PBAND-896':5,'PBAND-1005':5,'PBAND-1198':5,'PBAND-104':3,'PBAND-959':2,'PBAND-195':5,'PBAND-188':8,'PBAND-94':3,'PBAND-883':5,'PBAND-873':1,'PBAND-872':2,'PBAND-871':2,'PBAND-869':3,'PBAND-867':1,'PBAND-866':2,'PBAND-864':2,'PBAND-863':3,'PBAND-837':8,'PBAND-47':5,'PBAND-1418':3,'PBAND-1420':5,'PBAND-1422':2,'PBAND-1423':2,'PBAND-122':3,'PBAND-193':2,'PBAND-176':3,'PBAND-70':3,'PBAND-711':21,'PBAND-36':5,'PBAND-1235':5,'PBAND-1248':5,'PBAND-1388':5,'PBAND-1424':5,'PBAND-1217':1,'PBAND-1026':3,'PBAND-1087':13,'PBAND-1243':5,'PBAND-712':5,'PBAND-1325':2,'PBAND-1353':3,'PBAND-86':3,'PBAND-858':5,'PBAND-1145':5,'PBAND-50':3,'PBAND-1056':5,'PBAND-1240':1,'PBAND-1448':3,'PBAND-955':2,'PBAND-43':1,'PBAND-68':5,'PBAND-49':3,'PBAND-106':3,'PBAND-29':3,'PBAND-664':1,'PBAND-1251':2,'PBAND-1336':2,'PBAND-111':2,'PBAND-159':2,'PBAND-77':2,'PBAND-829':3,'PBAND-7':2,'PBAND-1025':3,'PBAND-1027':3,'PBAND-101':5,'PBAND-1035':5,'PBAND-1467':8,'PBAND-1466':3,'PBAND-1205':2,'PBAND-1206':1,'PBAND-1252':2,'PBAND-1348':1,'PBAND-1352':2,'PBAND-1446':2,'PBAND-1468':1,'PBAND-1470':1,'PBAND-1482':1,'PBAND-1483':3
+    };
+
+    const reviewStatuses = new Set(['In Review','Ready to Verify','Ready to Validate']);
+    const todoCategories = new Set(['En Cartera','Ready to Start','Refinement','Epic Refinement']);
+
+    function esc(value) { return String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+    function priorityClass(priority) { return priority.startsWith('A++') ? 'blocker' : priority.startsWith('A+') ? 'critical' : ''; }
+    function parseDate(value) { return value ? new Date(value.replace(' ', 'T').replace(/(\.\d{3})\d+/, '$1').replace(/([+-]\d{2})(\d{2})$/, '$1:$2')) : null; }
+    function ageFrom(value) {
+      const start = parseDate(value);
+      if (!start || Number.isNaN(start.getTime())) return '-';
+      const end = new Date(GENERATED_AT);
+      const hours = Math.max(0, Math.round((end - start) / 36e5));
+      const days = Math.floor(hours / 24);
+      const rest = hours % 24;
+      return days ? `${days}d ${rest}h` : `${rest}h`;
+    }
+    function daysFrom(value) {
+      const start = parseDate(value);
+      if (!start || Number.isNaN(start.getTime())) return 0;
+      return Math.floor(Math.max(0, new Date(GENERATED_AT) - start) / 864e5);
+    }
+    function rtvSeverityClass(value) {
+      const days = daysFrom(value);
+      return days > 10 ? 'rtv-danger' : days > 5 ? 'rtv-warning' : '';
+    }
+    function issueType(row) {
+      const text = `${row.summary} ${row.status}`.toLowerCase();
+      if (/bug|qa|crash|error|fix|incidencia|fallo|no se|accesibilidad|a11y/.test(text)) return 'Incidencia';
+      if (/actualizaci[oó]n|migraci[oó]n|documentaci[oó]n|observability|administraci[oó]n|refactor|sdk|dagger|koin|minify/.test(text)) return 'Tarea';
+      return 'Historia';
+    }
+    function storyPoints(row) { return Object.prototype.hasOwnProperty.call(storyPointsByKey, row.key) ? storyPointsByKey[row.key] : null; }
+    function storyPointLabel(row) { const points = storyPoints(row); return points === null ? 'sin estimación' : `${points} pts`; }
+    function totalPoints(data) { return data.reduce((sum, row) => sum + (storyPoints(row) ?? 0), 0); }
+    function statusPill(status, priority) {
+      const cls = reviewStatuses.has(status) ? 'review' : priorityClass(priority);
+      return `<span class="pill ${cls}">${esc(status)}</span>`;
+    }
+    const filterState = { owner: 'All', reporter: 'All' };
+    const chartColors = ['#000000', '#363636', '#757575', '#b3b3b3', '#0170e9', '#ff9500', '#34c759', '#ff3b30', '#6b3daf', '#0c7878'];
+
+    function currentRows() {
+      return rows.filter(r => (filterState.owner === 'All' || r.owner === filterState.owner) && (filterState.reporter === 'All' || r.reporter === filterState.reporter));
+    }
+    function countBy(data, field) {
+      return data.reduce((acc, row) => {
+        acc[row[field]] = (acc[row[field]] || 0) + 1;
+        return acc;
+      }, {});
+    }
+    function renderFilters() {
+      const owners = ['All', ...Object.keys(countBy(rows, 'owner')).sort((a, b) => a.localeCompare(b, 'es'))];
+      const reporters = ['All', ...Object.keys(countBy(rows, 'reporter')).sort((a, b) => a.localeCompare(b, 'es'))];
+      const button = (type, value) => `<button class="filter-chip ${filterState[type] === value ? 'active' : ''}" data-filter-type="${type}" data-filter-value="${esc(value)}">${type === 'owner' ? 'Owner' : 'PO'}: ${esc(value)}</button>`;
+      document.getElementById('filters').innerHTML = owners.map(owner => button('owner', owner)).join('') + reporters.map(reporter => button('reporter', reporter)).join('');
+      document.querySelectorAll('[data-filter-type]').forEach(el => el.addEventListener('click', () => {
+        filterState[el.dataset.filterType] = el.dataset.filterValue;
+        renderAll();
+      }));
+    }
+    function renderTable(id, data, options = {}) {
+      const table = document.getElementById(id);
+      const rtvHead = options.includeRtv ? '<th>Tiempo en Ready to Verify</th>' : '';
+      const body = data.length ? data.map((r, i) => `<tr><td>${i + 1}</td><td>${esc(issueType(r))}</td><td><a href="https://jira.inditex.com/jira/browse/${r.key}">${r.key}</a></td><td class="summary">${esc(r.summary)}</td><td class="status">${statusPill(r.status, r.priority)}</td><td><span class="pill ${priorityClass(r.priority)}">${esc(r.priority)}</span></td><td>${esc(storyPointLabel(r))}</td><td>${esc(r.owner)}</td><td>${esc(r.reporter)}</td>${options.includeRtv ? `<td><span class="pill ${rtvSeverityClass(r.rtv)}">${ageFrom(r.rtv)}</span></td>` : ''}</tr>`).join('') : '<tr><td colspan="10">Sin tickets para este filtro. Milagro operativo o filtro demasiado concreto.</td></tr>';
+      table.innerHTML = `<thead><tr><th>#</th><th>Tipo de tarea</th><th>Ticket</th><th class="summary">Summary</th><th>Status</th><th>Priority</th><th>Puntos de Historia</th><th>Owner</th><th>PO / reporter</th>${rtvHead}</tr></thead><tbody>${body}</tbody>`;
+      }
+    function renderKpis(data) {
+      const review = data.filter(r => reviewStatuses.has(r.status));
+      const rework = data.filter(r => r.status === 'To Rework');
+      const inProgress = data.filter(r => !todoCategories.has(r.status));
+      const todo = data.filter(r => todoCategories.has(r.status));
+      const unassigned = data.filter(r => r.owner === 'Unassigned');
+      const unestimated = data.filter(row => storyPoints(row) === null);
+      document.getElementById('kpis').innerHTML = [
+        ['Scope activo', `${data.length} JIRAs`], ['Puntos estimados', `${totalPoints(data)} pts`], ['Sin estimación', unestimated.length], ['Review / Validación', review.length], ['To Rework', rework.length], ['Sin owner activo', unassigned.length]
+      ].map(([label, value]) => `<div class="kpi"><span>${label}</span><strong>${value}</strong></div>`).join('');
+      document.getElementById('review-count-copy').textContent = review.length;
+      document.getElementById('rework-count-copy').textContent = rework.length;
+    }
+    function renderKanban(data) {
+      const lanes = [
+        ['Por hacer', r => todoCategories.has(r.status)],
+        ['En curso', r => r.status === 'En Curso'],
+        ['Review / validate', r => r.status === 'In Review' || r.status === 'Ready to Validate'],
+        ['Ready to Verify', r => r.status === 'Ready to Verify'],
+        ['To Rework', r => r.status === 'To Rework'],
+      ];
+      document.getElementById('kanban').innerHTML = lanes.map(([title, predicate]) => {
+        const items = data.filter(predicate);
+        const visible = items.slice(0, 8);
+        const more = items.length > visible.length ? `<div class="card-more">+${items.length - visible.length} mas en la tabla completa. Porque un Kanban tambien necesita respirar.</div>` : '';
+        return `<article class="lane"><div class="lane-head"><h3>${title}</h3><span class="pill">${items.length}</span></div><div class="lane-body">${visible.map(row => `<div class="card ${row.status === 'To Rework' ? 'risk' : reviewStatuses.has(row.status) ? 'review' : ''}"><span class="pill ${priorityClass(row.priority)}">${esc(row.priority)}</span><div class="card-title"><a href="https://jira.inditex.com/jira/browse/${row.key}">${row.key}</a> · ${esc(row.summary)}</div><div class="label">Owner: ${esc(row.owner)}<br>PO: ${esc(row.reporter)}</div></div>`).join('') || '<div class="card-more">Sin tickets. No tocar, da suerte.</div>'}${more}</div></article>`;
+      }).join('');
+    }
+    function renderDonut(data) {
+      const stats = data.reduce((acc, row) => {
+        acc[row.owner] = acc[row.owner] || { points: 0, tickets: 0, unestimated: 0 };
+        acc[row.owner].tickets += 1;
+        const points = storyPoints(row);
+        if (points === null) acc[row.owner].unestimated += 1;
+        else acc[row.owner].points += points;
+        return acc;
+      }, {});
+      const entries = Object.entries(stats).sort((a, b) => b[1].points - a[1].points || b[1].tickets - a[1].tickets);
+      const total = entries.reduce((sum, [, stat]) => sum + stat.points, 0) || 1;
+      let cursor = 0;
+      const gradient = entries.map(([, stat], index) => {
+        const start = cursor;
+        cursor += (stat.points / total) * 100;
+        return `${chartColors[index % chartColors.length]} ${start}% ${cursor}%`;
+      }).join(', ');
+      document.getElementById('owner-donut').style.background = entries.length ? `conic-gradient(${gradient})` : 'var(--surface)';
+      document.getElementById('owner-legend').innerHTML = entries.map(([owner, stat], index) => `<div class="legend-row"><span class="swatch" style="background:${chartColors[index % chartColors.length]}"></span><span>${esc(owner)} · ${stat.tickets} JIRAs · ${stat.unestimated} sin estimación</span><strong>${stat.points} pts</strong></div>`).join('') || '<p class="section-note">Sin carga para este filtro.</p>';
+    }
+    function renderSummary(data) {
+      const ready = data.filter(r => r.status === 'Ready to Verify');
+      const rework = data.filter(r => r.status === 'To Rework');
+      const unassigned = data.filter(r => r.owner === 'Unassigned');
+      const topOwner = Object.entries(data.reduce((acc, row) => {
+        acc[row.owner] = (acc[row.owner] || 0) + (storyPoints(row) ?? 0);
+        return acc;
+      }, {})).sort((a, b) => b[1] - a[1])[0];
+      const unestimated = data.filter(row => storyPoints(row) === null);
+      document.getElementById('final-summary').innerHTML = `<p><strong>${data.length}</strong> tickets activos en el filtro actual, con <strong>${totalPoints(data)} puntos estimados</strong> y <strong>${unestimated.length}</strong> tickets sin estimación. <strong>${ready.length}</strong> estan en Ready to Verify, <strong>${rework.length}</strong> en To Rework y <strong>${unassigned.length}</strong> siguen sin owner.</p><p>${topOwner ? `La mayor carga estimada cae en <strong>${esc(topOwner[0])}</strong> con <strong>${topOwner[1]}</strong> puntos. Nada dramatico, solo Jira senalando con el dedo y ahora con unidades reales.` : 'El filtro no devuelve tickets. Una paz estadistica sospechosa.'}</p>`;
+    }
+    function renderAll() {
+      const data = currentRows();
+      renderFilters();
+      renderKpis(data);
+      renderKanban(data);
+      renderDonut(data);
+      renderTable('ready-table', data.filter(r => r.status === 'Ready to Verify'), { includeRtv: true });
+      renderTable('rework-table', data.filter(r => r.status === 'To Rework'));
+      renderTable('review-table', data.filter(r => r.status === 'In Review' || r.status === 'Ready to Validate'));
+      renderTable('refinement-table', data.filter(r => r.status === 'Refinement' || r.status === 'Epic Refinement'));
+      renderTable('unassigned-table', data.filter(r => r.owner === 'Unassigned'));
+      renderTable('all-table', data);
+      renderSummary(data);
+    }
+    renderAll();
+  </script>
+</body>
+</html>

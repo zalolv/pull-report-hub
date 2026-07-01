@@ -1,0 +1,364 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>PBIOS-SP2607 — Refinement Radar</title>
+  <style>
+    :root {
+      --bg:#fff; --surface:#f7f7f7; --ink:#000; --muted:#6f6f6f;
+      --line:#e2e2e2; --danger:#ff3b30; --warning:#ff9500;
+      --info:#007aff; --success:#34c759;
+      --radar:#ff9500;
+    }
+    * { box-sizing:border-box; }
+    body { margin:0; background:var(--bg); color:var(--ink); font-family:"Neue Haas","Helvetica Now Text",Helvetica,Arial,sans-serif; letter-spacing:.45px; }
+    a { color:inherit; border-bottom:1px solid currentColor; text-decoration:none; }
+    .page { max-width:1420px; margin:0 auto; padding:32px; }
+
+    /* Hero */
+    .hero { border:1px solid #000; padding:32px; display:grid; grid-template-columns:minmax(0,1.2fr) minmax(280px,.8fr); gap:32px; align-items:end; }
+    .eyebrow { font-size:11px; line-height:18px; text-transform:uppercase; color:var(--muted); letter-spacing:.9px; }
+    h1 { margin:16px 0 0; font-size:clamp(40px,6vw,88px); line-height:.92; letter-spacing:-2px; font-weight:350; }
+    .hero-copy { font-size:17px; line-height:1.5; max-width:660px; margin:20px 0 0; }
+    .hero-card { border:1px solid var(--line); background:var(--surface); padding:20px; }
+    .hero-card p { color:var(--muted); font-size:13px; line-height:1.5; margin:8px 0 0; }
+    .label { font-size:10px; text-transform:uppercase; letter-spacing:.9px; color:var(--muted); }
+
+    /* Radar badge */
+    .radar-badge {
+      display:inline-flex; align-items:center; gap:6px;
+      border:1px solid var(--radar); color:var(--radar); padding:4px 10px;
+      font-size:11px; text-transform:uppercase; letter-spacing:.8px; margin:0 0 16px;
+    }
+    .radar-dot { width:7px; height:7px; border-radius:50%; background:var(--radar); }
+
+    /* KPI row */
+    .kpi-row { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:12px; margin:24px 0; }
+    .kpi { border:1px solid var(--line); padding:20px; min-height:110px; display:flex; flex-direction:column; justify-content:space-between; }
+    .kpi strong { font-size:clamp(32px,5vw,58px); font-weight:350; letter-spacing:-2px; }
+    .kpi span { font-size:11px; text-transform:uppercase; color:var(--muted); }
+    .kpi.warn strong { color:var(--warning); }
+    .kpi.danger strong { color:var(--danger); }
+
+    /* Section */
+    .section { margin-top:48px; }
+    .section-head { display:flex; justify-content:space-between; align-items:end; gap:24px; margin-bottom:16px; }
+    h2 { margin:0; font-size:clamp(22px,3.5vw,44px); line-height:1; letter-spacing:-1px; font-weight:350; }
+    h3 { margin:0 0 12px; font-size:13px; text-transform:uppercase; font-weight:500; letter-spacing:.5px; }
+    .section-note { color:var(--muted); font-size:13px; line-height:1.5; margin:0; max-width:680px; }
+
+    /* Ticket cards */
+    .ticket-list { display:grid; gap:0; border:1px solid var(--line); }
+    .ticket-card { display:grid; grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr); border-bottom:1px solid var(--line); }
+    .ticket-card:last-child { border-bottom:0; }
+    .tc-meta { padding:20px 24px; border-right:1px solid var(--line); }
+    .tc-comments { padding:20px 24px; background:var(--surface); }
+
+    /* Ticket meta */
+    .tc-key-row { display:flex; align-items:center; gap:10px; margin-bottom:12px; flex-wrap:wrap; }
+    .tc-key { font-size:12px; font-weight:600; letter-spacing:.3px; }
+    .pill { display:inline-flex; border:1px solid var(--line); padding:3px 7px; font-size:10px; text-transform:uppercase; color:var(--muted); white-space:nowrap; }
+    .pill.blocker  { color:var(--danger);  border-color:var(--danger);  }
+    .pill.critical { color:var(--warning); border-color:var(--warning); }
+    .pill.important{ color:var(--info);    border-color:var(--info);    }
+    .pill.refinement{ color:var(--radar);  border-color:var(--radar);   }
+    .pill.unassigned{ color:var(--danger); border-color:var(--danger); background:#fff0f0; }
+    .tc-summary { font-size:15px; line-height:1.35; font-weight:400; margin:0 0 16px; }
+    .tc-row { display:flex; gap:6px; align-items:flex-start; margin-bottom:8px; font-size:12px; }
+    .tc-row .lbl { color:var(--muted); text-transform:uppercase; font-size:10px; letter-spacing:.5px; white-space:nowrap; min-width:70px; padding-top:1px; }
+    .tc-row .val { line-height:1.4; }
+    .no-sp { color:var(--warning); }
+    .tc-link { font-size:11px; margin-top:16px; display:inline-block; }
+
+    /* Comment thread */
+    .comment-header { font-size:11px; text-transform:uppercase; color:var(--muted); letter-spacing:.7px; margin-bottom:14px; display:flex; justify-content:space-between; align-items:center; }
+    .comment-count { border:1px solid var(--line); padding:2px 7px; font-size:10px; }
+    .comment { border:1px solid var(--line); background:#fff; padding:12px 14px; margin-bottom:8px; }
+    .comment:last-child { margin-bottom:0; }
+    .comment-meta { display:flex; justify-content:space-between; align-items:flex-start; gap:8px; margin-bottom:8px; }
+    .comment-author { font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:.4px; }
+    .comment-date { font-size:10px; color:var(--muted); white-space:nowrap; }
+    .comment-body { font-size:12px; line-height:1.55; color:var(--ink); }
+    .no-comments { font-size:12px; color:var(--muted); font-style:italic; border:1px dashed var(--line); padding:16px; }
+
+    /* Attention box */
+    .attention { border:1px solid var(--warning); padding:16px 20px; margin-top:24px; display:grid; grid-template-columns:32px 1fr; gap:12px; align-items:start; }
+    .attention-icon { font-size:20px; line-height:1; }
+    .attention-body { font-size:13px; line-height:1.5; }
+    .attention-body strong { display:block; margin-bottom:4px; text-transform:uppercase; font-size:11px; letter-spacing:.5px; }
+
+    /* Query block */
+    .query { background:#000; color:#fff; padding:16px; overflow:auto; font-size:12px; line-height:1.5; margin-top:0; }
+    .query code { white-space:pre; }
+
+    footer { margin:48px 0 0; padding-top:20px; border-top:1px solid var(--line); color:var(--muted); font-size:12px; line-height:1.6; }
+
+    @media(max-width:900px){
+      .hero{grid-template-columns:1fr;}
+      .kpi-row{grid-template-columns:repeat(2,1fr);}
+      .ticket-card{grid-template-columns:1fr;}
+      .tc-meta{border-right:0; border-bottom:1px solid var(--line);}
+    }
+    @media(max-width:560px){
+      .page{padding:16px;}
+      .kpi-row{grid-template-columns:1fr;}
+    }
+  </style>
+</head>
+<body>
+<main class="page">
+
+  <!-- Hero -->
+  <section class="hero">
+    <div>
+      <div class="eyebrow">Pull&amp;Bear iOS · PBIOS · Sprint PBIOS-SP2607</div>
+      <h1>Refinement<br>Radar.</h1>
+      <p class="hero-copy">El sprint PBIOS-SP2607 no tiene ningún ticket en estado Refinement o Epic Refinement. Lo que sí existe son <strong>3 historias de usuario bloqueadas en refinement a nivel de proyecto</strong>: sin criterios de aceptación, sin fecha de entrega, y con al menos un comentario de PO pidiendo exactamente eso.</p>
+    </div>
+    <aside class="hero-card">
+      <div class="label">Situación</div>
+      <p><strong>0 tickets en refinement dentro del sprint.</strong><br>3 tickets en refinement en el proyecto PBIOS — radar fuera de sprint activo.</p>
+      <p>Generado el 01/07/2026. Snapshot estático desde Jira live. No modifica Jira.</p>
+    </aside>
+  </section>
+
+  <!-- KPIs -->
+  <section class="kpi-row" aria-label="Resumen">
+    <div class="kpi">
+      <strong>0</strong>
+      <span>Refinement en SP2607</span>
+    </div>
+    <div class="kpi warn">
+      <strong>3</strong>
+      <span>Radar proyecto PBIOS</span>
+    </div>
+    <div class="kpi danger">
+      <strong>3</strong>
+      <span>Sin estimación (SP)</span>
+    </div>
+    <div class="kpi danger">
+      <strong>1</strong>
+      <span>Sin asignar</span>
+    </div>
+  </section>
+
+  <!-- Attention box -->
+  <div class="attention">
+    <div class="attention-icon">⚠</div>
+    <div class="attention-body">
+      <strong>Acción PO requerida</strong>
+      Los 3 tickets llevan meses parados en refinement. El patrón de comentarios es consistente: falta la nueva plantilla con criterios de aceptación y fecha de entrega. Hasta que eso no esté, ninguno puede entrar en planificación de sprint.
+    </div>
+  </div>
+
+  <!-- Refinement tickets -->
+  <section class="section">
+    <div class="section-head">
+      <h2>Tickets en Refinement</h2>
+      <p class="section-note">3 historias bloqueadas en el proyecto PBIOS. Radar fuera de sprint — no pertenecen a PBIOS-SP2607 pero son visibles para PO como trabajo pendiente de madurar.</p>
+    </div>
+
+    <div class="ticket-list">
+
+      <!-- PBIOS-340 -->
+      <article class="ticket-card">
+        <div class="tc-meta">
+          <div class="tc-key-row">
+            <span class="tc-key">PBIOS-340</span>
+            <span class="pill blocker">A+ Crítico</span>
+            <span class="pill refinement">Refinement</span>
+          </div>
+          <h3 class="tc-summary">[Experiencia regalo] Tarjeta regalo en parrillas</h3>
+          <div class="tc-row"><span class="lbl">Tipo</span><span class="val">Historia</span></div>
+          <div class="tc-row"><span class="lbl">Asignado</span><span class="val">Luis Miguel Demanuel Demanuel</span></div>
+          <div class="tc-row"><span class="lbl">Story pts</span><span class="val no-sp">Sin estimación</span></div>
+          <div class="tc-row"><span class="lbl">Sprint</span><span class="val" style="color:var(--muted)">— Fuera de sprint activo</span></div>
+          <div class="tc-row"><span class="lbl">Actualizado</span><span class="val">20/04/2026</span></div>
+          <a class="tc-link" href="https://jira.inditex.com/jira/browse/PBIOS-340" target="_blank">Abrir en Jira &rarr;</a>
+        </div>
+        <div class="tc-comments">
+          <div class="comment-header">
+            <span>Comentarios de refinement</span>
+            <span class="comment-count">1 comentario</span>
+          </div>
+          <div class="comment">
+            <div class="comment-meta">
+              <span class="comment-author">Martin Calvete Iglesias</span>
+              <span class="comment-date">20/04/2026</span>
+            </div>
+            <div class="comment-body">El jira debe incluir la información con la nueva plantilla, incluyendo los criterios de aceptación y la fecha de entrega (entre otros)</div>
+          </div>
+        </div>
+      </article>
+
+      <!-- PBIOS-343 -->
+      <article class="ticket-card">
+        <div class="tc-meta">
+          <div class="tc-key-row">
+            <span class="tc-key">PBIOS-343</span>
+            <span class="pill blocker">A+ Crítico</span>
+            <span class="pill refinement">Refinement</span>
+          </div>
+          <h3 class="tc-summary">[Parrilla] % descuento evolutivo</h3>
+          <div class="tc-row"><span class="lbl">Tipo</span><span class="val">Historia</span></div>
+          <div class="tc-row"><span class="lbl">Asignado</span><span class="val">Luis Miguel Demanuel Demanuel</span></div>
+          <div class="tc-row"><span class="lbl">Story pts</span><span class="val no-sp">Sin estimación</span></div>
+          <div class="tc-row"><span class="lbl">Sprint</span><span class="val" style="color:var(--muted)">— Fuera de sprint activo</span></div>
+          <div class="tc-row"><span class="lbl">Actualizado</span><span class="val">29/04/2026</span></div>
+          <a class="tc-link" href="https://jira.inditex.com/jira/browse/PBIOS-343" target="_blank">Abrir en Jira &rarr;</a>
+        </div>
+        <div class="tc-comments">
+          <div class="comment-header">
+            <span>Comentarios de refinement</span>
+            <span class="comment-count">2 comentarios</span>
+          </div>
+          <div class="comment">
+            <div class="comment-meta">
+              <span class="comment-author">Martin Calvete Iglesias</span>
+              <span class="comment-date">20/04/2026</span>
+            </div>
+            <div class="comment-body">El jira debe incluir la información con la nueva plantilla, incluyendo los criterios de aceptación y la fecha de entrega (entre otros)</div>
+          </div>
+          <div class="comment" style="border-color:var(--warning);">
+            <div class="comment-meta">
+              <span class="comment-author">Fernando Gomez Ferreiro</span>
+              <span class="comment-date">29/04/2026</span>
+            </div>
+            <div class="comment-body">este por ahora no se mueve, no lo he priorizado</div>
+          </div>
+        </div>
+      </article>
+
+      <!-- PBIOS-680 -->
+      <article class="ticket-card">
+        <div class="tc-meta">
+          <div class="tc-key-row">
+            <span class="tc-key">PBIOS-680</span>
+            <span class="pill important">B Importante</span>
+            <span class="pill refinement">Refinement</span>
+            <span class="pill unassigned">Sin asignar</span>
+          </div>
+          <h3 class="tc-summary">[Mi cuenta] Tus datos personales — Modificar localización valida tu teléfono</h3>
+          <div class="tc-row"><span class="lbl">Tipo</span><span class="val">Historia</span></div>
+          <div class="tc-row"><span class="lbl">Asignado</span><span class="val" style="color:var(--danger);">Sin asignar</span></div>
+          <div class="tc-row"><span class="lbl">Story pts</span><span class="val no-sp">Sin estimación</span></div>
+          <div class="tc-row"><span class="lbl">Sprint</span><span class="val" style="color:var(--muted)">— Fuera de sprint activo</span></div>
+          <div class="tc-row"><span class="lbl">Actualizado</span><span class="val">20/04/2026</span></div>
+          <a class="tc-link" href="https://jira.inditex.com/jira/browse/PBIOS-680" target="_blank">Abrir en Jira &rarr;</a>
+        </div>
+        <div class="tc-comments">
+          <div class="comment-header">
+            <span>Comentarios de refinement</span>
+            <span class="comment-count">1 comentario</span>
+          </div>
+          <div class="comment">
+            <div class="comment-meta">
+              <span class="comment-author">Martin Calvete Iglesias</span>
+              <span class="comment-date">20/04/2026</span>
+            </div>
+            <div class="comment-body">Faltan los criterios de aceptación y la fecha de entrega</div>
+          </div>
+        </div>
+      </article>
+
+    </div>
+  </section>
+
+  <!-- Summary table -->
+  <section class="section">
+    <div class="section-head">
+      <h2>Resumen por ticket</h2>
+      <p class="section-note">Vista tabular para comparativa rápida.</p>
+    </div>
+    <div style="border:1px solid var(--line); overflow:auto;">
+      <table style="width:100%; border-collapse:collapse; font-size:12px; min-width:700px;">
+        <thead>
+          <tr>
+            <th style="padding:9px 10px; border-bottom:1px solid var(--line); text-align:left; font-size:10px; text-transform:uppercase; color:var(--muted); background:#fff; white-space:nowrap;">Ticket</th>
+            <th style="padding:9px 10px; border-bottom:1px solid var(--line); text-align:left; font-size:10px; text-transform:uppercase; color:var(--muted); background:#fff;">Resumen</th>
+            <th style="padding:9px 10px; border-bottom:1px solid var(--line); text-align:left; font-size:10px; text-transform:uppercase; color:var(--muted); background:#fff; white-space:nowrap;">Prioridad</th>
+            <th style="padding:9px 10px; border-bottom:1px solid var(--line); text-align:left; font-size:10px; text-transform:uppercase; color:var(--muted); background:#fff; white-space:nowrap;">Asignado</th>
+            <th style="padding:9px 10px; border-bottom:1px solid var(--line); text-align:left; font-size:10px; text-transform:uppercase; color:var(--muted); background:#fff; white-space:nowrap;">SP</th>
+            <th style="padding:9px 10px; border-bottom:1px solid var(--line); text-align:left; font-size:10px; text-transform:uppercase; color:var(--muted); background:#fff; white-space:nowrap;">Comentarios</th>
+            <th style="padding:9px 10px; border-bottom:1px solid var(--line); text-align:left; font-size:10px; text-transform:uppercase; color:var(--muted); background:#fff; white-space:nowrap;">Últ. comentario</th>
+            <th style="padding:9px 10px; border-bottom:1px solid var(--line); text-align:left; font-size:10px; text-transform:uppercase; color:var(--muted); background:#fff; white-space:nowrap;">Bloqueo</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="padding:9px 10px; border-bottom:1px solid var(--line); white-space:nowrap;"><a href="https://jira.inditex.com/jira/browse/PBIOS-340" target="_blank">PBIOS-340</a></td>
+            <td style="padding:9px 10px; border-bottom:1px solid var(--line);">[Experiencia regalo] Tarjeta regalo en parrillas</td>
+            <td style="padding:9px 10px; border-bottom:1px solid var(--line); white-space:nowrap; color:var(--danger);">A+ Crítico</td>
+            <td style="padding:9px 10px; border-bottom:1px solid var(--line); white-space:nowrap;">L.M. Demanuel</td>
+            <td style="padding:9px 10px; border-bottom:1px solid var(--line); color:var(--warning);">—</td>
+            <td style="padding:9px 10px; border-bottom:1px solid var(--line); text-align:center;">1</td>
+            <td style="padding:9px 10px; border-bottom:1px solid var(--line); white-space:nowrap; color:var(--muted);">20/04/2026</td>
+            <td style="padding:9px 10px; border-bottom:1px solid var(--line); font-size:11px; color:var(--warning);">Falta plantilla, AC y fecha</td>
+          </tr>
+          <tr>
+            <td style="padding:9px 10px; border-bottom:1px solid var(--line); white-space:nowrap;"><a href="https://jira.inditex.com/jira/browse/PBIOS-343" target="_blank">PBIOS-343</a></td>
+            <td style="padding:9px 10px; border-bottom:1px solid var(--line);">[Parrilla] % descuento evolutivo</td>
+            <td style="padding:9px 10px; border-bottom:1px solid var(--line); white-space:nowrap; color:var(--danger);">A+ Crítico</td>
+            <td style="padding:9px 10px; border-bottom:1px solid var(--line); white-space:nowrap;">L.M. Demanuel</td>
+            <td style="padding:9px 10px; border-bottom:1px solid var(--line); color:var(--warning);">—</td>
+            <td style="padding:9px 10px; border-bottom:1px solid var(--line); text-align:center;">2</td>
+            <td style="padding:9px 10px; border-bottom:1px solid var(--line); white-space:nowrap; color:var(--muted);">29/04/2026</td>
+            <td style="padding:9px 10px; border-bottom:1px solid var(--line); font-size:11px; color:var(--danger);">No priorizado — "no se mueve"</td>
+          </tr>
+          <tr>
+            <td style="padding:9px 10px; border-bottom:0; white-space:nowrap;"><a href="https://jira.inditex.com/jira/browse/PBIOS-680" target="_blank">PBIOS-680</a></td>
+            <td style="padding:9px 10px; border-bottom:0;">[Mi cuenta] Modificar localización valida tu teléfono</td>
+            <td style="padding:9px 10px; border-bottom:0; white-space:nowrap; color:var(--info);">B Importante</td>
+            <td style="padding:9px 10px; border-bottom:0; white-space:nowrap; color:var(--danger);">Sin asignar</td>
+            <td style="padding:9px 10px; border-bottom:0; color:var(--warning);">—</td>
+            <td style="padding:9px 10px; border-bottom:0; text-align:center;">1</td>
+            <td style="padding:9px 10px; border-bottom:0; white-space:nowrap; color:var(--muted);">20/04/2026</td>
+            <td style="padding:9px 10px; border-bottom:0; font-size:11px; color:var(--warning);">Faltan AC y fecha</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- Conclusion -->
+  <section class="section">
+    <div class="section-head"><h2>Lectura</h2></div>
+    <div style="border:1px solid var(--line); padding:24px; display:grid; grid-template-columns:repeat(3,1fr); gap:24px;">
+      <div>
+        <h3>Patrón común</h3>
+        <p style="font-size:13px; line-height:1.55; color:var(--muted); margin:0;">Los 3 tickets llevan el mismo comentario: nueva plantilla con criterios de aceptación y fecha de entrega. Ninguno los tiene. El refinement está bloqueado por falta de información de producto, no por capacidad técnica.</p>
+      </div>
+      <div>
+        <h3>Riesgo</h3>
+        <p style="font-size:13px; line-height:1.55; color:var(--muted); margin:0;">PBIOS-340 y PBIOS-343 son prioridad A+ Crítico y llevan meses sin moverse. Si alguno es candidato a entrar en un sprint próximo, el tiempo de refinement necesario cuenta como capacidad real del equipo. PBIOS-343 tiene además un "no lo he priorizado" como último comentario.</p>
+      </div>
+      <div>
+        <h3>Próxima acción</h3>
+        <p style="font-size:13px; line-height:1.55; color:var(--muted); margin:0;">Decisión de PO sobre cada uno: completar plantilla y arrancar refinement activo, o moverlos a backlog explícito. PBIOS-680 necesita además asignación de owner antes de cualquier otro paso.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Queries -->
+  <section class="section">
+    <div class="section-head"><h2>Consultas usadas</h2><p class="section-note">Base JQL del informe.</p></div>
+    <pre class="query"><code>-- Sprint scope (0 refinement):
+project = PBIOS AND Sprint = "PBIOS-SP2607" AND status in (Refinement, "Epic Refinement") ORDER BY updated DESC
+-- Total: 0
+
+-- Refinement radar (fuera de sprint):
+project = PBIOS AND status in (Refinement, "Epic Refinement") ORDER BY updated DESC
+-- Total: 3
+
+-- Campos: key, summary, status, assignee, priority, issuetype, updated, labels, comment</code></pre>
+  </section>
+
+  <footer>
+    Pull&amp;Bear iOS &middot; PBIOS-SP2607 Refinement Radar &middot; Generado el 01/07/2026 desde Jira live.<br>
+    Snapshot estático. No modifica Jira. El sprint SP2607 no tiene tickets en refinement en su scope &mdash; este informe es un radar del estado actual del proyecto.
+  </footer>
+
+</main>
+</body>
+</html>

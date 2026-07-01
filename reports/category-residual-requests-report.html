@@ -1,0 +1,491 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Informe funcional - llamadas residuales /category</title>
+  <style>
+    :root {
+      --bg: #f6f5f2;
+      --card: #ffffff;
+      --text: #1b1b1b;
+      --muted: #666666;
+      --line: #dedbd4;
+      --strong: #111111;
+      --risk-high: #7a1f1f;
+      --risk-high-bg: #f7dfdf;
+      --risk-medium: #7a4f00;
+      --risk-medium-bg: #fff1cc;
+      --risk-low: #255c38;
+      --risk-low-bg: #e1f2e5;
+      --code: #f1f0ec;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: Arial, Helvetica, sans-serif;
+      line-height: 1.45;
+    }
+
+    .page {
+      max-width: 1160px;
+      margin: 0 auto;
+      padding: 40px 24px 56px;
+    }
+
+    header {
+      padding: 28px 32px;
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      margin-bottom: 20px;
+    }
+
+    h1, h2, h3 {
+      margin: 0;
+      color: var(--strong);
+      letter-spacing: -0.02em;
+    }
+
+    h1 { font-size: 34px; line-height: 1.1; }
+    h2 { font-size: 22px; margin-bottom: 14px; }
+    h3 { font-size: 17px; margin-bottom: 8px; }
+
+    p { margin: 8px 0 0; }
+
+    .subtitle {
+      max-width: 880px;
+      color: var(--muted);
+      font-size: 16px;
+      margin-top: 12px;
+    }
+
+    .meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 18px;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+      background: var(--code);
+      color: var(--strong);
+      border: 1px solid var(--line);
+    }
+
+    .section {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 24px 28px;
+      margin-top: 16px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+      margin-top: 14px;
+    }
+
+    .card {
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 16px;
+      background: #fbfaf8;
+    }
+
+    .card p { color: var(--muted); }
+
+    .risk {
+      display: inline-block;
+      padding: 5px 8px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      margin-bottom: 10px;
+    }
+
+    .risk.high { color: var(--risk-high); background: var(--risk-high-bg); }
+    .risk.medium { color: var(--risk-medium); background: var(--risk-medium-bg); }
+    .risk.low { color: var(--risk-low); background: var(--risk-low-bg); }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 12px;
+      font-size: 14px;
+    }
+
+    th, td {
+      padding: 11px 10px;
+      border-bottom: 1px solid var(--line);
+      vertical-align: top;
+      text-align: left;
+    }
+
+    th {
+      color: var(--strong);
+      background: #f3f1ec;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    code {
+      padding: 2px 5px;
+      border-radius: 5px;
+      background: var(--code);
+      font-family: "SFMono-Regular", Consolas, monospace;
+      font-size: 12px;
+    }
+
+    ul {
+      margin: 10px 0 0;
+      padding-left: 20px;
+    }
+
+    li { margin: 6px 0; }
+
+    .callout {
+      border-left: 4px solid #111111;
+      background: #f7f6f3;
+      padding: 14px 16px;
+      margin-top: 14px;
+      border-radius: 0 12px 12px 0;
+    }
+
+    .small { color: var(--muted); font-size: 13px; }
+
+    @media (max-width: 860px) {
+      .grid { grid-template-columns: 1fr; }
+      h1 { font-size: 28px; }
+      .page { padding: 20px 14px 40px; }
+      header, .section { padding: 20px; }
+      table { font-size: 13px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <header>
+      <h1>Informe funcional: llamadas residuales a rutas <code>/category</code></h1>
+      <p class="subtitle">Revisión de Web, iOS y Android para entender en qué journeys de negocio podrían seguir generándose llamadas legacy tras la migración. El foco está en uso funcional real, no en falsos positivos de analítica, navegación o constantes.</p>
+      <div class="meta">
+        <span class="pill">Pull&amp;Bear</span>
+        <span class="pill">Repos revisados por GitHub CLI</span>
+        <span class="pill">Rama principal revisada: develop</span>
+        <span class="pill">Fecha: 2026-06-22</span>
+      </div>
+    </header>
+
+    <section class="section">
+      <h2>1. Resumen ejecutivo</h2>
+      <p>La investigación apunta a que las llamadas residuales no parecen venir de un único punto común, sino de varios journeys históricos ligados a catálogo: carga de árbol de categorías, apertura de PLP, detalle de producto desde categoría, stock de categoría, deeplinks y preview CMS.</p>
+      <div class="grid">
+        <article class="card">
+          <span class="risk high">Riesgo alto</span>
+          <h3>Android</h3>
+          <p>Conserva endpoints Retrofit reales con rutas <code>/category</code> y rutas derivadas <code>/category/{categoryId}/product</code>, <code>/detail</code> y <code>/stock</code>. Es la plataforma con mayor probabilidad de explicar tráfico residual.</p>
+        </article>
+        <article class="card">
+          <span class="risk medium">Riesgo medio</span>
+          <h3>iOS</h3>
+          <p>No se ve una URL literal <code>/category</code>, pero existe fallback legacy mediante <code>client?.categories</code> si la flag de StoreFront Menu está desactivada.</p>
+        </article>
+        <article class="card">
+          <span class="risk medium">Riesgo medio/bajo</span>
+          <h3>Web</h3>
+          <p>No se identifica llamada directa literal a <code>/category</code> en el repo. Sí hay acciones Corefront relacionadas con categoría cuyo mapeo final vive fuera del repositorio.</p>
+        </article>
+      </div>
+      <div class="callout">
+        <strong>Lectura de negocio:</strong> si el tráfico residual aparece en observabilidad como peticiones a <code>/category</code>, el primer sospechoso es Android, especialmente en flujos de menú/categoría, PLP, PDP desde categoría, stock y deeplinks. iOS dependería de configuración. Web requiere validar el mapeo externo de acciones.
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>2. Mapa funcional de posibles orígenes</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Journey de negocio</th>
+            <th>Qué hace el usuario o negocio</th>
+            <th>Plataformas afectadas</th>
+            <th>Probabilidad</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Menú / árbol de categorías</td>
+            <td>La app o web carga la estructura de categorías para pintar el menú, secciones Mujer/Hombre o navegación inicial.</td>
+            <td>Android alto, iOS condicionado por fallback, Web indirecto</td>
+            <td>Alta en Android</td>
+          </tr>
+          <tr>
+            <td>PLP / grid de categoría</td>
+            <td>El usuario entra en una categoría y se solicitan productos, filtros, ordenación o IDs de producto para pintar la parrilla.</td>
+            <td>Android alto, Web indirecto</td>
+            <td>Alta</td>
+          </tr>
+          <tr>
+            <td>PDP desde categoría</td>
+            <td>El usuario pulsa un producto desde una PLP y se carga el detalle con contexto de categoría.</td>
+            <td>Android alto</td>
+            <td>Alta</td>
+          </tr>
+          <tr>
+            <td>Stock de categoría</td>
+            <td>La experiencia necesita disponibilidad de productos/SKUs asociados a una categoría para pintar sold out, coming soon o disponibilidad.</td>
+            <td>Android alto, Web indirecto</td>
+            <td>Alta</td>
+          </tr>
+          <tr>
+            <td>Deeplink / SEO a categoría</td>
+            <td>El usuario llega desde push, enlace, SEO o ruta compartida y la app valida o resuelve la categoría.</td>
+            <td>Android medio/alto, iOS navegación sin API directa observada</td>
+            <td>Media</td>
+          </tr>
+          <tr>
+            <td>CMS preview / stage review</td>
+            <td>Equipos internos revisan contenido futuro, grids o categorías con parámetros de preview, catálogo o idioma.</td>
+            <td>Android medio, Web medio</td>
+            <td>Media</td>
+          </tr>
+          <tr>
+            <td>Módulos de recomendaciones o producto embebido</td>
+            <td>Un módulo usa una categoría como fuente para pintar productos recomendados, carruseles o bloques de tienda.</td>
+            <td>Web medio, iOS bajo/medio, Android medio</td>
+            <td>Media</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="section">
+      <h2>3. Android: principal foco de llamadas residuales</h2>
+      <p>Android mantiene definiciones de red reales con rutas legacy de categoría. A nivel negocio, no son solo llamadas técnicas aisladas: están conectadas con journeys activos o históricamente activos de catálogo.</p>
+      <table>
+        <thead>
+          <tr>
+            <th>Flujo</th>
+            <th>Endpoint observado</th>
+            <th>Interpretación funcional</th>
+            <th>Referencias</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Árbol de categorías / menú</td>
+            <td><code>GET catalog/store/{storeId}/{catalogId}/category</code></td>
+            <td>Carga la jerarquía de categorías para construir navegación y secciones.</td>
+            <td><code>CategoryWs.kt</code>, <code>GetWsCategoryListUC.java</code>, <code>CategoryRepository</code>, <code>CategoryListPresenter</code></td>
+          </tr>
+          <tr>
+            <td>Detalle o validación de categoría</td>
+            <td><code>GET .../category/{categoryId}</code></td>
+            <td>Se usa al navegar a una categoría, validar deeplinks, resolver redirecciones o recuperar categoría si no está en caché.</td>
+            <td><code>GetWsCategoryUC.java</code>, <code>CategoryViewModel</code>, <code>DeepLinkManager</code></td>
+          </tr>
+          <tr>
+            <td>PLP / productos de categoría</td>
+            <td><code>GET .../category/{categoryId}/product</code></td>
+            <td>Obtiene productos, filtros o datos iniciales para pintar la parrilla de categoría.</td>
+            <td><code>ProductWs.kt</code>, <code>ProductGridApi.kt</code>, <code>GetWsProductListUC.java</code>, <code>GridViewModel</code></td>
+          </tr>
+          <tr>
+            <td>PDP desde PLP</td>
+            <td><code>GET .../category/{categoryId}/product/{productId}/detail</code></td>
+            <td>Carga detalle de producto manteniendo contexto de categoría.</td>
+            <td><code>ProductAdapterApi.kt</code>, <code>GetWsProductDetailUC.java</code>, <code>GetLegacyProductDetailUseCaseImpl</code></td>
+          </tr>
+          <tr>
+            <td>Stock de categoría</td>
+            <td><code>GET .../category/{categoryId}/stock</code></td>
+            <td>Calcula disponibilidad asociada a los productos de una categoría.</td>
+            <td><code>StockWs.kt</code>, <code>GetWsCategoryStockListUC.java</code>, <code>GetWsProductListUC.java</code></td>
+          </tr>
+          <tr>
+            <td>SEO/deeplink</td>
+            <td><code>GET .../mapper/category/seo-id/{seoId}</code></td>
+            <td>Resuelve una categoría desde identificador SEO. No es la colección <code>/category</code>, pero sí mantiene dependencia funcional con categoría.</td>
+            <td><code>GetWsCategoryIdFromSeoIdUC.kt</code>, <code>CategoryWs.kt</code></td>
+          </tr>
+          <tr>
+            <td>CMS preview</td>
+            <td>Variantes de <code>/category</code> y <code>/category/{categoryId}/product</code> con parámetros de idioma/catálogo</td>
+            <td>Puede explicar tráfico residual interno o de validación de contenidos, no necesariamente de cliente final.</td>
+            <td><code>getCategoryListCMSPreview</code>, <code>getProductListCMSPreview</code></td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="callout">
+        <strong>Hipótesis principal:</strong> si el volumen residual procede de producción cliente, revisar primero PLP, PDP desde PLP, deeplinks y stock. Si procede de entornos internos o horarios de validación, revisar CMS preview/stage.
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>4. iOS: riesgo condicionado por flag</h2>
+      <p>iOS parece estar migrado hacia StoreFront Menu para el caso nominal. La llamada funcional actual para menú es <code>stores/{storeId}/menu</code>, no <code>/category</code>. El riesgo está en el fallback legacy.</p>
+      <table>
+        <thead>
+          <tr>
+            <th>Flujo</th>
+            <th>Request / acción</th>
+            <th>Lectura funcional</th>
+            <th>Referencias</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Menú StoreFront</td>
+            <td><code>GET stores/{storeId}/menu</code></td>
+            <td>Carga el menú/categorías desde el nuevo modelo StoreFront.</td>
+            <td><code>MenuEndpoint.swift</code>, <code>MenuManager.swift</code>, <code>CatalogViewController.swift</code></td>
+          </tr>
+          <tr>
+            <td>Items de menú</td>
+            <td><code>GET stores/{storeId}/menu/items</code></td>
+            <td>Endpoint disponible para resolver elementos concretos por <code>itemId</code> o <code>seoId</code>. No se observó como fuente principal de navegación normal.</td>
+            <td><code>MenuItemsEndpoint.swift</code>, <code>MenuManager.swift</code></td>
+          </tr>
+          <tr>
+            <td>Fallback legacy categorías</td>
+            <td><code>client?.categories</code></td>
+            <td>Si <code>enableStorefrontMenu</code> está desactivada, puede volver a la petición legacy encapsulada en <code>ITXClient</code>.</td>
+            <td><code>MenuManager.swift</code></td>
+          </tr>
+          <tr>
+            <td>Deeplinks y navegación</td>
+            <td>Navegación sobre árbol ya cargado</td>
+            <td>Se observan rutas de negocio de categoría, pero no una petición <code>/category</code> directa en ese punto.</td>
+            <td><code>CategoryNavigationHandler.swift</code>, <code>CatalogViewController.swift</code></td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="callout">
+        <strong>Validación clave:</strong> confirmar en configuración de últimas versiones que <code>menu.enableStorefrontMenu</code> está siempre activo para todos los mercados/entornos relevantes. Si está activo globalmente, iOS no debería ser el origen principal del residual.
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>5. Web: sin llamada literal, pero con acciones de categoría</h2>
+      <p>En Web no se ha identificado construcción directa de una URL <code>/category</code>. La capa web utiliza acciones Corefront y wrappers; por tanto, el punto crítico es validar a qué URL final resuelve cada acción fuera del repo.</p>
+      <table>
+        <thead>
+          <tr>
+            <th>Flujo</th>
+            <th>Acción / wrapper</th>
+            <th>Lectura funcional</th>
+            <th>Referencias</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>PLP / grid de categoría</td>
+            <td><code>GET_PRODUCTS_FILTERED_PAGINATED_ORDERED</code></td>
+            <td>Obtiene productos, filtros y ordenación para la parrilla de categoría.</td>
+            <td><code>itxCategoryService.js</code></td>
+          </tr>
+          <tr>
+            <td>Hidratación de productos</td>
+            <td><code>GET_CATALOG_PRODUCTS_ESI</code></td>
+            <td>Convierte IDs de producto en tarjetas completas visibles en grid, búsqueda, PDP o módulos.</td>
+            <td><code>itxCategoryService.js</code>, <code>productService.js</code>, <code>recommendationsService.js</code></td>
+          </tr>
+          <tr>
+            <td>Stock de categoría</td>
+            <td><code>xRestGetCategoryStock</code> / <code>catalog:categoryStock</code></td>
+            <td>Disponibilidad asociada a productos de categoría. Es el candidato web más cercano a una ruta category legacy.</td>
+            <td><code>itx-request-api.js</code>, <code>itxCategoryService.js</code></td>
+          </tr>
+          <tr>
+            <td>Preview CMS / Stage Review</td>
+            <td><code>GET_GRID</code>, <code>GET_PRODUCTS_FILTERED_PAGINATED_ORDERED</code>, <code>GET_CATALOG_PRODUCTS_ESI</code></td>
+            <td>Validación interna de grids futuros con <code>milestoneCode</code> o <code>gridId</code>.</td>
+            <td><code>stageReviewCategoryPage.js</code></td>
+          </tr>
+          <tr>
+            <td>Módulos de tienda/recomendación</td>
+            <td><code>xRestGetCategory</code>, producto filtrado y detalle de productos</td>
+            <td>Algunos componentes usan una categoría como fuente para pintar módulos o CTAs.</td>
+            <td><code>storeSectionsModal.js</code>, <code>recommendationsService.js</code></td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="callout">
+        <strong>Validación clave:</strong> revisar el mapping Corefront de <code>catalog:categoryStock</code>, <code>GET_PRODUCTS_FILTERED_PAGINATED_ORDERED</code> y <code>xRestGetCategory</code>. El repo web no permite asegurar la URL final.
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>6. Falsos positivos descartados</h2>
+      <ul>
+        <li><strong>Analítica:</strong> constantes como <code>/category</code> usadas para etiquetar pantallas o eventos no son llamadas HTTP de catálogo.</li>
+        <li><strong>Navegación:</strong> rutas, deeplinks, URLs amigables y helpers de navegación pueden contener category, pero no necesariamente disparan la petición legacy.</li>
+        <li><strong>Tests y mocks:</strong> fixtures como <code>https://example.com/category</code> no explican tráfico real.</li>
+        <li><strong>Assets:</strong> rutas tipo <code>/img/menu/categoryIcon</code> son imágenes o recursos estáticos.</li>
+        <li><strong>ProductsArray y product stock:</strong> usan <code>categoryId</code> como contexto, pero no son rutas <code>/category</code>.</li>
+      </ul>
+    </section>
+
+    <section class="section">
+      <h2>7. Recomendaciones de siguiente paso</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Prioridad</th>
+            <th>Acción</th>
+            <th>Objetivo</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>1</td>
+            <td>Confirmar en logs si el residual incluye plataforma, app version, endpoint exacto y user-agent.</td>
+            <td>Separar Android real de tráfico interno, bots, preview o versiones antiguas.</td>
+          </tr>
+          <tr>
+            <td>2</td>
+            <td>En Android, revisar reachability de use cases legacy: <code>GetWsCategoryListUC</code>, <code>GetWsCategoryUC</code>, <code>GetWsProductListUC</code>, <code>GetWsProductDetailUC</code>, <code>GetWsCategoryStockListUC</code>.</td>
+            <td>Determinar qué journeys siguen ejecutando rutas legacy en últimas versiones.</td>
+          </tr>
+          <tr>
+            <td>3</td>
+            <td>Validar flags/config de iOS: <code>enableStorefrontMenu</code> por mercado y entorno.</td>
+            <td>Descartar fallback legacy de menú en producción.</td>
+          </tr>
+          <tr>
+            <td>4</td>
+            <td>Revisar mapping Corefront usado por Web para acciones de categoría y stock.</td>
+            <td>Confirmar si alguna acción web resuelve internamente a la ruta migrada.</td>
+          </tr>
+          <tr>
+            <td>5</td>
+            <td>Cruzar timestamps de tráfico residual con eventos de preview, CMS, stage review o campañas.</td>
+            <td>Identificar si el tráfico viene de operación interna y no de navegación cliente final.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="section">
+      <h2>8. Conclusión</h2>
+      <p>La causa más probable de llamadas residuales a <code>/category</code> en últimas versiones es Android, porque mantiene endpoints explícitos y cadenas de ejecución conectadas con journeys de catálogo. iOS queda como riesgo de configuración por fallback legacy. Web no muestra llamada literal en el repo, pero requiere validación del mapeo de acciones Corefront para cerrar completamente la hipótesis.</p>
+      <p class="small">Repos revisados: <code>inditex/web-ecommercepullandbear</code>, <code>inditex/mob-pullappios</code>, <code>inditex/mob-pullappand</code>. Investigación realizada sin modificar los repos remotos.</p>
+    </section>
+  </main>
+</body>
+</html>

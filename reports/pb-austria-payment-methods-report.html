@@ -1,0 +1,377 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Pull&amp;Bear Austria | Metodos de pago</title>
+  <style>
+    :root {
+      --content: #000000;
+      --content-low: #595959;
+      --content-muted: #8f8f8f;
+      --background: #ffffff;
+      --background-low: #f7f7f7;
+      --background-pressed: #eeeeee;
+      --border: #000000;
+      --border-low: #dddddd;
+      --success: #237a43;
+      --warning: #9a5a00;
+      --danger: #a52a24;
+      --accent: #454545;
+      --max: 1240px;
+    }
+
+    * { box-sizing: border-box; }
+
+    html { background: var(--background); scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--content);
+      background:
+        linear-gradient(90deg, rgba(0,0,0,0.035) 1px, transparent 1px),
+        linear-gradient(rgba(0,0,0,0.025) 1px, transparent 1px),
+        var(--background);
+      background-size: 48px 48px;
+      font-family: "Helvetica Now Text", Helvetica, Arial, sans-serif;
+      letter-spacing: 0.45px;
+    }
+
+    main {
+      width: min(var(--max), calc(100% - 32px));
+      margin: 0 auto;
+      padding: 24px 0 56px;
+    }
+
+    section {
+      margin: 0 0 18px;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.94);
+      padding: clamp(28px, 6vw, 72px);
+      min-height: min(780px, calc(100vh - 48px));
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    section.compact { min-height: auto; }
+    section.alt { background: var(--background-low); }
+
+    .topline {
+      display: flex;
+      justify-content: space-between;
+      gap: 24px;
+      align-items: flex-start;
+      margin-bottom: clamp(36px, 7vw, 92px);
+      color: var(--content-low);
+      font-size: 11px;
+      line-height: 16px;
+      text-transform: uppercase;
+    }
+
+    .brand { color: var(--content); font-size: 13px; }
+    .eyebrow { color: var(--content-low); font-size: 11px; line-height: 16px; text-transform: uppercase; margin-bottom: 18px; }
+
+    h1, h2, h3, p { margin: 0; }
+
+    h1 {
+      max-width: 1060px;
+      font-size: clamp(52px, 10vw, 116px);
+      line-height: 0.94;
+      font-weight: 400;
+      letter-spacing: -2.2px;
+    }
+
+    h2 {
+      max-width: 980px;
+      font-size: clamp(34px, 6.4vw, 74px);
+      line-height: 0.98;
+      font-weight: 400;
+      letter-spacing: -1.8px;
+    }
+
+    h3 {
+      font-size: clamp(18px, 2vw, 26px);
+      line-height: 1.1;
+      font-weight: 400;
+      letter-spacing: -0.4px;
+    }
+
+    .lead {
+      max-width: 850px;
+      margin-top: 28px;
+      color: var(--content-low);
+      font-size: clamp(18px, 2.2vw, 29px);
+      line-height: 1.24;
+      letter-spacing: -0.3px;
+    }
+
+    .note {
+      max-width: 860px;
+      color: var(--content-low);
+      font-size: 14px;
+      line-height: 1.55;
+    }
+
+    .grid { display: grid; gap: 14px; }
+    .grid.cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .grid.cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .grid.cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+
+    .kpi {
+      border: 1px solid var(--border);
+      background: var(--background);
+      padding: 22px;
+      min-height: 150px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .kpi .value { font-size: clamp(28px, 4.8vw, 54px); line-height: 0.98; letter-spacing: -1.6px; }
+    .kpi .label { color: var(--content-low); font-size: 12px; line-height: 16px; text-transform: uppercase; margin-top: 18px; }
+    .kpi .delta { font-size: 13px; margin-top: 8px; color: var(--content-low); }
+    .up { color: var(--success); }
+    .down { color: var(--danger); }
+    .warn { color: var(--warning); }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+      line-height: 1.35;
+      background: var(--background);
+    }
+
+    th, td { border-bottom: 1px solid var(--border-low); padding: 13px 10px; text-align: left; vertical-align: top; }
+    th { color: var(--content-low); font-size: 11px; text-transform: uppercase; font-weight: 400; }
+    td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
+    tr:last-child td { border-bottom: 0; }
+
+    .panel {
+      border: 1px solid var(--border);
+      background: var(--background);
+      padding: clamp(20px, 3vw, 34px);
+    }
+
+    .callout {
+      border: 1px solid var(--border);
+      background: var(--background);
+      padding: 22px;
+      display: grid;
+      grid-template-columns: 34px 1fr;
+      gap: 16px;
+      align-items: start;
+    }
+
+    .callout strong { display: block; margin-bottom: 8px; }
+    .callout p { color: var(--content-low); font-size: 14px; line-height: 1.5; }
+    .icon { font-size: 24px; line-height: 1; }
+
+    .bars { display: grid; gap: 12px; }
+    .bar-row { display: grid; grid-template-columns: 130px 1fr 80px; gap: 12px; align-items: center; font-size: 13px; }
+    .bar-track { height: 16px; background: var(--background-pressed); border: 1px solid var(--border-low); }
+    .bar-fill { height: 100%; background: var(--content); }
+    .bar-fill.paypal { background: #1b1b1b; }
+    .bar-fill.secondary { background: #757575; }
+    .bar-fill.muted { background: #adadad; }
+    .bar-value { text-align: right; font-variant-numeric: tabular-nums; color: var(--content-low); }
+
+    .split {
+      display: grid;
+      grid-template-columns: 0.9fr 1.1fr;
+      gap: clamp(24px, 4vw, 54px);
+      align-items: start;
+    }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      border: 1px solid var(--border);
+      padding: 5px 8px;
+      font-size: 11px;
+      line-height: 1;
+      text-transform: uppercase;
+      background: var(--background);
+    }
+
+    .stack { display: grid; gap: 14px; }
+    .footer { color: var(--content-low); font-size: 11px; line-height: 1.5; }
+
+    @media (max-width: 840px) {
+      section { min-height: auto; }
+      .grid.cols-2, .grid.cols-3, .grid.cols-4, .split { grid-template-columns: 1fr; }
+      .bar-row { grid-template-columns: 95px 1fr 58px; }
+      .topline { flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <section>
+      <div class="topline">
+        <div class="brand">Pull&amp;Bear · Austria</div>
+        <div>Periodo fiscal: 01/02/2026 - 27/06/2026<br>Generado: 29/06/2026</div>
+      </div>
+      <div class="eyebrow">Analisis de mercado · Metodos de pago</div>
+      <h1>Austria cae por volumen y cesta. PayPal requiere investigacion especifica de mayo.</h1>
+      <p class="lead">La conversion global mejora frente al ano anterior, pero el mercado pierde visitas, pedidos, revenue y valor por pedido. PayPal concentra una senal operativa relevante de rechazos, especialmente en web durante mayo.</p>
+    </section>
+
+    <section class="compact alt">
+      <div class="eyebrow">Scorecard comercial</div>
+      <div class="grid cols-4">
+        <div class="kpi"><div><div class="value">914.315</div><div class="label">Visitas 2026</div></div><div class="delta down">-11,0% vs LY</div></div>
+        <div class="kpi"><div><div class="value">30.804</div><div class="label">Pedidos 2026</div></div><div class="delta down">-6,5% vs LY</div></div>
+        <div class="kpi"><div><div class="value">2,61M</div><div class="label">Revenue EUR</div></div><div class="delta down">-9,0% vs LY</div></div>
+        <div class="kpi"><div><div class="value">3,37%</div><div class="label">Conversion rate</div></div><div class="delta up">+0,16 pp vs LY</div></div>
+      </div>
+    </section>
+
+    <section class="compact">
+      <div class="eyebrow">Lectura principal</div>
+      <div class="grid cols-3">
+        <div class="callout"><div class="icon">↓</div><div><strong>Menor volumen de entrada</strong><p>Las visitas bajan un 11,0%. Es el principal vector de perdida de escala del mercado.</p></div></div>
+        <div class="callout"><div class="icon">↓</div><div><strong>Menor valor por pedido</strong><p>El AOV baja de 87,14 EUR a 84,74 EUR y el UPT cae de 3,82 a 3,67 unidades por pedido.</p></div></div>
+        <div class="callout"><div class="icon">↑</div><div><strong>Conversion no deteriorada</strong><p>La CR mejora de 3,21% a 3,37%, por lo que no hay evidencia de caida general del funnel.</p></div></div>
+      </div>
+    </section>
+
+    <section class="compact alt">
+      <div class="split">
+        <div>
+          <div class="eyebrow">Comparativa TY vs LY</div>
+          <h2>El problema no es eficiencia global de conversion.</h2>
+          <p class="lead">Austria pierde revenue por menos trafico, menos unidades y menor cesta media. La mejora de conversion compensa parcialmente la perdida de visitas, pero no alcanza para sostener el volumen comercial.</p>
+        </div>
+        <div class="panel">
+          <table>
+            <thead><tr><th>Metrica</th><th class="num">2026</th><th class="num">2025</th><th class="num">Var.</th></tr></thead>
+            <tbody>
+              <tr><td>Visitas</td><td class="num">914.315</td><td class="num">1.027.221</td><td class="num down">-11,0%</td></tr>
+              <tr><td>Pedidos</td><td class="num">30.804</td><td class="num">32.933</td><td class="num down">-6,5%</td></tr>
+              <tr><td>Revenue</td><td class="num">2.610.195 EUR</td><td class="num">2.869.842 EUR</td><td class="num down">-9,0%</td></tr>
+              <tr><td>Unidades</td><td class="num">113.022</td><td class="num">125.844</td><td class="num down">-10,2%</td></tr>
+              <tr><td>CR</td><td class="num">3,37%</td><td class="num">3,21%</td><td class="num up">+0,16 pp</td></tr>
+              <tr><td>AOV</td><td class="num">84,74 EUR</td><td class="num">87,14 EUR</td><td class="num down">-2,8%</td></tr>
+              <tr><td>UPT</td><td class="num">3,67</td><td class="num">3,82</td><td class="num down">-4,0%</td></tr>
+              <tr><td>ATC rate</td><td class="num">50,1%</td><td class="num">48,0%</td><td class="num up">+2,1 pp</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="eyebrow">PayPal · Senal operativa</div>
+      <h2>PayPal concentra el 39,2% de los rechazos operativos observados.</h2>
+      <p class="lead">La senal procede de Prometheus/SRE, no del mix comercial de pedidos. Sirve para detectar friccion de checkout por metodo, no para afirmar cuota de uso ni impacto economico cerrado.</p>
+      <div style="height: 34px"></div>
+      <div class="panel">
+        <div class="bars">
+          <div class="bar-row"><div>PayPal</div><div class="bar-track"><div class="bar-fill paypal" style="width:100%"></div></div><div class="bar-value">830</div></div>
+          <div class="bar-row"><div>MasterCard</div><div class="bar-track"><div class="bar-fill secondary" style="width:91.7%"></div></div><div class="bar-value">761</div></div>
+          <div class="bar-row"><div>ApplePay</div><div class="bar-track"><div class="bar-fill muted" style="width:49.4%"></div></div><div class="bar-value">410</div></div>
+          <div class="bar-row"><div>VISA</div><div class="bar-track"><div class="bar-fill muted" style="width:11.1%"></div></div><div class="bar-value">92</div></div>
+          <div class="bar-row"><div>GooglePay</div><div class="bar-track"><div class="bar-fill muted" style="width:1.9%"></div></div><div class="bar-value">16</div></div>
+          <div class="bar-row"><div>Klarna</div><div class="bar-track"><div class="bar-fill muted" style="width:0.7%"></div></div><div class="bar-value">6</div></div>
+          <div class="bar-row"><div>GiftCard</div><div class="bar-track"><div class="bar-fill muted" style="width:0.2%"></div></div><div class="bar-value">2</div></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="compact alt">
+      <div class="eyebrow">Evolucion mensual</div>
+      <div class="split">
+        <div>
+          <h2>El pico esta en mayo, especialmente en web.</h2>
+          <p class="lead">PayPal pasa de 122 rechazos en abril a 425 en mayo y baja a 116 hasta el 27 de junio. Esto apunta a un episodio concentrado, no a una degradacion lineal sostenida.</p>
+        </div>
+        <div class="panel">
+          <table>
+            <thead><tr><th>Mes</th><th class="num">Intentos compra</th><th class="num">Rechazos total</th><th class="num">PayPal</th><th class="num">PayPal / intentos</th></tr></thead>
+            <tbody>
+              <tr><td>Febrero</td><td class="num">3.524</td><td class="num">95</td><td class="num">19</td><td class="num">0,54%</td></tr>
+              <tr><td>Marzo</td><td class="num">14.547</td><td class="num">502</td><td class="num">148</td><td class="num">1,02%</td></tr>
+              <tr><td>Abril</td><td class="num">13.772</td><td class="num">385</td><td class="num">122</td><td class="num">0,89%</td></tr>
+              <tr><td>Mayo</td><td class="num">17.587</td><td class="num warn">731</td><td class="num warn">425</td><td class="num warn">2,42%</td></tr>
+              <tr><td>Junio 1-27</td><td class="num">18.407</td><td class="num">404</td><td class="num">116</td><td class="num">0,63%</td></tr>
+              <tr><td><strong>Total</strong></td><td class="num"><strong>67.837</strong></td><td class="num"><strong>2.117</strong></td><td class="num"><strong>830</strong></td><td class="num"><strong>1,22%</strong></td></tr>
+            </tbody>
+          </table>
+          <p class="note" style="margin-top:14px">El denominador es el total de intentos de compra operativos, no intentos especificos de PayPal. Por tanto, no debe interpretarse como tasa real de rechazo de PayPal.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="compact">
+      <div class="eyebrow">PayPal por canal</div>
+      <div class="grid cols-2">
+        <div class="panel">
+          <h3>Mayo 2026</h3>
+          <div style="height: 20px"></div>
+          <div class="bars">
+            <div class="bar-row"><div>web-mobile</div><div class="bar-track"><div class="bar-fill paypal" style="width:100%"></div></div><div class="bar-value">174</div></div>
+            <div class="bar-row"><div>web-standard</div><div class="bar-track"><div class="bar-fill paypal" style="width:90.8%"></div></div><div class="bar-value">158</div></div>
+            <div class="bar-row"><div>app</div><div class="bar-track"><div class="bar-fill secondary" style="width:40.2%"></div></div><div class="bar-value">70</div></div>
+            <div class="bar-row"><div>store-exp.</div><div class="bar-track"><div class="bar-fill muted" style="width:12.6%"></div></div><div class="bar-value">22</div></div>
+            <div class="bar-row"><div>store</div><div class="bar-track"><div class="bar-fill muted" style="width:0.6%"></div></div><div class="bar-value">1</div></div>
+          </div>
+        </div>
+        <div class="panel">
+          <h3>Junio 2026 hasta 27/06</h3>
+          <div style="height: 20px"></div>
+          <div class="bars">
+            <div class="bar-row"><div>app</div><div class="bar-track"><div class="bar-fill paypal" style="width:100%"></div></div><div class="bar-value">54</div></div>
+            <div class="bar-row"><div>web-mobile</div><div class="bar-track"><div class="bar-fill secondary" style="width:70.4%"></div></div><div class="bar-value">38</div></div>
+            <div class="bar-row"><div>web-standard</div><div class="bar-track"><div class="bar-fill secondary" style="width:29.6%"></div></div><div class="bar-value">16</div></div>
+            <div class="bar-row"><div>store-exp.</div><div class="bar-track"><div class="bar-fill muted" style="width:9.3%"></div></div><div class="bar-value">5</div></div>
+            <div class="bar-row"><div>store</div><div class="bar-track"><div class="bar-fill muted" style="width:5.6%"></div></div><div class="bar-value">3</div></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="compact alt">
+      <div class="eyebrow">Estado de la extraccion comercial</div>
+      <h2>Mix real de metodos de pago pendiente de preagregacion.</h2>
+      <p class="lead">Se identifico la fuente correcta para metodo real y estado de pago, pero las consultas directas sobre Austria devolvieron timeout. No se han usado IDs agregados de tipo de pago para inferir PayPal, Visa, Mastercard o Klarna.</p>
+      <div style="height: 30px"></div>
+      <div class="panel">
+        <table>
+          <thead><tr><th>Fuente / accion</th><th>Resultado</th><th>Lectura</th></tr></thead>
+          <tbody>
+            <tr><td>DIM_PAIS</td><td><span class="tag">OK</span></td><td>Austria resuelta como COD_COUNTRY = 17.</td></tr>
+            <tr><td>V_E_DIM_STORE / DIM_STORE</td><td><span class="tag">OK</span></td><td>Tienda online propia Pull&amp;Bear Austria: STORE_ID = 24009419.</td></tr>
+            <tr><td>V_T_ZENIT_TRAFFIC_AND_CONVERSION_GROUPED_AGG</td><td><span class="tag">OK</span></td><td>Baseline comercial TY/LY obtenido.</td></tr>
+            <tr><td>V_CHECKOUT_PB</td><td><span class="tag">Timeout</span></td><td>Fuente correcta para PAYMENT_METHOD_NAME, PAYMENT_GATEWAY y PAYMENT_STATUS, pero no accesible en consulta directa.</td></tr>
+            <tr><td>V_ECOMMERCE_UECOITX_SPX_PEDIDOS_MERCADO</td><td><span class="tag">Timeout</span></td><td>Vista agregada alternativa no disponible por timeout.</td></tr>
+            <tr><td>SRE Prometheus</td><td><span class="tag">OK</span></td><td>Senal operativa de rechazos por metodo disponible por meses.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section>
+      <div class="eyebrow">Conclusion</div>
+      <h2>No hay evidencia para atribuir la caida completa a PayPal, pero si hay una alerta accionable en mayo.</h2>
+      <p class="lead">La prioridad recomendada es validar el episodio de mayo en web con una extraccion preagregada de checkout por PAYMENT_METHOD_NAME y PAYMENT_STATUS. Si se confirma una tasa anomala de rechazo o abandono en PayPal, el impacto seria acotado temporalmente y concentrado en canales web.</p>
+      <div style="height: 30px"></div>
+      <div class="grid cols-3">
+        <div class="callout"><div class="icon">1</div><div><strong>Preagregar checkout</strong><p>STORE_ID 24009419, fechas 2026-02-01 a 2026-06-27, agrupado por metodo, gateway, status y mes.</p></div></div>
+        <div class="callout"><div class="icon">2</div><div><strong>Aislar mayo web</strong><p>Comparar web-mobile y web-standard con app para confirmar si el pico fue especifico de web.</p></div></div>
+        <div class="callout"><div class="icon">3</div><div><strong>Conectar con negocio</strong><p>Relacionar rechazos PayPal con pedidos finalizados y revenue potencial, no solo con contadores operativos.</p></div></div>
+      </div>
+    </section>
+
+    <section class="compact">
+      <div class="footer">
+        Fuentes: DATAWAREHOUSE_PULL.PB_ECOMMERCE.V_T_ZENIT_TRAFFIC_AND_CONVERSION_GROUPED_AGG; DATAWAREHOUSE_PULL.DMECOMMERCE_VISTAS.DIM_PAIS; DATAWAREHOUSE_PULL.DMECOMMERCE_COMERCIAL_VIEWS.V_E_DIM_STORE; SRE Prometheus mecchcktco_fn_payment_refused_total y mecchcktco_fn_purchaseAttempt_created_total. Limitacion: extraccion comercial de V_CHECKOUT_PB pendiente por timeout.
+      </div>
+    </section>
+  </main>
+</body>
+</html>

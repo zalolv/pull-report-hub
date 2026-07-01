@@ -1,0 +1,486 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>PBAND-SP2607 — Refinement en Sprint</title>
+  <style>
+    :root {
+      --bg:#fff; --surface:#f7f7f7; --ink:#000; --muted:#6f6f6f;
+      --line:#e2e2e2; --danger:#ff3b30; --warning:#ff9500;
+      --info:#007aff; --success:#34c759;
+      --refine:#5856d6;
+    }
+    * { box-sizing:border-box; }
+    body { margin:0; background:var(--bg); color:var(--ink); font-family:"Neue Haas","Helvetica Now Text",Helvetica,Arial,sans-serif; letter-spacing:.45px; }
+    a { color:inherit; border-bottom:1px solid currentColor; text-decoration:none; }
+    .page { max-width:1420px; margin:0 auto; padding:32px; }
+
+    /* Hero */
+    .hero { border:1px solid #000; padding:32px; display:grid; grid-template-columns:minmax(0,1.2fr) minmax(280px,.8fr); gap:32px; align-items:end; }
+    .eyebrow { font-size:11px; line-height:18px; text-transform:uppercase; color:var(--muted); letter-spacing:.9px; }
+    h1 { margin:16px 0 0; font-size:clamp(40px,6vw,88px); line-height:.92; letter-spacing:-2px; font-weight:350; }
+    .hero-copy { font-size:17px; line-height:1.5; max-width:660px; margin:20px 0 0; }
+    .hero-card { border:1px solid var(--line); background:var(--surface); padding:20px; }
+    .hero-card p { color:var(--muted); font-size:13px; line-height:1.5; margin:8px 0 0; }
+    .label { font-size:10px; text-transform:uppercase; letter-spacing:.9px; color:var(--muted); }
+
+    /* KPI row */
+    .kpi-row { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:12px; margin:24px 0; }
+    .kpi { border:1px solid var(--line); padding:20px; min-height:110px; display:flex; flex-direction:column; justify-content:space-between; }
+    .kpi strong { font-size:clamp(32px,5vw,58px); font-weight:350; letter-spacing:-2px; }
+    .kpi span { font-size:11px; text-transform:uppercase; color:var(--muted); }
+    .kpi.warn strong { color:var(--warning); }
+    .kpi.danger strong { color:var(--danger); }
+    .kpi.refine strong { color:var(--refine); }
+
+    /* Attention */
+    .attention { border:1px solid var(--danger); padding:16px 20px; margin-top:24px; display:grid; grid-template-columns:32px 1fr; gap:12px; align-items:start; }
+    .attention-icon { font-size:20px; line-height:1; }
+    .attention-body { font-size:13px; line-height:1.5; }
+    .attention-body strong { display:block; margin-bottom:4px; text-transform:uppercase; font-size:11px; letter-spacing:.5px; }
+
+    /* Section */
+    .section { margin-top:48px; }
+    .section-head { display:flex; justify-content:space-between; align-items:end; gap:24px; margin-bottom:16px; }
+    h2 { margin:0; font-size:clamp(22px,3.5vw,44px); line-height:1; letter-spacing:-1px; font-weight:350; }
+    h3 { margin:0 0 10px; font-size:13px; text-transform:uppercase; font-weight:500; letter-spacing:.5px; }
+    .section-note { color:var(--muted); font-size:13px; line-height:1.5; margin:0; max-width:680px; }
+
+    /* Ticket cards */
+    .ticket-list { display:grid; gap:0; border:1px solid var(--line); }
+    .ticket-card { display:grid; grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr); border-bottom:1px solid var(--line); }
+    .ticket-card:last-child { border-bottom:0; }
+    .tc-meta { padding:22px 24px; border-right:1px solid var(--line); }
+    .tc-comments { padding:22px 24px; background:var(--surface); }
+
+    /* Meta */
+    .tc-key-row { display:flex; align-items:center; gap:10px; margin-bottom:12px; flex-wrap:wrap; }
+    .tc-key { font-size:12px; font-weight:600; letter-spacing:.3px; }
+    .pill { display:inline-flex; border:1px solid var(--line); padding:3px 7px; font-size:10px; text-transform:uppercase; color:var(--muted); white-space:nowrap; }
+    .pill.blocker   { color:var(--danger);  border-color:var(--danger);  }
+    .pill.critical  { color:var(--warning); border-color:var(--warning); }
+    .pill.important { color:var(--info);    border-color:var(--info);    }
+    .pill.minor     { color:var(--muted);   border-color:var(--line);    }
+    .pill.refinement{ color:var(--refine);  border-color:var(--refine);  }
+    .pill.unassigned{ color:var(--danger);  border-color:var(--danger);  background:#fff0f0; }
+    .tc-summary { font-size:15px; line-height:1.35; font-weight:400; margin:0 0 16px; }
+    .tc-row { display:flex; gap:6px; align-items:flex-start; margin-bottom:8px; font-size:12px; }
+    .tc-row .lbl { color:var(--muted); text-transform:uppercase; font-size:10px; letter-spacing:.5px; white-space:nowrap; min-width:72px; padding-top:1px; }
+    .tc-row .val { line-height:1.4; }
+    .no-sp { color:var(--warning); }
+    .tc-link { font-size:11px; margin-top:16px; display:inline-block; }
+
+    /* Blocker tag */
+    .blocker-tag { display:inline-block; margin-top:12px; border:1px solid var(--danger); color:var(--danger); padding:4px 9px; font-size:10px; text-transform:uppercase; letter-spacing:.6px; }
+    .blocker-tag.dep { border-color:var(--warning); color:var(--warning); }
+    .blocker-tag.info-needed { border-color:var(--info); color:var(--info); }
+
+    /* Comment thread */
+    .comment-header { font-size:11px; text-transform:uppercase; color:var(--muted); letter-spacing:.7px; margin-bottom:14px; display:flex; justify-content:space-between; align-items:center; }
+    .comment-count { border:1px solid var(--line); padding:2px 7px; font-size:10px; }
+    .comment { border:1px solid var(--line); background:#fff; padding:12px 14px; margin-bottom:8px; }
+    .comment:last-child { margin-bottom:0; }
+    .comment-meta { display:flex; justify-content:space-between; align-items:flex-start; gap:8px; margin-bottom:8px; }
+    .comment-author { font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:.4px; }
+    .comment-date { font-size:10px; color:var(--muted); white-space:nowrap; }
+    .comment-body { font-size:12px; line-height:1.6; color:var(--ink); }
+    .comment.last-active { border-color:var(--refine); }
+    .comment.dep-block { border-color:var(--danger); }
+
+    /* Dependency badge */
+    .dep-badge { display:inline-flex; align-items:center; gap:5px; font-size:10px; text-transform:uppercase; letter-spacing:.6px; margin-bottom:10px; }
+    .dep-badge.design { color:var(--info); }
+    .dep-badge.external { color:var(--danger); }
+    .dep-badge.product { color:var(--warning); }
+
+    /* Summary table */
+    .tbl-wrap { border:1px solid var(--line); overflow:auto; }
+    table { width:100%; border-collapse:collapse; font-size:12px; min-width:800px; }
+    th,td { border-bottom:1px solid var(--line); padding:9px 10px; text-align:left; vertical-align:top; }
+    th { color:var(--muted); text-transform:uppercase; font-size:10px; font-weight:500; background:#fff; position:sticky; top:0; }
+    tr:last-child td { border-bottom:0; }
+
+    /* Query */
+    .query { background:#000; color:#fff; padding:16px; overflow:auto; font-size:12px; line-height:1.5; }
+    .query code { white-space:pre; }
+
+    /* Conclusion grid */
+    .conclusion-grid { border:1px solid var(--line); padding:24px; display:grid; grid-template-columns:repeat(3,1fr); gap:24px; }
+    .conclusion-grid p { font-size:13px; line-height:1.55; color:var(--muted); margin:0; }
+
+    footer { margin:48px 0 0; padding-top:20px; border-top:1px solid var(--line); color:var(--muted); font-size:12px; line-height:1.6; }
+
+    @media(max-width:900px){
+      .hero{grid-template-columns:1fr;}
+      .kpi-row{grid-template-columns:repeat(2,1fr);}
+      .ticket-card{grid-template-columns:1fr;}
+      .tc-meta{border-right:0; border-bottom:1px solid var(--line);}
+      .conclusion-grid{grid-template-columns:1fr;}
+    }
+    @media(max-width:560px){
+      .page{padding:16px;}
+      .kpi-row{grid-template-columns:1fr;}
+    }
+  </style>
+</head>
+<body>
+<main class="page">
+
+  <!-- Hero -->
+  <section class="hero">
+    <div>
+      <div class="eyebrow">Pull&amp;Bear Android · PBAND · Sprint PBAND-SP2607</div>
+      <h1>Refinement<br>en Sprint.</h1>
+      <p class="hero-copy">A diferencia de iOS, el sprint PBAND-SP2607 sí tiene tickets en Refinement dentro de su scope: <strong>5 historias bloqueadas por dependencias externas</strong> — diseño sin responder, equipo HLP externo, y contenido pendiente de validar. Todos sin estimación de story points.</p>
+    </div>
+    <aside class="hero-card">
+      <div class="label">Situación</div>
+      <p><strong>5 tickets en Refinement dentro del sprint.</strong><br>No es radar — son scope activo que necesita desbloqueo para poder planificarse.</p>
+      <p>Generado el 01/07/2026. Snapshot estático desde Jira live. No modifica Jira.</p>
+    </aside>
+  </section>
+
+  <!-- KPIs -->
+  <section class="kpi-row" aria-label="Resumen">
+    <div class="kpi refine">
+      <strong>5</strong>
+      <span>Refinement en sprint</span>
+    </div>
+    <div class="kpi danger">
+      <strong>5</strong>
+      <span>Sin estimación (SP)</span>
+    </div>
+    <div class="kpi danger">
+      <strong>1</strong>
+      <span>Sin asignar</span>
+    </div>
+    <div class="kpi warn">
+      <strong>3</strong>
+      <span>Depend. externas</span>
+    </div>
+  </section>
+
+  <!-- Attention -->
+  <div class="attention">
+    <div class="attention-icon">⛔</div>
+    <div class="attention-body">
+      <strong>Desbloqueo urgente requerido</strong>
+      5 tickets dentro del sprint en estado Refinement. Ninguno tiene story points. El bloqueo es principalmente externo: diseño (Figma sin responder), equipo HLP, y contenido de texto. Sin resolver estos nodos, el trabajo no puede entrar en desarrollo.
+    </div>
+  </div>
+
+  <!-- Tickets -->
+  <section class="section">
+    <div class="section-head">
+      <h2>Tickets en Refinement</h2>
+      <p class="section-note">5 historias bloqueadas dentro del sprint PBAND-SP2607. Cada bloqueo tiene un tipo distinto — la solución no es la misma para todos.</p>
+    </div>
+
+    <div class="ticket-list">
+
+      <!-- PBAND-188 -->
+      <article class="ticket-card">
+        <div class="tc-meta">
+          <div class="tc-key-row">
+            <span class="tc-key">PBAND-188</span>
+            <span class="pill blocker">A+ Crítico</span>
+            <span class="pill refinement">Refinement</span>
+          </div>
+          <h3 class="tc-summary">[WISHLIST] Edición listas personalizadas</h3>
+          <div class="tc-row"><span class="lbl">Tipo</span><span class="val">Historia</span></div>
+          <div class="tc-row"><span class="lbl">Asignado</span><span class="val">Juan Jose Rejon</span></div>
+          <div class="tc-row"><span class="lbl">Story pts</span><span class="val no-sp">Sin estimación</span></div>
+          <div class="tc-row"><span class="lbl">Actualizado</span><span class="val">15/06/2026</span></div>
+          <div class="blocker-tag info-needed">Definición incompleta</div>
+          <br>
+          <a class="tc-link" href="https://jira.inditex.com/jira/browse/PBAND-188" target="_blank">Abrir en Jira &rarr;</a>
+        </div>
+        <div class="tc-comments">
+          <div class="comment-header">
+            <span>Comentarios de refinement</span>
+            <span class="comment-count">2 comentarios</span>
+          </div>
+          <div class="comment">
+            <div class="comment-meta">
+              <span class="comment-author">Juan Jose Rejon</span>
+              <span class="comment-date">14/04/2026</span>
+            </div>
+            <div class="comment-body">Es necesario definir bien todo el tema de la wishlist compartida y si al abrir una va a una pantalla a parte ya que no se guarda, como pasa actualmente.</div>
+          </div>
+          <div class="comment last-active">
+            <div class="comment-meta">
+              <span class="comment-author">Cesar Bernardo Martinez</span>
+              <span class="comment-date">19/05/2026</span>
+            </div>
+            <div class="comment-body">La edición de las listas, se modifica y ya no se hará desde el icono de la parte superior, el cual desaparece, sino con un botón en la parte inferior.<br><br>Al pulsar el botón editar lista, la funcionalidad se mantiene tal y como está descrita ahora, pero teniendo en cuenta el prototipo visual de la pantalla:<br><br><a href="https://www.figma.com/design/0A7sQZB1SVmU4cH4tSGyOt/Proyecto-Wishlist-2025--Pruebas-?node-id=2491-43589" target="_blank">Ver prototipo en Figma &rarr;</a></div>
+          </div>
+        </div>
+      </article>
+
+      <!-- PBAND-1324 -->
+      <article class="ticket-card">
+        <div class="tc-meta">
+          <div class="tc-key-row">
+            <span class="tc-key">PBAND-1324</span>
+            <span class="pill blocker">A+ Crítico</span>
+            <span class="pill refinement">Refinement</span>
+            <span class="pill unassigned">Sin asignar</span>
+          </div>
+          <h3 class="tc-summary">[QA] [AUTO] [OAUTH] Hacer localizadores únicos en OAUTH</h3>
+          <div class="tc-row"><span class="lbl">Tipo</span><span class="val">Historia</span></div>
+          <div class="tc-row"><span class="lbl">Asignado</span><span class="val" style="color:var(--danger);">Sin asignar</span></div>
+          <div class="tc-row"><span class="lbl">Etiquetas</span><span class="val">SngularApps-Auto</span></div>
+          <div class="tc-row"><span class="lbl">Story pts</span><span class="val no-sp">Sin estimación</span></div>
+          <div class="tc-row"><span class="lbl">Actualizado</span><span class="val">15/06/2026</span></div>
+          <div class="blocker-tag">Dep. equipo externo (HLP)</div>
+          <br>
+          <a class="tc-link" href="https://jira.inditex.com/jira/browse/PBAND-1324" target="_blank">Abrir en Jira &rarr;</a>
+        </div>
+        <div class="tc-comments">
+          <div class="comment-header">
+            <span>Comentarios de refinement</span>
+            <span class="comment-count">1 comentario</span>
+          </div>
+          <div class="comment dep-block">
+            <div class="comment-meta">
+              <span class="comment-author">Juan Jose Rejon</span>
+              <span class="comment-date">03/06/2026</span>
+            </div>
+            <div class="comment-body">Esos elementos son de una web, nosotros obtenemos la url de la HLP y eso es lo que cargamos, entonces esos ids os lo tienen que fijar los devs de HLP.</div>
+          </div>
+        </div>
+      </article>
+
+      <!-- PBAND-43 -->
+      <article class="ticket-card">
+        <div class="tc-meta">
+          <div class="tc-key-row">
+            <span class="tc-key">PBAND-43</span>
+            <span class="pill important">A Importante</span>
+            <span class="pill refinement">Refinement</span>
+          </div>
+          <h3 class="tc-summary">[CESTA] [YODA] Desajustes en la maquetación</h3>
+          <div class="tc-row"><span class="lbl">Tipo</span><span class="val">Historia</span></div>
+          <div class="tc-row"><span class="lbl">Asignado</span><span class="val">David Gonzalez Lomeña</span></div>
+          <div class="tc-row"><span class="lbl">Story pts</span><span class="val no-sp">Sin estimación</span></div>
+          <div class="tc-row"><span class="lbl">Actualizado</span><span class="val">15/06/2026</span></div>
+          <div class="blocker-tag dep">Dep. diseño (Figma)</div>
+          <br>
+          <a class="tc-link" href="https://jira.inditex.com/jira/browse/PBAND-43" target="_blank">Abrir en Jira &rarr;</a>
+        </div>
+        <div class="tc-comments">
+          <div class="comment-header">
+            <span>Comentarios de refinement</span>
+            <span class="comment-count">1 comentario</span>
+          </div>
+          <div class="comment dep-block" style="border-color:var(--warning);">
+            <div class="comment-meta">
+              <span class="comment-author">David Gonzalez Lomeña</span>
+              <span class="comment-date">14/05/2026</span>
+            </div>
+            <div class="comment-body">Buenas, hay preguntas en Figma pendientes de responder por parte de diseño y no veo cuál es el diseño correcto, también se menciona un punto "2" pero no aparece en la imagen adjuntada en Jira, solo veo los puntos "1" y "3".</div>
+          </div>
+        </div>
+      </article>
+
+      <!-- PBAND-101 -->
+      <article class="ticket-card">
+        <div class="tc-meta">
+          <div class="tc-key-row">
+            <span class="tc-key">PBAND-101</span>
+            <span class="pill critical">B Importante</span>
+            <span class="pill refinement">Refinement</span>
+          </div>
+          <h3 class="tc-summary">[Help] Acceso a widget de chat desde enlace web en el webview de las FAQS</h3>
+          <div class="tc-row"><span class="lbl">Tipo</span><span class="val">Historia</span></div>
+          <div class="tc-row"><span class="lbl">Asignado</span><span class="val">Jorge Lopez Hidalgo</span></div>
+          <div class="tc-row"><span class="lbl">Story pts</span><span class="val no-sp">Sin estimación</span></div>
+          <div class="tc-row"><span class="lbl">Actualizado</span><span class="val">11/06/2026</span></div>
+          <div class="blocker-tag">Dep. equipo externo (HLP)</div>
+          <br>
+          <a class="tc-link" href="https://jira.inditex.com/jira/browse/PBAND-101" target="_blank">Abrir en Jira &rarr;</a>
+        </div>
+        <div class="tc-comments">
+          <div class="comment-header">
+            <span>Comentarios de refinement</span>
+            <span class="comment-count">3 comentarios</span>
+          </div>
+          <div class="comment">
+            <div class="comment-meta">
+              <span class="comment-author">Javier Suarez Torres</span>
+              <span class="comment-date">20/03/2026</span>
+            </div>
+            <div class="comment-body">Es necesario que tenga una interfaz como otros eventos de javascript para poder interceptarlo.</div>
+          </div>
+          <div class="comment">
+            <div class="comment-meta">
+              <span class="comment-author">Diana Queijo Bello</span>
+              <span class="comment-date">10/04/2026</span>
+            </div>
+            <div class="comment-body">Se ha creado el evento <code style="background:var(--surface); padding:1px 4px; font-size:11px;">open-chat</code> en el webview para que podáis interceptarlo.</div>
+          </div>
+          <div class="comment dep-block">
+            <div class="comment-meta">
+              <span class="comment-author">Jorge Lopez Hidalgo</span>
+              <span class="comment-date">06/05/2026</span>
+            </div>
+            <div class="comment-body">Buenos días. Estuve probando con el webview de la pantalla de Ayuda en Colombia pero no he conseguido capturar la acción y la navegación al chat. Se lo he comentado a Javi Suarez y me ha comentado que hubo anteriormente otro desarrollo parecido en que se capturaban otras acciones (ver <a href="https://jira.inditex.com/jira/browse/APPSPULLA-3060" target="_blank">APPSPULLA-3060</a>). Puede ser que las funciones que se crearan en ese momento estuvieran en otro JS distinto o funcionara de otra manera. Si nos puedes dar un poco más de contexto de cómo funciona todo...</div>
+          </div>
+        </div>
+      </article>
+
+      <!-- PBAND-1007 -->
+      <article class="ticket-card">
+        <div class="tc-meta">
+          <div class="tc-key-row">
+            <span class="tc-key">PBAND-1007</span>
+            <span class="pill minor">C Menor</span>
+            <span class="pill refinement">Refinement</span>
+          </div>
+          <h3 class="tc-summary">[QA][Android][Localizador] El placeholder del buscador en "Punto de recogida" presenta errores de redacción</h3>
+          <div class="tc-row"><span class="lbl">Tipo</span><span class="val">Incidencia</span></div>
+          <div class="tc-row"><span class="lbl">Asignado</span><span class="val">Diego Castrillo Martinez</span></div>
+          <div class="tc-row"><span class="lbl">Story pts</span><span class="val no-sp">Sin estimación</span></div>
+          <div class="tc-row"><span class="lbl">Actualizado</span><span class="val">15/06/2026</span></div>
+          <div class="blocker-tag info-needed">Pendiente contenido validado</div>
+          <br>
+          <a class="tc-link" href="https://jira.inditex.com/jira/browse/PBAND-1007" target="_blank">Abrir en Jira &rarr;</a>
+        </div>
+        <div class="tc-comments">
+          <div class="comment-header">
+            <span>Comentarios de refinement</span>
+            <span class="comment-count">1 comentario</span>
+          </div>
+          <div class="comment dep-block" style="border-color:var(--info);">
+            <div class="comment-meta">
+              <span class="comment-author">Diego Castrillo Martinez</span>
+              <span class="comment-date">29/05/2026</span>
+            </div>
+            <div class="comment-body">El valor String (localización) en español sí aparece incorrectamente como en el ticket. ¿Es solamente en español que está mal o en otros idiomas también? Necesitaríamos los valores correctos y confirmados para este texto.</div>
+          </div>
+        </div>
+      </article>
+
+    </div>
+  </section>
+
+  <!-- Summary table -->
+  <section class="section">
+    <div class="section-head">
+      <h2>Resumen por ticket</h2>
+      <p class="section-note">Vista tabular con tipo de bloqueo y acción necesaria.</p>
+    </div>
+    <div class="tbl-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Ticket</th>
+            <th>Resumen</th>
+            <th>Prioridad</th>
+            <th>Asignado</th>
+            <th>SP</th>
+            <th># Com.</th>
+            <th>Último comentario</th>
+            <th>Tipo de bloqueo</th>
+            <th>Acción necesaria</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><a href="https://jira.inditex.com/jira/browse/PBAND-188" target="_blank">PBAND-188</a></td>
+            <td>[WISHLIST] Edición listas personalizadas</td>
+            <td style="color:var(--danger); white-space:nowrap;">A+ Crítico</td>
+            <td style="white-space:nowrap;">J.J. Rejon</td>
+            <td style="color:var(--warning);">—</td>
+            <td style="text-align:center;">2</td>
+            <td style="white-space:nowrap; color:var(--muted);">19/05/2026</td>
+            <td style="white-space:nowrap; color:var(--info);">Definición incompleta</td>
+            <td style="font-size:11px;">Confirmar comportamiento wishlist compartida + validar Figma</td>
+          </tr>
+          <tr>
+            <td><a href="https://jira.inditex.com/jira/browse/PBAND-1324" target="_blank">PBAND-1324</a></td>
+            <td>[QA][AUTO][OAUTH] Localizadores únicos en OAUTH</td>
+            <td style="color:var(--danger); white-space:nowrap;">A+ Crítico</td>
+            <td style="color:var(--danger); white-space:nowrap;">Sin asignar</td>
+            <td style="color:var(--warning);">—</td>
+            <td style="text-align:center;">1</td>
+            <td style="white-space:nowrap; color:var(--muted);">03/06/2026</td>
+            <td style="white-space:nowrap; color:var(--danger);">Dep. ext. HLP</td>
+            <td style="font-size:11px;">Equipo HLP debe modificar los ids de los elementos web</td>
+          </tr>
+          <tr>
+            <td><a href="https://jira.inditex.com/jira/browse/PBAND-43" target="_blank">PBAND-43</a></td>
+            <td>[CESTA][YODA] Desajustes en la maquetación</td>
+            <td style="color:var(--info); white-space:nowrap;">A Importante</td>
+            <td style="white-space:nowrap;">D. Gonzalez</td>
+            <td style="color:var(--warning);">—</td>
+            <td style="text-align:center;">1</td>
+            <td style="white-space:nowrap; color:var(--muted);">14/05/2026</td>
+            <td style="white-space:nowrap; color:var(--warning);">Dep. diseño (Figma)</td>
+            <td style="font-size:11px;">Diseño debe responder las preguntas abiertas en Figma y clarificar punto "2"</td>
+          </tr>
+          <tr>
+            <td><a href="https://jira.inditex.com/jira/browse/PBAND-101" target="_blank">PBAND-101</a></td>
+            <td>[Help] Chat desde webview FAQS</td>
+            <td style="color:var(--warning); white-space:nowrap;">B Importante</td>
+            <td style="white-space:nowrap;">J. Lopez Hidalgo</td>
+            <td style="color:var(--warning);">—</td>
+            <td style="text-align:center;">3</td>
+            <td style="white-space:nowrap; color:var(--muted);">06/05/2026</td>
+            <td style="white-space:nowrap; color:var(--danger);">Dep. ext. HLP</td>
+            <td style="font-size:11px;">HLP debe clarificar el funcionamiento del evento open-chat y el JS implicado</td>
+          </tr>
+          <tr>
+            <td><a href="https://jira.inditex.com/jira/browse/PBAND-1007" target="_blank">PBAND-1007</a></td>
+            <td>[QA] Placeholder buscador "Punto de recogida"</td>
+            <td style="white-space:nowrap;">C Menor</td>
+            <td style="white-space:nowrap;">D. Castrillo</td>
+            <td style="color:var(--warning);">—</td>
+            <td style="text-align:center;">1</td>
+            <td style="white-space:nowrap; color:var(--muted);">29/05/2026</td>
+            <td style="white-space:nowrap; color:var(--info);">Contenido pendiente</td>
+            <td style="font-size:11px;">Producto debe confirmar los valores de texto correctos en todos los idiomas afectados</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- Conclusion -->
+  <section class="section">
+    <div class="section-head"><h2>Lectura</h2></div>
+    <div class="conclusion-grid">
+      <div>
+        <h3>Patrón</h3>
+        <p>Los 5 tickets están bloqueados por información externa al equipo de desarrollo. No es un problema de capacidad técnica: es un problema de dependencias sin resolver entre diseño, HLP y producto.</p>
+      </div>
+      <div>
+        <h3>Riesgo</h3>
+        <p>PBAND-188 y PBAND-1324 son A+ Crítico. Llevan en refinement desde abril-mayo sin avanzar. Con 0 story points en todos, es imposible hacer estimaciones de sprint fiables mientras sigan en este estado.</p>
+      </div>
+      <div>
+        <h3>Próximas acciones</h3>
+        <p><strong>Diseño:</strong> responder preguntas Figma de PBAND-43.<br><strong>HLP:</strong> desbloquear PBAND-1324 (ids OAUTH) y PBAND-101 (evento open-chat).<br><strong>Producto:</strong> confirmar textos PBAND-1007 y definición completa PBAND-188.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Queries -->
+  <section class="section">
+    <div class="section-head"><h2>Consultas usadas</h2><p class="section-note">Base JQL del informe.</p></div>
+    <pre class="query"><code>-- Refinement dentro del sprint:
+project = PBAND AND Sprint = "PBAND-SP2607" AND status in (Refinement, "Epic Refinement") ORDER BY updated DESC
+-- Total: 5
+
+-- Campos: key, summary, status, assignee, priority, issuetype, updated, labels, comment, customfield_10016</code></pre>
+  </section>
+
+  <footer>
+    Pull&amp;Bear Android · PBAND-SP2607 Refinement en Sprint · Generado el 01/07/2026 desde Jira live.<br>
+    Snapshot estático. No modifica Jira. Los 5 tickets son scope activo del sprint — no es radar externo.
+  </footer>
+
+</main>
+</body>
+</html>

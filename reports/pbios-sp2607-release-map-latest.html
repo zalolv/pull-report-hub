@@ -1,0 +1,366 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>PBIOS-SP2607 iOS Release Control</title>
+  <style>
+    :root { --bg:#fff; --surface:#f7f7f7; --ink:#000; --muted:#6f6f6f; --line:#e2e2e2; --danger:#ff3b30; --warning:#ff9500; --info:#007aff; --success:#34c759; }
+    * { box-sizing:border-box; }
+    body { margin:0; background:var(--bg); color:var(--ink); font-family:"Neue Haas", "Helvetica Now Text", Helvetica, Arial, sans-serif; letter-spacing:.45px; }
+    a { color:inherit; text-decoration:none; border-bottom:1px solid currentColor; }
+    .page { max-width:1560px; margin:0 auto; padding:32px; }
+    .hero { min-height:360px; border:1px solid #000; padding:32px; display:grid; grid-template-columns:minmax(0,1.2fr) minmax(320px,.8fr); gap:32px; align-items:end; }
+    .eyebrow,.label { font-size:11px; line-height:18px; text-transform:uppercase; color:var(--muted); letter-spacing:.9px; }
+    h1 { margin:16px 0 0; font-size:clamp(44px,7vw,96px); line-height:.92; letter-spacing:-2px; font-weight:350; }
+    h2 { margin:0; font-size:clamp(28px,4vw,54px); line-height:1; letter-spacing:-1px; font-weight:350; }
+    h3 { margin:0 0 14px; font-size:14px; text-transform:uppercase; font-weight:500; }
+    .hero-copy { font-size:18px; line-height:1.45; max-width:680px; margin:24px 0 0; }
+    .hero-card,.panel,.kpi { border:1px solid var(--line); background:#fff; }
+    .hero-card,.panel { padding:20px; }
+    .hero-card { background:var(--surface); }
+    .hero-card p,.panel p,.section-note { color:var(--muted); line-height:1.45; }
+    .grid { display:grid; gap:16px; }
+    .kpis { grid-template-columns:repeat(6,minmax(0,1fr)); margin:24px 0; }
+    .kpi { min-height:132px; padding:20px; display:flex; flex-direction:column; justify-content:space-between; }
+    .kpi strong { font-size:clamp(34px,5vw,62px); font-weight:350; letter-spacing:-2px; }
+    .kpi span { color:var(--muted); font-size:11px; line-height:18px; text-transform:uppercase; }
+    .section { margin-top:48px; }
+    .section-head { display:flex; justify-content:space-between; align-items:end; gap:24px; margin-bottom:16px; }
+    .section-note { max-width:760px; margin:0; }
+    .three-col { grid-template-columns:repeat(3,minmax(0,1fr)); }
+    .filter-bar { display:flex; flex-wrap:wrap; gap:8px; align-items:center; }
+    .filter-chip { border:1px solid var(--line); background:#fff; color:var(--ink); padding:7px 10px; font:inherit; font-size:11px; text-transform:uppercase; cursor:pointer; }
+    .filter-chip.active { background:#000; color:#fff; border-color:#000; }
+    .kanban { display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:12px; }
+    .lane { border:1px solid var(--line); background:#fff; min-height:260px; }
+    .lane-head { border-bottom:1px solid var(--line); padding:14px; display:flex; justify-content:space-between; gap:12px; align-items:center; }
+    .lane-body { padding:10px; display:grid; gap:8px; }
+    .card { border:1px solid var(--line); background:var(--surface); padding:10px; }
+    .card.risk { border-color:var(--danger); background:#fff; }
+    .card.review { border-color:var(--info); background:#fff; }
+    .card-title { margin:8px 0; font-size:12px; line-height:1.3; }
+    .card-more { color:var(--muted); font-size:11px; line-height:1.4; padding:8px; border:1px dashed var(--line); }
+    .load-grid { display:grid; grid-template-columns:320px minmax(0,1fr); gap:16px; align-items:center; }
+    .donut { width:250px; height:250px; border-radius:50%; background:var(--surface); margin:auto; position:relative; border:1px solid var(--line); }
+    .donut::after { content:""; position:absolute; inset:56px; background:#fff; border-radius:50%; border:1px solid var(--line); }
+    .legend { display:grid; gap:8px; }
+    .legend-row { display:grid; grid-template-columns:14px minmax(0,1fr) auto; gap:8px; align-items:center; font-size:12px; }
+    .swatch { width:14px; height:14px; border:1px solid var(--line); }
+    .table-wrap { border:1px solid var(--line); overflow:auto; background:#fff; }
+    table { width:100%; border-collapse:collapse; font-size:12px; min-width:1180px; }
+    th,td { border-bottom:1px solid var(--line); padding:9px 8px; text-align:left; vertical-align:top; }
+    th { color:var(--muted); text-transform:uppercase; font-size:10px; font-weight:500; background:#fff; position:sticky; top:0; z-index:1; }
+    tr:last-child td { border-bottom:0; }
+    .summary { min-width:320px; }
+    .status { white-space:nowrap; }
+    .pill { display:inline-block; border:1px solid var(--line); padding:3px 7px; font-size:10px; text-transform:uppercase; color:var(--muted); background:#fff; white-space:nowrap; }
+    .pill.blocker { color:var(--danger); border-color:var(--danger); }
+    .pill.critical { color:var(--warning); border-color:var(--warning); }
+    .pill.review { color:var(--info); border-color:var(--info); }
+    .pill.good { color:var(--success); border-color:var(--success); }
+    .pill.rtv-warning { color:var(--warning); border-color:var(--warning); background:#fff4e5; }
+    .pill.rtv-danger { color:var(--danger); border-color:var(--danger); background:#fff0f0; }
+    .query { background:#000; color:#fff; padding:16px; overflow:auto; font-size:12px; line-height:1.5; }
+    .query code { white-space:pre; }
+    footer { margin:48px 0 0; padding-top:20px; border-top:1px solid var(--line); color:var(--muted); font-size:12px; line-height:1.5; }
+    @media (max-width:1100px){ .hero{grid-template-columns:1fr;} .kpis,.three-col{grid-template-columns:repeat(3,1fr);} .kanban{grid-template-columns:repeat(2,1fr);} .load-grid{grid-template-columns:1fr;} }
+    @media (max-width:720px){ .page{padding:16px;} .hero{padding:20px; min-height:auto;} .kpis,.three-col,.kanban{grid-template-columns:1fr;} .section-head{display:block;} .section-note{margin-top:12px;} }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <section class="hero">
+      <div>
+        <div class="eyebrow">Pull&amp;Bear iOS · PBIOS · Sprint PBIOS-SP2607</div>
+        <h1>Release control, sin fantasmas.</h1>
+        <p class="hero-copy">Snapshot live de Jira ordenado por Rank ASC. PBIOS-846 ya no aparece como Ready to Verify porque Jira dice Accepted; el informe no discute con Jira, que bastante tenemos.</p>
+      </div>
+      <aside class="hero-card">
+        <div class="label">Fuente de verdad</div>
+        <p><strong>Jira live:</strong> project = PBIOS AND Sprint = "PBIOS-SP2607" AND statusCategory != Done ORDER BY Rank ASC</p>
+        <p>Generado el 23/06/2026 16:00 +0200. Snapshot sin cache; no modifica Jira.</p>
+      </aside>
+    </section>
+
+    <section class="grid kpis" id="kpis" aria-label="KPIs principales"></section>
+
+    <section class="section">
+      <div class="section-head"><h2>Filtro ejecutivo</h2><p class="section-note">Filtra todo el informe por responsable de desarrollo o por PO / reporter. Ideal para convertir una release en una conversacion muy concreta, pero con datos.</p></div>
+      <div class="filter-bar" id="filters"></div>
+    </section>
+
+    <section class="section">
+      <div class="section-head"><h2>Lectura ejecutiva</h2><p class="section-note">iOS tiene menos volumen activo que Android, pero sigue concentrando trabajo cerca de validacion. El listado completo permite separar lo que esta pendiente de cerrar de lo que simplemente parece cerrado en una slide.</p></div>
+      <div class="grid three-col">
+        <article class="panel"><h3>Validacion cargada</h3><p><strong id="review-count-copy">-</strong> tickets estan en In Review, Ready to Verify o Ready to Validate. Cerca de cerrar sigue siendo un verbo en futuro.</p></article>
+        <article class="panel"><h3>Rework visible</h3><p><strong id="rework-count-copy">-</strong> tickets estan en To Rework y se muestran todos, sin resumen optimista ni magia de paginacion.</p></article>
+        <article class="panel"><h3>Control anti-cache</h3><p><strong>PBIOS-846</strong> queda fuera del scope activo porque su estado live es Accepted. Si aparece en Ready to Verify en otra copia, esa copia esta pasada de moda.</p></article>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-head"><h2>Kanban ejecutivo</h2><p class="section-note">Vista rapida por bloques. Las tarjetas son compactas; el detalle completo vive en las tablas de abajo, donde Jira puede extenderse sin pedir perdon.</p></div>
+      <div class="kanban" id="kanban"></div>
+    </section>
+
+    <section class="section">
+      <div class="section-head"><h2>Carga por desarrollador</h2><p class="section-note">Distribucion por owner usando Puntos de Historia como metrica principal. Los tickets sin estimacion se muestran aparte; no convertimos humo en puntos por deporte.</p></div>
+      <div class="panel load-grid"><div class="donut" id="owner-donut"></div><div class="legend" id="owner-legend"></div></div>
+    </section>
+
+    <section class="section">
+      <div class="section-head"><h2>Ready to Verify completo</h2><p class="section-note">Unico modulo con columna de tiempo en Ready to Verify. Validar tarde sigue siendo validar, pero el reloj no se calla.</p></div>
+      <div class="table-wrap"><table id="ready-table"></table></div>
+    </section>
+
+    <section class="section">
+      <div class="section-head"><h2>To Rework completo</h2><p class="section-note">Todas las filas en To Rework, ordenadas por Rank ASC.</p></div>
+      <div class="table-wrap"><table id="rework-table"></table></div>
+    </section>
+
+    <section class="section">
+      <div class="section-head"><h2>In Review / Ready to Validate</h2><p class="section-note">Validacion sin Ready to Verify, para que la columna de tiempo RTV no se cuele donde no toca.</p></div>
+      <div class="table-wrap"><table id="review-table"></table></div>
+    </section>
+
+    <section class="section">
+      <div class="section-head"><h2>Refinement PO</h2><p class="section-note">Tickets en Refinement o Epic Refinement dentro del sprint.</p></div>
+      <div class="table-wrap"><table id="refinement-table"></table></div>
+    </section>
+
+    <section class="section">
+      <div class="section-head"><h2>Sin owner activo</h2><p class="section-note">Tickets activos sin assignee claro.</p></div>
+      <div class="table-wrap"><table id="unassigned-table"></table></div>
+    </section>
+
+    <section class="section">
+      <div class="section-head"><h2>Scope activo completo</h2><p class="section-note">Las 54 filas activas del sprint, sin muestra representativa. PBIOS-1229 se lista por trazabilidad, pero no cuenta en capacidad ni candidatos por ser gestion auxiliar iOS.</p></div>
+      <div class="table-wrap"><table id="all-table"></table></div>
+    </section>
+
+    <section class="section">
+      <div class="section-head"><h2>Resumen final</h2><p class="section-note">Lectura automatica del scope filtrado, con sarcasmo medido y cero ficcion.</p></div>
+      <div class="panel" id="final-summary"></div>
+    </section>
+
+    <section class="section">
+      <div class="section-head"><h2>Consultas usadas</h2><p class="section-note">Base JQL del informe.</p></div>
+      <pre class="query"><code>project = PBIOS AND Sprint = "PBIOS-SP2607" AND statusCategory != Done ORDER BY Rank ASC
+project = PBIOS AND Sprint = "PBIOS-SP2607" AND status = "Ready to Verify" ORDER BY Rank ASC expand=changelog
+fields incluye customfield_10866 / Puntos de Historia
+key = PBIOS-846</code></pre>
+    </section>
+
+    <footer>Informe iOS regenerado desde Jira live para Pull&amp;Bear. PBIOS-846 esta Accepted y no forma parte del bucket Ready to Verify.</footer>
+  </main>
+
+  <script>
+    const GENERATED_AT = '2026-06-23T16:00:00+02:00';
+    const rows = [
+      {key:'PBIOS-409',summary:'[FaseV] Integración HPP',status:'En Curso',priority:'A++ (Bloqueo)',owner:'Nicolas Carrascal Mesa',reporter:'Danilo Linares Garcia',updated:'2026-06-23T10:51:57.000+0200'},
+      {key:'PBIOS-413',summary:'[Fase V] UX pantalla de selección de tipo de envío',status:'En Curso',priority:'A++ (Bloqueo)',owner:'Hugo Morales Martinez',reporter:'Danilo Linares Garcia',updated:'2026-06-18T23:35:05.000+0200'},
+      {key:'PBIOS-410',summary:'[FaseV] Migración de peticiones de shipping',status:'Ready to Verify',priority:'A++ (Bloqueo)',owner:'Nicolas Carrascal Mesa',reporter:'Danilo Linares Garcia',updated:'2026-06-18T23:35:05.000+0200',rtv:'2026-05-25 13:06:17.609000+02:00'},
+      {key:'PBIOS-412',summary:'[Fase V] UX Pantalla de resumen de compra',status:'En Curso',priority:'A+ (Crítico)',owner:'Hugo Morales Martinez',reporter:'Danilo Linares Garcia',updated:'2026-06-18T23:35:05.000+0200'},
+      {key:'PBIOS-942',summary:'[Ficha de producto] Ajustar imágenes y vídeos al ancho disponible con espaciado vertical',status:'Ready to Verify',priority:'A++ (Bloqueo)',owner:'Hugo Morales Martinez',reporter:'Jose Ramon Lopez Vazquez',updated:'2026-06-18T14:50:15.000+0200',rtv:'2026-06-18 14:50:15.757000+02:00'},
+      {key:'PBIOS-832',summary:'Migración formulario Bank Transfer a Formidables',status:'En Curso',priority:'A++ (Bloqueo)',owner:'Martin Calvete Iglesias',reporter:'Diana Queijo Bello',updated:'2026-06-15T10:04:33.000+0200'},
+      {key:'PBIOS-867',summary:'[Menú] Adaptación assets - settings',status:'Ready to Verify',priority:'A++ (Bloqueo)',owner:'Luis Miguel Demanuel Demanuel',reporter:'Julian Garcia Vidal',updated:'2026-06-18T13:35:33.000+0200',rtv:'2026-06-04 15:09:11.625000+02:00'},
+      {key:'PBIOS-1178',summary:'[CESTA][STOCK] Revisión lógica stock ítems cesta',status:'Ready to Verify',priority:'A+ (Crítico)',owner:'Imanol Cobian Martinez',reporter:'Angel Rodriguez Cerdeira',updated:'2026-06-23T10:31:17.000+0200',rtv:'2026-06-18 13:19:56.963000+02:00'},
+      {key:'PBIOS-1139',summary:'[QA][CESTA] No se pueden editar tallas en productos con "Low_stock"',status:'To Rework',priority:'A+ (Crítico)',owner:'Jun Qiu',reporter:'Marta Medina Moreno',updated:'2026-06-22T13:15:39.000+0200'},
+      {key:'PBIOS-1210',summary:'[Checkout] Error editando DP desde pantalla de resumen de compra (con extraParams)',status:'Ready to Verify',priority:'A++ (Bloqueo)',owner:'Imanol Cobian Martinez',reporter:'Jose Ramon Lopez Vazquez',updated:'2026-06-23T10:31:24.000+0200',rtv:'2026-06-18 11:26:37.597000+02:00'},
+      {key:'PBIOS-1145',summary:'[Wishlist] peticiones en arranque con 403 y en bucle',status:'In Review',priority:'A++ (Bloqueo)',owner:'Miguel Vicente Arara Lujan',reporter:'Cesar Bernardo Martinez',updated:'2026-06-18T08:38:41.000+0200'},
+      {key:'PBIOS-1149',summary:'[Checkout] Resumen de Pedido - Mejoras de UX en las promociones ',status:'En Curso',priority:'A+ (Crítico)',owner:'Nicolas Carrascal Mesa',reporter:'Carlos Belmonte Ceniza',updated:'2026-06-22T12:45:43.000+0200'},
+      {key:'PBIOS-1116',summary:'[CESTA][PROMOCIONES] Revisar valores label de descuento',status:'Ready to Verify',priority:'A+ (Crítico)',owner:'Hugo Morales Martinez',reporter:'Carlos Belmonte Ceniza',updated:'2026-06-18T14:50:28.000+0200',rtv:'2026-06-18 14:50:23.038000+02:00'},
+      {key:'PBIOS-1126',summary:'[Wishlist] Modificaciones sobre el MVP - ACCESO ',status:'In Review',priority:'A+ (Crítico)',owner:'Miguel Vicente Arara Lujan',reporter:'Cesar Bernardo Martinez',updated:'2026-06-18T08:44:14.000+0200'},
+      {key:'PBIOS-1137',summary:'[Wishlist] Modificaciones sobre el MVP - EDICIÓN',status:'In Review',priority:'A+ (Crítico)',owner:'Miguel Vicente Arara Lujan',reporter:'Cesar Bernardo Martinez',updated:'2026-06-18T08:46:22.000+0200'},
+      {key:'PBIOS-1194',summary:'[QA] [Checkout] Fallo en el flujo de checkout con usuario nuevo al introducir direccion y volver',status:'En Curso',priority:'A (Muy Importante)',owner:'Javier Mazorra Rodriguez',reporter:'Mario Martínez Barea',updated:'2026-06-17T12:20:12.000+0200'},
+      {key:'PBIOS-1238',summary:'[QA] - [Subcestas] - [Opciones regalo] - Al añadir opciones de regalo desde la pantalla Envío en una subcesta, el sobre regalo no se refleja ni se cobra en el total',status:'En Curso',priority:'A (Muy Importante)',owner:'Víctor Llinares Muñoz',reporter:'Pierangela Betti Hernádez',updated:'2026-06-23T12:29:58.000+0200'},
+      {key:'PBIOS-397',summary:'[WISHLIST] Añadir items a lista Coming soon',status:'En Curso',priority:'A+ (Crítico)',owner:'Miguel Vicente Arara Lujan',reporter:'Cesar Bernardo Martinez',updated:'2026-06-16T23:34:18.000+0200'},
+      {key:'PBIOS-296',summary:'[Analitica] - Analitica Checkout Fase V GA4 - iOS',status:'En Curso',priority:'A+ (Crítico)',owner:'Nicolas Carrascal Mesa',reporter:'Julian Molina Sánchez',updated:'2026-06-22T23:35:53.000+0200'},
+      {key:'PBIOS-307',summary:'[Formularios Formidables] Formularios de dirección - Geolocalización ',status:'En Curso',priority:'A+ (Crítico)',owner:'Jun Qiu',reporter:'Fernando Gomez Ferreiro',updated:'2026-06-22T23:35:53.000+0200'},
+      {key:'PBIOS-1151',summary:'[Analitica] Zenit - Incidencias Wishlist 2.0 - iOS',status:'In Review',priority:'A+ (Crítico)',owner:'Miguel Vicente Arara Lujan',reporter:'María Emilia Baez',updated:'2026-06-23T10:41:27.000+0200'},
+      {key:'PBIOS-943',summary:'[ARRANQUE] Splash congelado tras primera instalación o cambio de mercado',status:'Ready to Verify',priority:'A+ (Crítico)',owner:'Jose Bechiarelli Mateo',reporter:'Angel Rodriguez Cerdeira',updated:'2026-06-22T12:45:58.000+0200',rtv:'2026-06-18 12:32:38.531000+02:00'},
+      {key:'PBIOS-1147',summary:'[Wishlist] Modificación sobre el MVP - módulo de recomendados',status:'En Cartera',priority:'A+ (Crítico)',owner:'Miguel Vicente Arara Lujan',reporter:'Cesar Bernardo Martinez',updated:'2026-06-16T10:19:44.000+0200'},
+      {key:'PBIOS-401',summary:'OpenRoaming: Añadir funcionalidad OpenRoaming WiFi para Tiendas Físicas',status:'En Curso',priority:'A (Muy Importante)',owner:'Jose Bechiarelli Mateo',reporter:'Diana Queijo Bello',updated:'2026-06-18T23:35:05.000+0200'},
+      {key:'PBIOS-819',summary:'[Plan de animaciones] Interacciones Hápticas',status:'En Cartera',priority:'A (Muy Importante)',owner:'Jose Bechiarelli Mateo',reporter:'Cesar Bernardo Martinez',updated:'2026-06-22T12:46:59.000+0200'},
+      {key:'PBIOS-1188',summary:'[PERSONALIZACIÓN] Incidencia productos personalizados en recomendados',status:'Ready to Verify',priority:'A (Muy Importante)',owner:'Javier Mazorra Rodriguez',reporter:'Diana Queijo Bello',updated:'2026-06-18T23:35:05.000+0200',rtv:'2026-06-18 15:20:09.372000+02:00'},
+      {key:'PBIOS-935',summary:'[Analitica] Zenit - Incidencias PRODUCT_BUNDLE_DETAILS (PageHit/ImpressionHit/Click/AddToCart) - iOS',status:'To Rework',priority:'A (Muy Importante)',owner:'Jun Qiu',reporter:'María Emilia Baez',updated:'2026-06-19T14:37:10.000+0200'},
+      {key:'PBIOS-1205',summary:'[Analítica] [Adjust] Restaurar evento VIEW PRODUCT',status:'Ready to Verify',priority:'A (Muy Importante)',owner:'Jun Qiu',reporter:'Angel Rodriguez Cerdeira',updated:'2026-06-18T23:35:04.000+0200',rtv:'2026-06-18 12:29:07.246000+02:00'},
+      {key:'PBIOS-352',summary:'[Bazaar] Eliminar código Bazaarvoice',status:'Ready to Verify',priority:'A (Muy Importante)',owner:'Jun Qiu',reporter:'Millan Rivera Pardo',updated:'2026-06-18T23:35:06.000+0200',rtv:'2026-06-18 12:33:26.477000+02:00'},
+      {key:'PBIOS-416',summary:'[CESTA][SWR] Mejoras del flujo Smart Waiting Room',status:'Ready to Verify',priority:'A (Muy Importante)',owner:'Víctor Llinares Muñoz',reporter:'Angel Rodriguez Cerdeira',updated:'2026-06-18T23:35:05.000+0200',rtv:'2026-06-18 12:43:09.467000+02:00'},
+      {key:'PBIOS-371',summary:'[Analitica] - Funcionalidad Geolocalizacion Google Formularios - iOS',status:'En Curso',priority:'A (Muy Importante)',owner:'Jun Qiu',reporter:'Julian Molina Sánchez',updated:'2026-06-15T23:35:41.000+0200'},
+      {key:'PBIOS-797',summary:'[Wallet][Store] Activación de QR tienda desde wallet iPhone por geolocalización',status:'Ready to Start',priority:'A (Muy Importante)',owner:'Jose Bechiarelli Mateo',reporter:'Angel Rodriguez Cerdeira',updated:'2026-06-22T12:45:33.000+0200'},
+      {key:'PBIOS-823',summary:' [iOS] Migración a Scene Lifecycle (UIScene) – Cumplimiento requisito Apple',status:'Ready to Verify',priority:'A (Muy Importante)',owner:'Jose Bechiarelli Mateo',reporter:'Angel Rodriguez Cerdeira',updated:'2026-06-18T12:36:07.000+0200',rtv:'2026-06-18 12:36:07.319000+02:00'},
+      {key:'PBIOS-394',summary:'[eStore] Nuevas secciones',status:'Ready to Verify',priority:'A (Muy Importante)',owner:'Víctor Llinares Muñoz',reporter:'Diana Queijo Bello',updated:'2026-06-18T23:35:06.000+0200',rtv:'2026-06-11 13:29:51.490000+02:00'},
+      {key:'PBIOS-368',summary:'[P_ANIM_UX] Despliegue de menú.',status:'To Rework',priority:'A (Muy Importante)',owner:'Imanol Cobian Martinez',reporter:'Cesar Bernardo Martinez',updated:'2026-06-23T10:31:07.000+0200'},
+      {key:'PBIOS-1237',summary:'[Crashlytics] ITXJsonResponseDeserializer',status:'Ready to Verify',priority:'D (Trivial)',owner:'Martin Calvete Iglesias',reporter:'Martin Calvete Iglesias',updated:'2026-06-18T13:44:32.000+0200',rtv:'2026-06-18 13:44:32.712000+02:00'},
+      {key:'PBIOS-1034',summary:'[PBPASS] Ajustes mi cuenta',status:'En Cartera',priority:'A++ (Bloqueo)',owner:'Imanol Cobian Martinez',reporter:'Javier Lopez Abeledo',updated:'2026-06-23T10:29:17.000+0200'},
+      {key:'PBIOS-840',summary:'[PLP] Filtro de talla por tipo de producto',status:'Ready to Verify',priority:'A (Muy Importante)',owner:'Luis Miguel Demanuel Demanuel',reporter:'Fernando Gomez Ferreiro',updated:'2026-06-19T14:08:09.000+0200',rtv:'2026-06-19 14:08:09.940000+02:00'},
+      {key:'PBIOS-681',summary:'[Firebase][ERROR]ProductGridDataSource.reconfigureItems(_:animating:)',status:'En Cartera',priority:'C (Menor)',owner:'Miguel Vicente Arara Lujan',reporter:'Miguel Vicente Arara Lujan',updated:'2026-06-11T17:15:03.000+0200'},
+      {key:'PBIOS-800',summary:'[Discovery] Implementación de Atajos App Intents base (carrito, wishlist, pedidos)',status:'Ready to Verify',priority:'D (Trivial)',owner:'Jose Bechiarelli Mateo',reporter:'Angel Rodriguez Cerdeira',updated:'2026-06-18T12:36:33.000+0200',rtv:'2026-06-18 12:36:33.346000+02:00'},
+      {key:'PBIOS-801',summary:'[Discovery] Integración App Intents + Siri + Spotlight para búsqueda de productos',status:'Ready to Verify',priority:'D (Trivial)',owner:'Jose Bechiarelli Mateo',reporter:'Angel Rodriguez Cerdeira',updated:'2026-06-18T12:36:55.000+0200',rtv:'2026-06-18 12:36:55.358000+02:00'},
+      {key:'PBIOS-895',summary:'[Analitica][GA4] - Plazos de entrega - IOS',status:'En Curso',priority:'D (Trivial)',owner:'Nicolas Carrascal Mesa',reporter:'Julian Molina Sánchez',updated:'2026-06-11T17:15:09.000+0200'},
+      {key:'PBIOS-904',summary:'[HLP][OAuth] Integración token APPETIZE para evitar bloqueo Akamai',status:'Ready to Verify',priority:'B (Importante)',owner:'Javier Mazorra Rodriguez',reporter:'Angel Rodriguez Cerdeira',updated:'2026-06-22T09:53:48.000+0200',rtv:'2026-06-18 15:19:42.014000+02:00'},
+      {key:'PBIOS-1181',summary:'[QA] [OAUTH-PRO-DEBUG] Loop en el login por OAUTH',status:'En Cartera',priority:'A (Muy Importante)',owner:'Unassigned',reporter:'Mario Martínez Barea',updated:'2026-06-22T12:40:21.000+0200'},
+      {key:'PBIOS-891',summary:'[ACCESIBILIDAD][A11y][Checkout] textbox número telefono con implementación incorrecta',status:'To Rework',priority:'A+ (Crítico)',owner:'Jun Qiu',reporter:'Angel Rodriguez Cerdeira',updated:'2026-06-23T11:22:42.000+0200'},
+      {key:'PBIOS-906',summary:'[ACCESIBILIDAD][A11y][Parrilla] Botón categoría no operable - v2',status:'To Rework',priority:'A+ (Crítico)',owner:'Jun Qiu',reporter:'Angel Rodriguez Cerdeira',updated:'2026-06-23T11:41:10.000+0200'},
+      {key:'PBIOS-1206',summary:'Actualización Xcode 26.5',status:'Ready to Verify',priority:'D (Trivial)',owner:'Martin Calvete Iglesias',reporter:'Martin Calvete Iglesias',updated:'2026-06-18T13:44:44.000+0200',rtv:'2026-06-11 13:26:38.268000+02:00'},
+      {key:'PBIOS-1229',summary:'Gestión de incidencias y otras tareas auxiliares v2607.0.0',status:'En Cartera',priority:'C (Menor)',owner:'Unassigned',reporter:'eCommerceContactoCadenas',updated:'2026-06-15T08:25:43.000+0200'},
+      {key:'PBIOS-1246',summary:'[PUSH][INAPP] No se muestra banner en home de la push 10% welcome app',status:'En Cartera',priority:'A+ (Crítico)',owner:'Víctor Llinares Muñoz',reporter:'Angel Rodriguez Cerdeira',updated:'2026-06-23T08:59:25.000+0200'},
+      {key:'PBIOS-1254',summary:'[Checkout] Gestion de promociones en Fase V',status:'En Cartera',priority:'A+ (Crítico)',owner:'Unassigned',reporter:'Carlos Belmonte Ceniza',updated:'2026-06-22T12:40:58.000+0200'},
+      {key:'PBIOS-1265',summary:'[OAUTH] redireccion de direcciones de mi cuenta',status:'Ready to Verify',priority:'A (Muy Importante)',owner:'Jose Bechiarelli Mateo',reporter:'Julen Zugasti Bilbao',updated:'2026-06-22T12:46:42.000+0200',rtv:'2026-06-18 12:37:54.285000+02:00'},
+      {key:'PBIOS-1276',summary:'[Adjust] Integrar la SDK Signature library',status:'Ready to Verify',priority:'A+ (Crítico)',owner:'Jun Qiu',reporter:'Julen Zugasti Bilbao',updated:'2026-06-22T13:17:40.000+0200',rtv:'2026-06-18 14:06:11.911000+02:00'},
+      {key:'PBIOS-1300',summary:'[Detalle pedido][Fast Sint] Pedidos partidos con fast sint',status:'En Curso',priority:'A (Muy Importante)',owner:'Hugo Morales Martinez',reporter:'Jose Ramon Lopez Vazquez',updated:'2026-06-22T23:35:52.000+0200'},
+      {key:'PBIOS-1307',summary:'[CESTA][PREWARMING] Ítem en cesta no muestra prewarming',status:'En Cartera',priority:'A+ (Crítico)',owner:'Unassigned',reporter:'Angel Rodriguez Cerdeira',updated:'2026-06-23T15:31:12.000+0200'}
+    ];
+
+    const storyPointsByKey = {
+      'PBIOS-409':13,'PBIOS-413':13,'PBIOS-410':13,'PBIOS-412':13,'PBIOS-942':2,'PBIOS-832':8,'PBIOS-867':5,'PBIOS-1178':2,'PBIOS-1139':2,'PBIOS-1210':2,'PBIOS-1149':3,'PBIOS-1116':2,'PBIOS-1238':3,'PBIOS-397':8,'PBIOS-296':13,'PBIOS-307':8,'PBIOS-943':8,'PBIOS-401':13,'PBIOS-819':5,'PBIOS-1188':5,'PBIOS-935':2,'PBIOS-1205':1,'PBIOS-352':5,'PBIOS-416':13,'PBIOS-371':1,'PBIOS-823':5,'PBIOS-394':13,'PBIOS-368':3,'PBIOS-1237':3,'PBIOS-1034':5,'PBIOS-840':8,'PBIOS-681':5,'PBIOS-800':3,'PBIOS-801':3,'PBIOS-895':3,'PBIOS-1181':5,'PBIOS-891':1,'PBIOS-906':2,'PBIOS-1206':1,'PBIOS-1229':8,'PBIOS-1246':3,'PBIOS-1254':5,'PBIOS-1265':5,'PBIOS-1276':1,'PBIOS-1300':3
+    };
+    const CAPACITY_EXCLUDED_KEYS = new Set(['PBIOS-1229']);
+
+    const reviewStatuses = new Set(['In Review','Ready to Verify','Ready to Validate']);
+    const todoCategories = new Set(['En Cartera','Ready to Start','Refinement','Epic Refinement']);
+
+    function esc(value) { return String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+    function priorityClass(priority) { return priority.startsWith('A++') ? 'blocker' : priority.startsWith('A+') ? 'critical' : ''; }
+    function parseDate(value) { return value ? new Date(value.replace(' ', 'T').replace(/(\.\d{3})\d+/, '$1').replace(/([+-]\d{2})(\d{2})$/, '$1:$2')) : null; }
+    function ageFrom(value) {
+      const start = parseDate(value);
+      if (!start || Number.isNaN(start.getTime())) return '-';
+      const end = new Date(GENERATED_AT);
+      const hours = Math.max(0, Math.round((end - start) / 36e5));
+      const days = Math.floor(hours / 24);
+      const rest = hours % 24;
+      return days ? `${days}d ${rest}h` : `${rest}h`;
+    }
+    function daysFrom(value) {
+      const start = parseDate(value);
+      if (!start || Number.isNaN(start.getTime())) return 0;
+      return Math.floor(Math.max(0, new Date(GENERATED_AT) - start) / 864e5);
+    }
+    function rtvSeverityClass(value) {
+      const days = daysFrom(value);
+      return days > 10 ? 'rtv-danger' : days > 5 ? 'rtv-warning' : '';
+    }
+    function issueType(row) {
+      const text = `${row.summary} ${row.status}`.toLowerCase();
+      if (/bug|qa|crash|error|fix|incidencia|fallo|no se|accesibilidad|a11y/.test(text)) return 'Incidencia';
+      if (/actualizaci[oó]n|migraci[oó]n|documentaci[oó]n|observability|administraci[oó]n|refactor|sdk|dagger|koin|minify/.test(text)) return 'Tarea';
+      return 'Historia';
+    }
+    function storyPoints(row) { return Object.prototype.hasOwnProperty.call(storyPointsByKey, row.key) ? storyPointsByKey[row.key] : null; }
+    function storyPointLabel(row) { const points = storyPoints(row); return points === null ? 'sin estimación' : `${points} pts`; }
+    function totalPoints(data) { return data.reduce((sum, row) => sum + (storyPoints(row) ?? 0), 0); }
+    function capacityRows(data) { return data.filter(row => !CAPACITY_EXCLUDED_KEYS.has(row.key)); }
+    function statusPill(status, priority) {
+      const cls = reviewStatuses.has(status) ? 'review' : priorityClass(priority);
+      return `<span class="pill ${cls}">${esc(status)}</span>`;
+    }
+    const filterState = { owner: 'All', reporter: 'All' };
+    const chartColors = ['#000000', '#363636', '#757575', '#b3b3b3', '#0170e9', '#ff9500', '#34c759', '#ff3b30', '#6b3daf', '#0c7878'];
+
+    function currentRows() {
+      return rows.filter(r => (filterState.owner === 'All' || r.owner === filterState.owner) && (filterState.reporter === 'All' || r.reporter === filterState.reporter));
+    }
+    function countBy(data, field) {
+      return data.reduce((acc, row) => {
+        acc[row[field]] = (acc[row[field]] || 0) + 1;
+        return acc;
+      }, {});
+    }
+    function renderFilters() {
+      const owners = ['All', ...Object.keys(countBy(rows, 'owner')).sort((a, b) => a.localeCompare(b, 'es'))];
+      const reporters = ['All', ...Object.keys(countBy(rows, 'reporter')).sort((a, b) => a.localeCompare(b, 'es'))];
+      const button = (type, value) => `<button class="filter-chip ${filterState[type] === value ? 'active' : ''}" data-filter-type="${type}" data-filter-value="${esc(value)}">${type === 'owner' ? 'Owner' : 'PO'}: ${esc(value)}</button>`;
+      document.getElementById('filters').innerHTML = owners.map(owner => button('owner', owner)).join('') + reporters.map(reporter => button('reporter', reporter)).join('');
+      document.querySelectorAll('[data-filter-type]').forEach(el => el.addEventListener('click', () => {
+        filterState[el.dataset.filterType] = el.dataset.filterValue;
+        renderAll();
+      }));
+    }
+    function renderTable(id, data, options = {}) {
+      const table = document.getElementById(id);
+      const rtvHead = options.includeRtv ? '<th>Tiempo en Ready to Verify</th>' : '';
+      const body = data.length ? data.map((r, i) => `<tr><td>${i + 1}</td><td>${esc(issueType(r))}</td><td><a href="https://jira.inditex.com/jira/browse/${r.key}">${r.key}</a></td><td class="summary">${esc(r.summary)}</td><td class="status">${statusPill(r.status, r.priority)}</td><td><span class="pill ${priorityClass(r.priority)}">${esc(r.priority)}</span></td><td>${esc(storyPointLabel(r))}</td><td>${esc(r.owner)}</td><td>${esc(r.reporter)}</td>${options.includeRtv ? `<td><span class="pill ${rtvSeverityClass(r.rtv)}">${ageFrom(r.rtv)}</span></td>` : ''}</tr>`).join('') : '<tr><td colspan="10">Sin tickets para este filtro. Pequeña victoria o filtro con exceso de personalidad.</td></tr>';
+      table.innerHTML = `<thead><tr><th>#</th><th>Tipo de tarea</th><th>Ticket</th><th class="summary">Summary</th><th>Status</th><th>Priority</th><th>Puntos de Historia</th><th>Owner</th><th>PO / reporter</th>${rtvHead}</tr></thead><tbody>${body}</tbody>`;
+      }
+    function renderKpis(data) {
+      const review = data.filter(r => reviewStatuses.has(r.status));
+      const rework = data.filter(r => r.status === 'To Rework');
+      const inProgress = data.filter(r => !todoCategories.has(r.status));
+      const todo = data.filter(r => todoCategories.has(r.status));
+      const unassigned = data.filter(r => r.owner === 'Unassigned');
+      const capacity = capacityRows(data);
+      const unestimated = capacity.filter(row => storyPoints(row) === null);
+      document.getElementById('kpis').innerHTML = [
+        ['Scope activo', `${data.length} JIRAs`], ['Puntos estimados', `${totalPoints(capacity)} pts`], ['Sin estimación', unestimated.length], ['Review / Validación', review.length], ['To Rework', rework.length], ['Sin owner activo', unassigned.length]
+      ].map(([label, value]) => `<div class="kpi"><span>${label}</span><strong>${value}</strong></div>`).join('');
+      document.getElementById('review-count-copy').textContent = review.length;
+      document.getElementById('rework-count-copy').textContent = rework.length;
+    }
+    function renderKanban(data) {
+      const lanes = [
+        ['Por hacer', r => todoCategories.has(r.status)],
+        ['En curso', r => r.status === 'En Curso'],
+        ['Review / validate', r => r.status === 'In Review' || r.status === 'Ready to Validate'],
+        ['Ready to Verify', r => r.status === 'Ready to Verify'],
+        ['To Rework', r => r.status === 'To Rework'],
+      ];
+      document.getElementById('kanban').innerHTML = lanes.map(([title, predicate]) => {
+        const items = data.filter(predicate);
+        const visible = items.slice(0, 8);
+        const more = items.length > visible.length ? `<div class="card-more">+${items.length - visible.length} mas en la tabla completa. La release es compacta; Jira no.</div>` : '';
+        return `<article class="lane"><div class="lane-head"><h3>${title}</h3><span class="pill">${items.length}</span></div><div class="lane-body">${visible.map(row => `<div class="card ${row.status === 'To Rework' ? 'risk' : reviewStatuses.has(row.status) ? 'review' : ''}"><span class="pill ${priorityClass(row.priority)}">${esc(row.priority)}</span><div class="card-title"><a href="https://jira.inditex.com/jira/browse/${row.key}">${row.key}</a> · ${esc(row.summary)}</div><div class="label">Owner: ${esc(row.owner)}<br>PO: ${esc(row.reporter)}</div></div>`).join('') || '<div class="card-more">Sin tickets. Respiremos dos segundos.</div>'}${more}</div></article>`;
+      }).join('');
+    }
+    function renderDonut(data) {
+      const stats = capacityRows(data).reduce((acc, row) => {
+        acc[row.owner] = acc[row.owner] || { points: 0, tickets: 0, unestimated: 0 };
+        acc[row.owner].tickets += 1;
+        const points = storyPoints(row);
+        if (points === null) acc[row.owner].unestimated += 1;
+        else acc[row.owner].points += points;
+        return acc;
+      }, {});
+      const entries = Object.entries(stats).sort((a, b) => b[1].points - a[1].points || b[1].tickets - a[1].tickets);
+      const total = entries.reduce((sum, [, stat]) => sum + stat.points, 0) || 1;
+      let cursor = 0;
+      const gradient = entries.map(([, stat], index) => {
+        const start = cursor;
+        cursor += (stat.points / total) * 100;
+        return `${chartColors[index % chartColors.length]} ${start}% ${cursor}%`;
+      }).join(', ');
+      document.getElementById('owner-donut').style.background = entries.length ? `conic-gradient(${gradient})` : 'var(--surface)';
+      document.getElementById('owner-legend').innerHTML = entries.map(([owner, stat], index) => `<div class="legend-row"><span class="swatch" style="background:${chartColors[index % chartColors.length]}"></span><span>${esc(owner)} · ${stat.tickets} JIRAs · ${stat.unestimated} sin estimación</span><strong>${stat.points} pts</strong></div>`).join('') || '<p class="section-note">Sin carga para este filtro.</p>';
+    }
+    function renderSummary(data) {
+      const ready = data.filter(r => r.status === 'Ready to Verify');
+      const rework = data.filter(r => r.status === 'To Rework');
+      const unassigned = data.filter(r => r.owner === 'Unassigned');
+      const capacity = capacityRows(data);
+      const topOwner = Object.entries(capacity.reduce((acc, row) => {
+        acc[row.owner] = (acc[row.owner] || 0) + (storyPoints(row) ?? 0);
+        return acc;
+      }, {})).sort((a, b) => b[1] - a[1])[0];
+      const unestimated = capacity.filter(row => storyPoints(row) === null);
+      document.getElementById('final-summary').innerHTML = `<p><strong>${data.length}</strong> tickets activos en el filtro actual, con <strong>${totalPoints(capacity)} puntos estimados</strong> y <strong>${unestimated.length}</strong> tickets sin estimación. <strong>${ready.length}</strong> estan en Ready to Verify, <strong>${rework.length}</strong> en To Rework y <strong>${unassigned.length}</strong> siguen sin owner.</p><p>${topOwner ? `La mayor carga estimada cae en <strong>${esc(topOwner[0])}</strong> con <strong>${topOwner[1]}</strong> puntos. PBIOS-1229 queda excluido de capacidad por gestion auxiliar iOS; Jira lo lista, la capacidad no lo compra.` : 'El filtro no devuelve tickets. Por una vez, Jira parece zen.'}</p>`;
+    }
+    function renderAll() {
+      const data = currentRows();
+      renderFilters();
+      renderKpis(data);
+      renderKanban(data);
+      renderDonut(data);
+      renderTable('ready-table', data.filter(r => r.status === 'Ready to Verify'), { includeRtv: true });
+      renderTable('rework-table', data.filter(r => r.status === 'To Rework'));
+      renderTable('review-table', data.filter(r => r.status === 'In Review' || r.status === 'Ready to Validate'));
+      renderTable('refinement-table', data.filter(r => r.status === 'Refinement' || r.status === 'Epic Refinement'));
+      renderTable('unassigned-table', data.filter(r => r.owner === 'Unassigned'));
+      renderTable('all-table', data);
+      renderSummary(data);
+    }
+    renderAll();
+  </script>
+</body>
+</html>
