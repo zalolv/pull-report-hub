@@ -110,6 +110,85 @@
       line-height: 1;
     }
 
+    .roadmap {
+      margin-bottom: clamp(46px, 7vw, 86px);
+    }
+
+    .roadmap-rows {
+      display: grid;
+      gap: 18px;
+      padding-top: 24px;
+    }
+
+    .roadmap-row {
+      display: grid;
+      grid-template-columns: 150px 1fr;
+      gap: 18px;
+      align-items: stretch;
+      padding: 18px 0;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .roadmap-label {
+      color: var(--ink);
+      font-size: 12px;
+      line-height: 1;
+      letter-spacing: .8px;
+      text-transform: uppercase;
+    }
+
+    .roadmap-line {
+      position: relative;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 12px;
+    }
+
+    .roadmap-item {
+      position: relative;
+      min-height: 132px;
+      padding: 18px;
+      border: 1px solid var(--line);
+      background: var(--bg);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 16px;
+      transition: border-color .2s ease, transform .2s ease;
+    }
+
+    .roadmap-item:hover,
+    .roadmap-item:focus-visible {
+      border-color: var(--ink);
+      transform: translateY(-2px);
+      outline: none;
+    }
+
+    .roadmap-date {
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1;
+      letter-spacing: .7px;
+      text-transform: uppercase;
+    }
+
+    .roadmap-title {
+      font-size: 18px;
+      line-height: 1.05;
+      letter-spacing: -.4px;
+    }
+
+    .roadmap-type {
+      width: fit-content;
+      padding: 6px 8px;
+      border: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 10px;
+      line-height: 1;
+      letter-spacing: .7px;
+      text-transform: uppercase;
+    }
+
     .count {
       color: var(--muted);
       font-size: 12px;
@@ -267,6 +346,10 @@
         flex-direction: column;
       }
 
+      .roadmap-row {
+        grid-template-columns: 1fr;
+      }
+
       .report-card {
         min-height: auto;
         grid-template-rows: 240px 1fr;
@@ -287,6 +370,50 @@
         <h1 id="page-title">Informes visuales para consultar y compartir.</h1>
       </div>
       <p class="lead">Un mapa manual de informes HTML publicados en GitHub Pages. Cada tarjeta resume el motivo del informe y abre el recurso original.</p>
+    </section>
+
+    <section class="roadmap" aria-labelledby="roadmap-title">
+      <div class="section-head">
+        <h2 id="roadmap-title">Roadmap de informes</h2>
+        <span class="count">Fotos por fecha</span>
+      </div>
+
+      <div class="roadmap-rows">
+        <div class="roadmap-row">
+          <div class="roadmap-label">iOS</div>
+          <div class="roadmap-line">
+            <a class="roadmap-item" href="reports/pbios-sp2607-release-map.html"><span class="roadmap-date">22 Jun 2026</span><span class="roadmap-title">PBIOS release map</span><span class="roadmap-type">Release</span></a>
+            <a class="roadmap-item" href="reports/pbios-sp2607-release-map-latest.html"><span class="roadmap-date">23 Jun 2026</span><span class="roadmap-title">PBIOS release control live</span><span class="roadmap-type">Release</span></a>
+            <a class="roadmap-item" href="reports/pbios-sp2607-refinement-radar.html"><span class="roadmap-date">01 Jul 2026</span><span class="roadmap-title">PBIOS refinement radar</span><span class="roadmap-type">Refinement</span></a>
+          </div>
+        </div>
+
+        <div class="roadmap-row">
+          <div class="roadmap-label">Android</div>
+          <div class="roadmap-line">
+            <a class="roadmap-item" href="reports/android-pband-sp2607-release-map.html"><span class="roadmap-date">23 Jun 2026</span><span class="roadmap-title">PBAND Android release control</span><span class="roadmap-type">Release</span></a>
+            <a class="roadmap-item" href="reports/pband-sp2607-refinement-radar.html"><span class="roadmap-date">01 Jul 2026</span><span class="roadmap-title">PBAND refinement en sprint</span><span class="roadmap-type">Refinement</span></a>
+          </div>
+        </div>
+
+        <div class="roadmap-row">
+          <div class="roadmap-label">Ventas y pagos</div>
+          <div class="roadmap-line">
+            <a class="roadmap-item" href="reports/pb-germany-executive-report.html"><span class="roadmap-date">24 Jun 2026</span><span class="roadmap-title">Alemania diagnostico ecommerce</span><span class="roadmap-type">Ventas</span></a>
+            <a class="roadmap-item" href="reports/pb-germany-payment-methods-report.html"><span class="roadmap-date">24 Jun 2026</span><span class="roadmap-title">Alemania metodos de pago</span><span class="roadmap-type">Pagos</span></a>
+            <a class="roadmap-item" href="reports/pb-turkey-sale-launch-report.html"><span class="roadmap-date">24 Jun 2026</span><span class="roadmap-title">Turquia salida rebajas</span><span class="roadmap-type">Ventas</span></a>
+            <a class="roadmap-item" href="reports/pb-austria-payment-methods-report.html"><span class="roadmap-date">29 Jun 2026</span><span class="roadmap-title">Austria metodos de pago</span><span class="roadmap-type">Pagos</span></a>
+          </div>
+        </div>
+
+        <div class="roadmap-row">
+          <div class="roadmap-label">Incidencias y otros</div>
+          <div class="roadmap-line">
+            <a class="roadmap-item" href="reports/yerem-ai-visual-report.html"><span class="roadmap-date">22 Jun 2026</span><span class="roadmap-title">yerem-ai informe visual</span><span class="roadmap-type">Contexto</span></a>
+            <a class="roadmap-item" href="reports/category-residual-requests-report.html"><span class="roadmap-date">01 Jul 2026</span><span class="roadmap-title">Llamadas residuales /category</span><span class="roadmap-type">Incidencias</span></a>
+          </div>
+        </div>
+      </div>
     </section>
 
     <section aria-labelledby="reports-title">
